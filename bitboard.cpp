@@ -13,6 +13,10 @@ class Bitboard {
             board |= (std::uint64_t(1) << (row*8 + col));
         }
 
+        int get_bit(int row, int col) {
+            return (board >> (row*8+col)) & 1;
+        }
+
         std::string to_string() {
             std::string result;
             for (int row = 0; row < 8; row++) {
@@ -27,12 +31,3 @@ class Bitboard {
     private:
         std::uint64_t board;
 };
-
-
-int main()
-{
-  Bitboard b;
-  b.set_bit(4, 6);
-  std::cout << b.to_string() << std::endl;
- return 0;
-} 
