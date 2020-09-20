@@ -3,18 +3,31 @@
  #include <iostream>
  
 class Bitboard {
+
     public:
 
         Bitboard() {
             board = 0;
         };
 
-        void set_bit(int row, int col) {
+        Bitboard(std::uint64_t b) {
+            board = b;
+        };
+
+        void set_square(int row, int col) {
             board |= (std::uint64_t(1) << (row*8 + col));
         }
 
-        int get_bit(int row, int col) {
+        int get_square(int row, int col) {
             return (board >> (row*8+col)) & 1;
+        }
+
+        friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {
+            return Bitboard(a.board | b.board);
+        }
+
+        friend Bitboard squarewise_and(const Bitboard a, const Bitboard b) {
+            return Bitboard(a.board & b.board);
         }
 
         std::string to_string() {
