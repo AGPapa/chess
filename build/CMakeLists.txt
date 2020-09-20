@@ -8,5 +8,7 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
  
 # Link runTests with what we want to test and the GTest and pthread library
-add_executable(runTests ../bitboard_test.cpp)
-target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
+add_executable(runBitBoardTests ../bitboard_test.cpp)
+add_executable(runSquareTests ../square_test.cpp)
+target_link_libraries(runBitBoardTests ${GTEST_LIBRARIES} pthread)
+target_link_libraries(runSquareTests ${GTEST_LIBRARIES} pthread)
