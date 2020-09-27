@@ -3,8 +3,14 @@
 class Square {
 
     public:
+        Square() {}
+
         Square(int row, int col) {
             square = row * 8 + col;
+        };
+
+        Square(std::uint8_t s) {
+            square = s;
         };
 
         int get_row() const {
