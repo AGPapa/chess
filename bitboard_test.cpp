@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(BitboardTest, set_bit) {
+TEST(BitboardTest, set_square_ints) {
     Bitboard b;
     ASSERT_EQ(0, b.get_square(0,0));
     b.set_square(0,0);
@@ -12,6 +12,15 @@ TEST(BitboardTest, set_bit) {
     ASSERT_EQ(0, b.get_square(6,4));
     b.set_square(6,4);
     ASSERT_EQ(1, b.get_square(6,4));
+}
+
+TEST(BitboardTest, set_square_Square) {
+    Bitboard b;
+    Square s = Square(3,2);
+    ASSERT_EQ(0, b.get_square(3,2));
+    b.set_square(s);
+    ASSERT_EQ(1, b.get_square(3,2));
+    ASSERT_EQ(1, b.get_square(s));
 }
 
 TEST(BitboardTest, squarewise_or) {

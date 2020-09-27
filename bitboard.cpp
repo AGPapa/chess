@@ -1,11 +1,11 @@
  #include <cstdint>
  #include <string>
  #include <iostream>
+ #include "square.cpp"
  
 class Bitboard {
 
     public:
-
         Bitboard() {
             board = 0;
         };
@@ -18,8 +18,16 @@ class Bitboard {
             board |= (std::uint64_t(1) << (row*8 + col));
         }
 
+        void set_square(const Square s) {
+            board |= (std::uint64_t(1) << (s.get_row()*8 + s.get_col()));
+        }
+
         int get_square(int row, int col) {
             return (board >> (row*8+col)) & 1;
+        }
+
+        int get_square(const Square s) {
+            return (board >> (s.get_row()*8+s.get_col())) & 1;
         }
 
         friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {
