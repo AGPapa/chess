@@ -19,7 +19,7 @@ class Bitboard {
         }
 
         void set_square(const Square s) {
-            board |= (std::uint64_t(1) << (s.get_row()*8 + s.get_col()));
+             board |= (std::uint64_t(1) << s.get_int_value());
         }
 
         int get_square(int row, int col) {
@@ -27,7 +27,7 @@ class Bitboard {
         }
 
         int get_square(const Square s) {
-            return (board >> (s.get_row()*8+s.get_col())) & 1;
+            return (board >> s.get_int_value()) & 1;
         }
 
         friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {

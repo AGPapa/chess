@@ -3,7 +3,6 @@
 class Square {
 
     public:
-
         Square(int row, int col) {
             square = row * 8 + col;
         };
@@ -14,6 +13,10 @@ class Square {
  
         int get_col() const {
             return square % 8;
+        }
+
+        int get_int_value() const {
+            return square;
         }
 
     private:
