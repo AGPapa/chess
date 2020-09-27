@@ -1,0 +1,5 @@
+# Ignore everything
+build/*
+
+# But not these files...
+!build/CmakeLists.txt
