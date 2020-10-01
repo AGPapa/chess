@@ -40,7 +40,7 @@ class Bitboard {
 
         std::string to_string() {
             std::string result;
-            for (int row = 0; row < 8; row++) {
+            for (int row = 7; row >= 0; row--) {
                 for (int col = 0; col < 8; col++) {
                     result += ((board >> (row*8+col)) & 1) + 48;
                 }
