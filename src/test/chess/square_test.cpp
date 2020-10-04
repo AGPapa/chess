@@ -1,4 +1,4 @@
-#include "square.cpp"
+#include "../../chess/square.cpp"
 
 #include <gtest/gtest.h>
 

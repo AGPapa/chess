@@ -1,4 +1,4 @@
-#include "bitboard.cpp"
+#include "../../chess/bitboard.cpp"
 
 #include <gtest/gtest.h>
 
