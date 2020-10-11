@@ -41,6 +41,74 @@ class Board {
                          b_pawns, b_rooks, b_knights, b_bishops, b_king);
         }
 
+        Bitboard all_pieces() {
+            Bitboard b = squarewise_or(
+                squarewise_or(
+                    squarewise_or(w_pawns, b_pawns),
+                    squarewise_or(w_rooks, b_rooks)
+                ),
+                squarewise_or(
+                    squarewise_or(w_bishops, b_bishops),
+                    squarewise_or(w_knights, b_knights)
+                )
+            );
+            b.set_square(w_king);
+            b.set_square(b_king);
+            return b;
+        }
+
+        std::string to_fen() {
+            // TODO: Add 50 move rule, castling, en-passant
+            std::string result;
+            int empty = 0;
+            for (int row = 7; row >= 0; row--) {
+                for (int col = 0; col < 8; col++) {
+                    if (all_pieces().get_square(row, col) == 0) {
+                        empty++;
+                    } else {
+                        if (empty != 0) {
+                            result += empty + 48;
+                        }
+                        empty = 0;
+                        if (row == w_king.get_row() && col == w_king.get_col()) {
+                            result += 'K';
+                        } else if (w_rooks.get_square(row, col) && w_bishops.get_square(row, col)) {
+                            result += 'Q';
+                        } else if (w_pawns.get_square(row, col)) {
+                            result += 'P';
+                        } else if (w_rooks.get_square(row, col)) {
+                            result += 'R';
+                        } else if (w_knights.get_square(row, col)) {
+                            result += 'N';
+                        } else if (w_bishops.get_square(row, col)) {
+                            result += 'B';
+                        } else if (row == b_king.get_row() && col == b_king.get_col()) {
+                            result += 'k';
+                        } else if (b_rooks.get_square(row, col) && b_bishops.get_square(row, col)) {
+                            result += 'q';
+                        } else if (b_pawns.get_square(row, col)) {
+                            result += 'p';
+                        } else if (b_rooks.get_square(row, col)) {
+                            result += 'r';
+                        } else if (b_knights.get_square(row, col)) {
+                            result += 'n';
+                        } else if (b_bishops.get_square(row, col)) {
+                            result += 'b';
+                        }
+                    }
+                }
+                if (empty != 0) {
+                    result += empty + 48;
+                }
+                empty = 0;
+                if (row != 0) {
+                    result += '/';
+                }
+            }
+            result += '\n';
+            return result;
+        }
+
         std::string to_string() {
             std::string result;
             for (int row = 7; row >= 0; row--) {
@@ -94,6 +162,6 @@ class Board {
 
 int main(int argc, char** argv) {
     Board b = Board::default_board();
-    std::cout << b.to_string();
+    std::cout << b.to_string() << b.to_fen();
   return 0;
 }
