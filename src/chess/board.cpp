@@ -10,7 +10,8 @@ class Board {
         Board() {};
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
-              Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k) {
+              Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
+              bool w_t) {
             w_pawns = w_p;
             w_rooks = w_r;
             w_knights = w_n;
@@ -22,6 +23,8 @@ class Board {
             b_knights = b_n;
             b_bishops = b_b;
             b_king = b_k;
+
+            w_turn = w_t;
         };
 
         static Board default_board() {
@@ -38,7 +41,8 @@ class Board {
             Square b_king = Square(0x3C);
 
             return Board(w_pawns, w_rooks, w_knights, w_bishops, w_king,
-                         b_pawns, b_rooks, b_knights, b_bishops, b_king);
+                         b_pawns, b_rooks, b_knights, b_bishops, b_king,
+                         true);
         }
 
         Bitboard all_pieces() {
@@ -70,31 +74,7 @@ class Board {
                             result += empty + 48;
                         }
                         empty = 0;
-                        if (row == w_king.get_row() && col == w_king.get_col()) {
-                            result += 'K';
-                        } else if (w_rooks.get_square(row, col) && w_bishops.get_square(row, col)) {
-                            result += 'Q';
-                        } else if (w_pawns.get_square(row, col)) {
-                            result += 'P';
-                        } else if (w_rooks.get_square(row, col)) {
-                            result += 'R';
-                        } else if (w_knights.get_square(row, col)) {
-                            result += 'N';
-                        } else if (w_bishops.get_square(row, col)) {
-                            result += 'B';
-                        } else if (row == b_king.get_row() && col == b_king.get_col()) {
-                            result += 'k';
-                        } else if (b_rooks.get_square(row, col) && b_bishops.get_square(row, col)) {
-                            result += 'q';
-                        } else if (b_pawns.get_square(row, col)) {
-                            result += 'p';
-                        } else if (b_rooks.get_square(row, col)) {
-                            result += 'r';
-                        } else if (b_knights.get_square(row, col)) {
-                            result += 'n';
-                        } else if (b_bishops.get_square(row, col)) {
-                            result += 'b';
-                        }
+                        result += square_to_char(row, col);
                     }
                 }
                 if (empty != 0) {
@@ -105,6 +85,7 @@ class Board {
                     result += '/';
                 }
             }
+            result += w_turn ? " w" : " b";
             result += '\n';
             return result;
         }
@@ -113,33 +94,7 @@ class Board {
             std::string result;
             for (int row = 7; row >= 0; row--) {
                 for (int col = 0; col < 8; col++) {
-                    if (row == w_king.get_row() && col == w_king.get_col()) {
-                        result += 'K';
-                    } else if (w_rooks.get_square(row, col) && w_bishops.get_square(row, col)) {
-                        result += 'Q';
-                    } else if (w_pawns.get_square(row, col)) {
-                        result += 'P';
-                    } else if (w_rooks.get_square(row, col)) {
-                        result += 'R';
-                    } else if (w_knights.get_square(row, col)) {
-                        result += 'N';
-                    } else if (w_bishops.get_square(row, col)) {
-                        result += 'B';
-                    } else if (row == b_king.get_row() && col == b_king.get_col()) {
-                        result += 'k';
-                    } else if (b_rooks.get_square(row, col) && b_bishops.get_square(row, col)) {
-                        result += 'q';
-                    } else if (b_pawns.get_square(row, col)) {
-                        result += 'p';
-                    } else if (b_rooks.get_square(row, col)) {
-                        result += 'r';
-                    } else if (b_knights.get_square(row, col)) {
-                        result += 'n';
-                    } else if (b_bishops.get_square(row, col)) {
-                        result += 'b';
-                    } else {
-                        result += '.';
-                    }
+                    result += square_to_char(row, col);
                 }
                 result += '\n';
             }
@@ -158,6 +113,38 @@ class Board {
         Bitboard b_knights;
         Bitboard b_bishops; // includes Queens
         Square b_king;
+
+        bool w_turn;
+
+        char square_to_char(int row, int col) {
+            if (row == w_king.get_row() && col == w_king.get_col()) {
+                return 'K';
+            } else if (w_rooks.get_square(row, col) && w_bishops.get_square(row, col)) {
+                return 'Q';
+            } else if (w_pawns.get_square(row, col)) {
+                return 'P';
+            } else if (w_rooks.get_square(row, col)) {
+                return 'R';
+            } else if (w_knights.get_square(row, col)) {
+                return 'N';
+            } else if (w_bishops.get_square(row, col)) {
+                return 'B';
+            } else if (row == b_king.get_row() && col == b_king.get_col()) {
+                return 'k';
+            } else if (b_rooks.get_square(row, col) && b_bishops.get_square(row, col)) {
+                return 'q';
+            } else if (b_pawns.get_square(row, col)) {
+                return 'p';
+            } else if (b_rooks.get_square(row, col)) {
+                return 'r';
+            } else if (b_knights.get_square(row, col)) {
+                return 'n';
+            } else if (b_bishops.get_square(row, col)) {
+                return 'b';
+            } else {
+                return '.';
+            }
+        }
 };
 
 int main(int argc, char** argv) {
