@@ -2,6 +2,7 @@
  #include <string>
  #include <iostream>
  #include "bitboard.cpp"
+ #include "castling.cpp"
 
 
 class Board {
@@ -11,7 +12,7 @@ class Board {
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
-              bool w_t) {
+              bool w_t, Castling c) {
             w_pawns = w_p;
             w_rooks = w_r;
             w_knights = w_n;
@@ -25,6 +26,7 @@ class Board {
             b_king = b_k;
 
             w_turn = w_t;
+            castling = c;
         };
 
         static Board default_board() {
@@ -40,9 +42,11 @@ class Board {
             Bitboard b_bishops = Bitboard(0x2C00000000000000);
             Square b_king = Square(0x3C);
 
+            Castling c = Castling(true, true, true, true);
+
             return Board(w_pawns, w_rooks, w_knights, w_bishops, w_king,
                          b_pawns, b_rooks, b_knights, b_bishops, b_king,
-                         true);
+                         true, c);
         }
 
         Bitboard all_pieces() {
@@ -85,7 +89,15 @@ class Board {
                     result += '/';
                 }
             }
-            result += w_turn ? " w" : " b";
+            result += w_turn ? " w " : " b ";
+            if (castling.no_castle_legal()) {
+                result += '-';
+            } else {
+                if (castling.get_white_kingside()) { result += "K"; };
+                if (castling.get_white_queenside()) { result += "Q"; };
+                if (castling.get_black_kingside()) { result += "k"; };
+                if (castling.get_black_queenside()) { result += "q"; };
+            }
             result += '\n';
             return result;
         }
@@ -115,6 +127,8 @@ class Board {
         Square b_king;
 
         bool w_turn;
+
+        Castling castling;
 
         char square_to_char(int row, int col) {
             if (row == w_king.get_row() && col == w_king.get_col()) {

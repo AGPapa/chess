@@ -10,6 +10,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 # Link runTests with what we want to test and the GTest and pthread library
 add_executable(runBitBoardTests ../src/test/chess/bitboard_test.cpp)
 add_executable(runSquareTests ../src/test/chess/square_test.cpp)
+add_executable(runCastlingTests ../src/test/chess/castling_test.cpp)
 add_executable(runBoard ../src/chess/board.cpp)
 target_link_libraries(runBitBoardTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runSquareTests ${GTEST_LIBRARIES} pthread)
+target_link_libraries(runCastlingTests ${GTEST_LIBRARIES} pthread)
