@@ -19,14 +19,25 @@ TEST(SquareTest, to_fen) {
 
     Board b = Board(w_pawns, w_rooks, w_knights, w_bishops, w_king,
                     b_pawns, b_rooks, b_knights, b_bishops, b_king,
-                    true, c, 0, 1);
+                    true, c, 0, 2);
 
-    ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 1", b.to_fen());
+    ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 2", b.to_fen());
 }
 
 TEST(SquareTest, default_board) {
     Board b = Board::default_board();
     ASSERT_EQ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", b.to_fen());
+}
+
+TEST(SquareTest, from_fen) {
+    Board a = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    ASSERT_EQ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", a.to_fen());
+
+    Board b = Board("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 2");
+    ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 2", b.to_fen());
+
+    Board c = Board("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1");
+    ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1", c.to_fen());
 }
 
 int main(int argc, char** argv) {

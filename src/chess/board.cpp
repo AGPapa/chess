@@ -1,6 +1,7 @@
  #include <cstdint>
  #include <string>
  #include <iostream>
+ #include <sstream>
  #include "bitboard.cpp"
  #include "castling.cpp"
 
@@ -31,6 +32,149 @@ class Board {
             rule_fifty_ply_clock = r50_ply;
             move_count = m_c;
         };
+
+        Board(std::string fen) {
+            std::istringstream fen_stream (fen);
+            std::string peices;
+            std::string turn;
+            std::string castlings;
+            std::string en_passant;
+
+            fen_stream >> peices;
+
+            int row = 7;
+            int col = 0;
+            for (char c : peices) {
+                if (c == '/') {
+                    --row;
+                    if (row < 0) throw std::runtime_error("Bad fen string - too many rows: " + fen);
+                    col = 0;
+                    continue;
+                }
+                if (std::isdigit(c)) {
+                    col += (c - '0');
+                    continue;
+                }
+                if (col >= 8) throw std::runtime_error("Bad fen string - too many columns: " + fen);
+            
+                if (c == 'K') {
+                    w_king = Square(row, col);
+                } else if (c == 'Q') {
+                    w_bishops.set_square(row, col);
+                    w_rooks.set_square(row, col);
+                } else if (c == 'P') {
+                    w_pawns.set_square(row, col);
+                } else if (c == 'R') {
+                    w_rooks.set_square(row, col);
+                } else if (c == 'N') {
+                    w_knights.set_square(row, col);
+                } else if (c == 'B') {
+                    w_bishops.set_square(row, col);
+                } else if (c == 'k') {
+                    b_king = Square(row, col);
+                } else if (c == 'q') {
+                    b_bishops.set_square(row, col);
+                    b_rooks.set_square(row, col);
+                } else if (c == 'p') {
+                    b_pawns.set_square(row, col);
+                } else if (c == 'r') {
+                    b_rooks.set_square(row, col);
+                } else if (c == 'n') {
+                    b_knights.set_square(row, col);
+                } else if (c == 'b') {
+                    b_bishops.set_square(row, col);
+                } else {
+                    throw std::runtime_error("Bad fen string - invalid piece char: " + fen);
+                }
+                col++;
+            }
+
+            fen_stream >> turn;
+            if (turn == "w") { 
+                w_turn = true;
+            } else if (turn == "b") {
+                w_turn = false;
+            } else {
+                throw std::runtime_error("Bad fen string - invalid turn: " + fen);
+            }
+
+            fen_stream >> castlings;
+            if (castlings == "-") {
+                castling = Castling(false, false, false, false);
+            } else if (castlings == "K") {
+                castling = Castling(true, false, false, false);
+            } else if (castlings == "Q") {
+                castling = Castling(false, true, false, false);
+            } else if (castlings == "KQ") {
+                castling = Castling(true, true, false, false);
+            } else if (castlings == "k") {
+                castling = Castling(false, false, true, false);
+            } else if (castlings == "Kk") {
+                castling = Castling(true, false, true, false);
+            } else if (castlings == "Qk") {
+                castling = Castling(false, true, true, false);
+            } else if (castlings == "KQk") {
+                castling = Castling(true, true, true, false);
+            } else if (castlings == "q") {
+                castling = Castling(false, false, false, true);
+            } else if (castlings == "Kq") {
+                castling = Castling(true, false, false, true);
+            } else if (castlings == "Qq") {
+                castling = Castling(false, true, false, true);
+            } else if (castlings == "KQq") {
+                castling = Castling(true, true, false, true);
+            } else if (castlings == "kq") {
+                castling = Castling(false, false, true, true);
+            } else if (castlings == "Kkq") {
+                castling = Castling(true, false, true, true);
+            } else if (castlings == "Qkq") {
+                castling = Castling(false, true, true, true);
+            } else if (castlings == "KQkq") {
+                castling = Castling(true, true, true, true);
+            } else {
+                throw std::runtime_error("Bad fen string - invalid castling: " + fen);
+            }
+           
+            fen_stream >> en_passant;
+            if (en_passant == "a3") {
+                w_pawns.set_square(0, 0);
+            } else if (en_passant == "b3") {
+                w_pawns.set_square(0, 1);
+            } else if (en_passant == "c3") {
+                w_pawns.set_square(0, 2);
+            } else if (en_passant == "d3") {
+                w_pawns.set_square(0, 3);
+            } else if (en_passant == "e3") {
+                w_pawns.set_square(0, 4);
+            } else if (en_passant == "f3") {
+                w_pawns.set_square(0, 5);
+            } else if (en_passant == "g3") {
+                w_pawns.set_square(0, 6);
+            } else if (en_passant == "h3") {
+                w_pawns.set_square(0, 7);
+            } else if (en_passant == "a6") {
+                b_pawns.set_square(7, 0);
+            } else if (en_passant == "b6") {
+                b_pawns.set_square(7, 1);
+            } else if (en_passant == "c6") {
+                b_pawns.set_square(7, 2);
+            } else if (en_passant == "d6") {
+                b_pawns.set_square(7, 3);
+            } else if (en_passant == "e6") {
+                b_pawns.set_square(7, 4);
+            } else if (en_passant == "f6") {
+                b_pawns.set_square(7, 5);
+            } else if (en_passant == "g6") {
+                b_pawns.set_square(7, 6);
+            } else if (en_passant == "h6") {
+                b_pawns.set_square(7, 7);
+            } else if (en_passant != "-") {
+                throw std::runtime_error("Bad fen string - invalid en_passant: " + fen);
+            }
+
+            fen_stream >> rule_fifty_ply_clock;
+            fen_stream >> move_count;
+        }
 
         static Board default_board() {
             Bitboard w_pawns = Bitboard(0x0000000000FF00);
