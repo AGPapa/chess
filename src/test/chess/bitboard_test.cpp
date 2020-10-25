@@ -50,6 +50,17 @@ TEST(BitboardTest, unset_square_Square) {
     ASSERT_EQ(0, b.get_square(s));
 }
 
+TEST(BitboardTest, empty) {
+    Bitboard a;
+    ASSERT_EQ(true, a.empty());
+
+    a.set_square(6,4);
+    ASSERT_EQ(false, a.empty());
+
+    a.unset_square(6,4);
+    ASSERT_EQ(true, a.empty());
+}
+
 TEST(BitboardTest, squarewise_or) {
     Bitboard a;
     a.set_square(6,4);

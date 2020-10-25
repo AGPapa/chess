@@ -38,6 +38,10 @@ class Bitboard {
             return (board >> s.get_int_value()) & 1;
         }
 
+        bool empty() const {
+            return board == 0;
+        }
+
         friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {
             return Bitboard(a.board | b.board);
         }

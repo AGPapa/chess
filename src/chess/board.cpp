@@ -69,6 +69,18 @@ class Board {
             return squarewise_and(b_bishops, b_rooks);
         }
 
+        Bitboard white_en_passant() const {
+            return squarewise_and(w_pawns, en_passant_mask);
+        }
+
+        Bitboard black_en_passant() const {
+            return squarewise_and(b_pawns, en_passant_mask);
+        }
+
+        Bitboard all_en_passant() const {
+            return squarewise_and(squarewise_or(w_pawns, b_pawns), en_passant_mask);
+        }
+
         Bitboard all_pieces() const {
             Bitboard b = squarewise_or(
                 squarewise_or(
@@ -109,7 +121,9 @@ class Board {
                     result += '/';
                 }
             }
+
             result += w_turn ? " w " : " b ";
+
             if (castling.no_castle_legal()) {
                 result += '-';
             } else {
@@ -117,6 +131,27 @@ class Board {
                 if (castling.get_white_queenside()) { result += "Q"; };
                 if (castling.get_black_kingside()) { result += "k"; };
                 if (castling.get_black_queenside()) { result += "q"; };
+            }
+            result += ' ';
+
+            if (all_en_passant().empty()) {
+                result += '-';
+            } else if (!white_en_passant().empty()) {
+                for (int col = 0; col < 8; col++) {
+                    if (w_pawns.get_square(0, col)) {
+                        result += (col + 'a');
+                        result += '3';
+                        break;
+                    }
+                }
+            } else if (!black_en_passant().empty()) {
+                for (int col = 0; col < 8; col++) {
+                    if (b_pawns.get_square(7, col)) {
+                        result += (col + 'a');
+                        result += '6';
+                        break;
+                    }
+                }
             }
             result += '\n';
             return result;
@@ -136,6 +171,7 @@ class Board {
     private:
        // ranks 1 and 8 on pawns track en-passant
         const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
+        const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
 
         Bitboard w_pawns;
         Bitboard w_rooks; // includes Queens
