@@ -49,10 +49,30 @@ class Board {
                          true, c);
         }
 
-        Bitboard all_pieces() {
+        Bitboard white_pawns() const {
+            return squarewise_and(w_pawns, pawn_mask);
+        }
+
+        Bitboard black_pawns() const {
+            return squarewise_and(b_pawns, pawn_mask);
+        }
+
+        Bitboard all_pawns() const {
+            return squarewise_and(squarewise_or(w_pawns, b_pawns), pawn_mask);
+        }
+
+        Bitboard white_queens() const {
+            return squarewise_and(w_bishops, w_rooks);
+        }
+
+        Bitboard black_queens() const {
+            return squarewise_and(b_bishops, b_rooks);
+        }
+
+        Bitboard all_pieces() const {
             Bitboard b = squarewise_or(
                 squarewise_or(
-                    squarewise_or(w_pawns, b_pawns),
+                    all_pawns(),
                     squarewise_or(w_rooks, b_rooks)
                 ),
                 squarewise_or(
@@ -65,7 +85,7 @@ class Board {
             return b;
         }
 
-        std::string to_fen() {
+        std::string to_fen() const {
             // TODO: Add 50 move rule, castling, en-passant
             std::string result;
             int empty = 0;
@@ -102,7 +122,7 @@ class Board {
             return result;
         }
 
-        std::string to_string() {
+        std::string to_string() const {
             std::string result;
             for (int row = 7; row >= 0; row--) {
                 for (int col = 0; col < 8; col++) {
@@ -114,6 +134,9 @@ class Board {
         }
     
     private:
+       // ranks 1 and 8 on pawns track en-passant
+        const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
+
         Bitboard w_pawns;
         Bitboard w_rooks; // includes Queens
         Bitboard w_knights;
@@ -130,10 +153,10 @@ class Board {
 
         Castling castling;
 
-        char square_to_char(int row, int col) {
+        char square_to_char(int row, int col) const {
             if (row == w_king.get_row() && col == w_king.get_col()) {
                 return 'K';
-            } else if (w_rooks.get_square(row, col) && w_bishops.get_square(row, col)) {
+            } else if (white_queens().get_square(row, col)) {
                 return 'Q';
             } else if (w_pawns.get_square(row, col)) {
                 return 'P';
@@ -145,7 +168,7 @@ class Board {
                 return 'B';
             } else if (row == b_king.get_row() && col == b_king.get_col()) {
                 return 'k';
-            } else if (b_rooks.get_square(row, col) && b_bishops.get_square(row, col)) {
+            } else if (black_queens().get_square(row, col)) {
                 return 'q';
             } else if (b_pawns.get_square(row, col)) {
                 return 'p';

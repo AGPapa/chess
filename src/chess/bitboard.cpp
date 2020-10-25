@@ -30,11 +30,11 @@ class Bitboard {
              board ^= (std::uint64_t(1) << s.get_int_value());
         }
 
-        int get_square(int row, int col) {
+        int get_square(int row, int col) const {
             return (board >> (row*8+col)) & 1;
         }
 
-        int get_square(const Square s) {
+        int get_square(const Square s) const {
             return (board >> s.get_int_value()) & 1;
         }
 
