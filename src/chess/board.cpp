@@ -12,7 +12,7 @@ class Board {
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
-              bool w_t, Castling c) {
+              bool w_t, Castling c, int r50_ply) {
             w_pawns = w_p;
             w_rooks = w_r;
             w_knights = w_n;
@@ -27,6 +27,8 @@ class Board {
 
             w_turn = w_t;
             castling = c;
+
+            rule_fifty_ply_clock = r50_ply;
         };
 
         static Board default_board() {
@@ -46,7 +48,7 @@ class Board {
 
             return Board(w_pawns, w_rooks, w_knights, w_bishops, w_king,
                          b_pawns, b_rooks, b_knights, b_bishops, b_king,
-                         true, c);
+                         true, c, 0);
         }
 
         Bitboard white_pawns() const {
@@ -135,12 +137,12 @@ class Board {
             result += ' ';
 
             if (all_en_passant().empty()) {
-                result += '-';
+                result += "- ";
             } else if (!white_en_passant().empty()) {
                 for (int col = 0; col < 8; col++) {
                     if (w_pawns.get_square(0, col)) {
                         result += (col + 'a');
-                        result += '3';
+                        result += "3 ";
                         break;
                     }
                 }
@@ -148,11 +150,12 @@ class Board {
                 for (int col = 0; col < 8; col++) {
                     if (b_pawns.get_square(7, col)) {
                         result += (col + 'a');
-                        result += '6';
+                        result += "6 ";
                         break;
                     }
                 }
             }
+            result += (rule_fifty_ply_clock + '0');
             result += '\n';
             return result;
         }
@@ -188,6 +191,8 @@ class Board {
         bool w_turn;
 
         Castling castling;
+
+        int rule_fifty_ply_clock = 0;
 
         char square_to_char(int row, int col) const {
             if (row == w_king.get_row() && col == w_king.get_col()) {
