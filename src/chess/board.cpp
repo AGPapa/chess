@@ -159,7 +159,6 @@ class Board {
             result += (rule_fifty_ply_clock + '0');
             result += ' ';
             result += (move_count + '0');
-            result += '\n';
             return result;
         }
 
@@ -203,7 +202,7 @@ class Board {
                 return 'K';
             } else if (white_queens().get_square(row, col)) {
                 return 'Q';
-            } else if (w_pawns.get_square(row, col)) {
+            } else if (white_pawns().get_square(row, col)) {
                 return 'P';
             } else if (w_rooks.get_square(row, col)) {
                 return 'R';
@@ -215,7 +214,7 @@ class Board {
                 return 'k';
             } else if (black_queens().get_square(row, col)) {
                 return 'q';
-            } else if (b_pawns.get_square(row, col)) {
+            } else if (black_pawns().get_square(row, col)) {
                 return 'p';
             } else if (b_rooks.get_square(row, col)) {
                 return 'r';
@@ -228,9 +227,3 @@ class Board {
             }
         }
 };
-
-int main(int argc, char** argv) {
-    Board b = Board::default_board();
-    std::cout << b.to_string() << b.to_fen();
-  return 0;
-}
