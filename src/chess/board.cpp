@@ -12,7 +12,7 @@ class Board {
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
-              bool w_t, Castling c, int r50_ply) {
+              bool w_t, Castling c, int r50_ply, int m_c) {
             w_pawns = w_p;
             w_rooks = w_r;
             w_knights = w_n;
@@ -29,6 +29,7 @@ class Board {
             castling = c;
 
             rule_fifty_ply_clock = r50_ply;
+            move_count = m_c;
         };
 
         static Board default_board() {
@@ -48,7 +49,7 @@ class Board {
 
             return Board(w_pawns, w_rooks, w_knights, w_bishops, w_king,
                          b_pawns, b_rooks, b_knights, b_bishops, b_king,
-                         true, c, 0);
+                         true, c, 0, 1);
         }
 
         Bitboard white_pawns() const {
@@ -156,6 +157,8 @@ class Board {
                 }
             }
             result += (rule_fifty_ply_clock + '0');
+            result += ' ';
+            result += (move_count + '0');
             result += '\n';
             return result;
         }
@@ -193,6 +196,7 @@ class Board {
         Castling castling;
 
         int rule_fifty_ply_clock = 0;
+        int move_count = 1;
 
         char square_to_char(int row, int col) const {
             if (row == w_king.get_row() && col == w_king.get_col()) {
