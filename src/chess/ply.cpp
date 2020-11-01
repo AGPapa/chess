@@ -1,20 +1,34 @@
 #include <cstdint>
+#include <string>
 #include "square.cpp"
 
 class Ply {
     public:
         Ply() {};
 
-        Ply(Square from, Square to) {
+        Ply(const Square from, const Square to) {
             ply = (to.get_int_value() + (from.get_int_value() << 6));
         }
 
-        Square from_square() {
+        Ply(const std::string& str) {
+            Square from = str.substr(0, 2);
+            Square to = str.substr(2, 2);
+            ply = (to.get_int_value() + (from.get_int_value() << 6));
+        }
+
+        Square from_square() const {
             return Square((ply & from_mask) >> 6);
         }
 
-        Square to_square() {
+        Square to_square() const {
             return Square(ply & to_mask);
+        }
+
+        std::string to_string() const {
+            std::string result;
+            result += from_square().to_string();
+            result += to_square().to_string();
+            return result;
         }
 
     private:
