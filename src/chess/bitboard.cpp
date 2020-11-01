@@ -22,6 +22,14 @@ class Bitboard {
              board |= (std::uint64_t(1) << s.get_int_value());
         }
 
+        void set_square_if(int row, int col, bool condition) {
+            board |= (std::uint64_t(condition) << (row*8 + col));
+        }
+
+        void set_square_if(const Square s, bool condition) {
+            board |= (std::uint64_t(condition) << s.get_int_value());
+        }
+
         void unset_square(int row, int col) {
             board ^= (std::uint64_t(1) << (row*8 + col));
         }

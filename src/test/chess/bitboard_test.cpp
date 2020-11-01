@@ -23,6 +23,42 @@ TEST(BitboardTest, set_square_Square) {
     ASSERT_EQ(1, b.get_square(s));
 }
 
+TEST(BitboardTest, set_square_if_ints) {
+    Bitboard b;
+    ASSERT_EQ(0, b.get_square(0,0));
+    b.set_square_if(0,0, false);
+    ASSERT_EQ(0, b.get_square(0,0));
+    b.set_square_if(0,0, true);
+    ASSERT_EQ(1, b.get_square(0,0));
+    b.set_square_if(0,0, false);
+    ASSERT_EQ(1, b.get_square(0,0));
+
+    ASSERT_EQ(0, b.get_square(6,4));
+    b.set_square_if(6,4, false);
+    ASSERT_EQ(0, b.get_square(6,4));
+    b.set_square_if(6,4, true);
+    ASSERT_EQ(1, b.get_square(6,4));
+    b.set_square_if(6,4, false);
+    ASSERT_EQ(1, b.get_square(6,4));
+}
+
+TEST(BitboardTest, set_square_if_Square) {
+    Bitboard b;
+    Square s = Square(3,2);
+    ASSERT_EQ(0, b.get_square(3,2));
+    b.set_square_if(s, false);
+    ASSERT_EQ(0, b.get_square(3,2));
+    ASSERT_EQ(0, b.get_square(s));
+
+    b.set_square_if(s, true);
+    ASSERT_EQ(1, b.get_square(3,2));
+    ASSERT_EQ(1, b.get_square(s));
+
+    b.set_square_if(s, false);
+    ASSERT_EQ(1, b.get_square(3,2));
+    ASSERT_EQ(1, b.get_square(s));
+}
+
 TEST(BitboardTest, unset_square_ints) {
     Bitboard b;
     ASSERT_EQ(0, b.get_square(0,0));
