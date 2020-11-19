@@ -1,9 +1,12 @@
- #include <cstdint>
- #include <string>
- #include <iostream>
- #include <sstream>
- #include "bitboard.cpp"
- #include "castling.cpp"
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include "bitboard.cpp"
+#include "castling.cpp"
+#include "ply.cpp"
 
 
 class Board {
@@ -242,6 +245,55 @@ class Board {
             b.set_square(w_king);
             b.set_square(b_king);
             return b;
+        }
+
+        void apply_ply(Ply ply) {
+            Square from = ply.from_square();
+            Square to = ply.to_square();
+
+            // add to square 
+            if (w_turn) {
+                w_pawns.set_square_if(to, w_pawns.get_square(from));
+                w_rooks.set_square_if(to, w_rooks.get_square(from));
+                w_knights.set_square_if(to, w_knights.get_square(from));
+                w_bishops.set_square_if(to, w_bishops.get_square(from));
+            } else {
+                b_pawns.set_square_if(to, b_pawns.get_square(from));
+                b_rooks.set_square_if(to, b_rooks.get_square(from));
+                b_knights.set_square_if(to, b_knights.get_square(from));
+                b_bishops.set_square_if(to, b_bishops.get_square(from));
+            }
+
+            // clear from square
+            if (w_turn) {
+                w_pawns.unset_square(from);
+                w_rooks.unset_square(from);
+                w_knights.unset_square(from);
+                w_bishops.unset_square(from);
+            } else {
+                b_pawns.unset_square(from);
+                b_rooks.unset_square(from);
+                b_knights.unset_square(from);
+                b_bishops.unset_square(from);
+            }
+
+            //clear capture
+             if (w_turn) {
+                b_pawns.unset_square(to);
+                b_rooks.unset_square(to);
+                b_knights.unset_square(to);
+                b_bishops.unset_square(to);
+            } else {
+                w_pawns.unset_square(to);
+                w_rooks.unset_square(to);
+                w_knights.unset_square(to);
+                w_bishops.unset_square(to);
+            }
+
+            // increment move count
+            if (!w_turn) { move_count++; };
+            // change turn
+            w_turn = !w_turn;
         }
 
         std::string to_fen() const {

@@ -1,7 +1,9 @@
- #include <cstdint>
- #include <string>
- #include <iostream>
- #include "square.cpp"
+#pragma once
+
+#include <cstdint>
+#include <string>
+#include <iostream>
+#include "square.cpp"
 
 class Bitboard {
 
