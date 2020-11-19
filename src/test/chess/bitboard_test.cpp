@@ -72,6 +72,8 @@ TEST(BitboardTest, unset_square_ints) {
     ASSERT_EQ(1, b.get_square(6,4));
     b.unset_square(6,4);
     ASSERT_EQ(0, b.get_square(6,4));
+    b.unset_square(6,4);
+    ASSERT_EQ(0, b.get_square(6,4));
 }
 
 TEST(BitboardTest, unset_square_Square) {
@@ -81,6 +83,9 @@ TEST(BitboardTest, unset_square_Square) {
     b.set_square(s);
     ASSERT_EQ(1, b.get_square(3,2));
     ASSERT_EQ(1, b.get_square(s));
+    b.unset_square(s);
+    ASSERT_EQ(0, b.get_square(3,2));
+    ASSERT_EQ(0, b.get_square(s));
     b.unset_square(s);
     ASSERT_EQ(0, b.get_square(3,2));
     ASSERT_EQ(0, b.get_square(s));

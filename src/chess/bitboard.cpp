@@ -31,11 +31,11 @@ class Bitboard {
         }
 
         void unset_square(int row, int col) {
-            board ^= (std::uint64_t(1) << (row*8 + col));
+            board &= ~(std::uint64_t(1) << (row*8 + col));
         }
 
         void unset_square(const Square s) {
-             board ^= (std::uint64_t(1) << s.get_int_value());
+             board &= ~(std::uint64_t(1) << s.get_int_value());
         }
 
         int get_square(int row, int col) const {
