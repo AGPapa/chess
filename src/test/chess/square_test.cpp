@@ -36,6 +36,32 @@ TEST(SquareTest, to_string) {
     ASSERT_EQ("e3", s.to_string());
 }
 
+TEST(SquareTest, operator_equals) {
+    Square a = Square(2, 4);
+    Square b = Square(2, 4);
+    Square c = Square("e3");
+    Square d = Square(3, 4);
+    Square e = Square(2, 5);
+
+    ASSERT_EQ(true, a == b);
+    ASSERT_EQ(true, a == c);
+    ASSERT_EQ(false, a == d);
+    ASSERT_EQ(false, a == e);
+}
+
+TEST(SquareTest, operator_not_equals) {
+    Square a = Square(2, 4);
+    Square b = Square(2, 4);
+    Square c = Square("e3");
+    Square d = Square(3, 4);
+    Square e = Square(2, 5);
+
+    ASSERT_EQ(false, a != b);
+    ASSERT_EQ(false, a != c);
+    ASSERT_EQ(true, a != d);
+    ASSERT_EQ(true, a != e);
+}
+
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

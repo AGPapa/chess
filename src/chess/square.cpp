@@ -6,30 +6,34 @@
 class Square {
 
     public:
-        Square() {}
+        constexpr Square() {}
 
-        Square(const int row, const int col) {
-            square = row * 8 + col;
-        };
+        constexpr Square(std::uint8_t s) : square(s) {};
 
-        Square(std::uint8_t s) {
-            square = s;
-        };
+        constexpr Square(const int row, const int col) : square(row * 8 + col) {};
 
         Square(std::string s) {
             square = (s[1] - '1') * 8 + (s[0] - 'a');
         };
 
-        int get_row() const {
+        constexpr int get_row() const {
             return square / 8;
         }
  
-        int get_col() const {
+        constexpr int get_col() const {
             return square % 8;
         }
 
-        int get_int_value() const {
+        constexpr int get_int_value() const {
             return square;
+        }
+
+        constexpr bool operator==(const Square& other) const {
+            return square == other.square;
+        }
+
+        constexpr bool operator!=(const Square& other) const {
+            return square != other.square;
         }
 
         std::string to_string() const {
