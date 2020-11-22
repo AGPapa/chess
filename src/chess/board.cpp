@@ -251,6 +251,15 @@ class Board {
             Square from = ply.from_square();
             Square to = ply.to_square();
 
+            // move king
+            if (from == w_king) {
+                w_king = to;
+                castling.unset_white();
+            } else if (from == b_king) {
+                b_king = to;
+                castling.unset_black();
+            }
+
             // add to square 
             if (w_turn) {
                 w_pawns.set_square_if(to, w_pawns.get_square(from));
