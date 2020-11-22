@@ -21,6 +21,14 @@ class Castling {
         bool get_black_queenside() const { return castling & 8; }
         bool no_castle_legal() const { return castling == 0; }
 
+        void unset_white_kingside() { castling &= ~std::uint64_t(1); }
+        void unset_white_queenside() { castling &= ~std::uint64_t(2); }
+        void unset_black_kingside() { castling &= ~std::uint64_t(4); }
+        void unset_black_queenside() { castling &= ~std::uint64_t(8); }
+
+        void unset_white() { castling &= ~std::uint64_t(3); }
+        void unset_black() { castling &= ~std::uint64_t(12); }
+
     private:
         // - Bit 0 -- white kingside castle.
         // - Bit 1 -- white queenside castle.
