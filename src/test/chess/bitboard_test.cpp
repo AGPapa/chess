@@ -127,6 +127,31 @@ TEST(BitboardTest, squarewise_and) {
     ASSERT_EQ(0, c.get_square(2,3));
 }
 
+TEST(BitboardTest, operator_equals) {
+    Bitboard a = Bitboard(0xFFFF00000000FFFF);
+    Bitboard b = Bitboard(0xFFFF00000000FFFF);
+    Bitboard c = Bitboard(0xFFFF00000001FEFF);
+
+    ASSERT_EQ(true, a == b);
+    ASSERT_EQ(false, a == c);
+
+    a.set_square(2, 0);
+    a.unset_square(1, 0);
+    ASSERT_EQ(true, a == c);
+}
+
+TEST(BitboardTest, operator_not_equals) {
+    Bitboard a = Bitboard(0xFFFF00000000FFFF);
+    Bitboard b = Bitboard(0xFFFF00000000FFFF);
+    Bitboard c = Bitboard(0xFFFF00000001FEFF);
+
+    ASSERT_EQ(false, a != b);
+    ASSERT_EQ(true, a != c);
+
+    a.set_square(2, 0);
+    a.unset_square(1, 0);
+    ASSERT_EQ(false, a != c);
+}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

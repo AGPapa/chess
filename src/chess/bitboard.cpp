@@ -60,6 +60,14 @@ class Bitboard {
             return Bitboard(a.board & b.board);
         }
 
+        bool operator==(const Bitboard& other) const {
+            return board == other.board;
+        }
+
+        bool operator!=(const Bitboard& other) const {
+            return board != other.board;
+        }
+
         std::string to_string() {
             std::string result;
             for (int row = 7; row >= 0; row--) {
