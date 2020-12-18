@@ -326,10 +326,40 @@ class Board {
                 w_bishops.unset_square(to);
             }
 
+            //promote pawns
+            Ply::Promotion promotion = ply.promotion();
+            if (promotion != Ply::Promotion::None) {
+                if (w_turn) {
+                    w_pawns.unset_square(to);
+                    if (promotion == Ply::Promotion::Queen) {
+                        w_bishops.set_square(to);
+                        w_rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Knight) {
+                        w_knights.set_square(to);
+                    } else if (promotion == Ply::Promotion::Rook) {
+                        w_rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Bishop) {
+                        w_bishops.set_square(to);
+                    }
+                } else {
+                    b_pawns.unset_square(to);
+                    if (promotion == Ply::Promotion::Queen) {
+                        b_bishops.set_square(to);
+                        b_rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Knight) {
+                        b_knights.set_square(to);
+                    } else if (promotion == Ply::Promotion::Rook) {
+                        b_rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Bishop) {
+                        b_bishops.set_square(to);
+                    }
+                }
+            }
+
             // reset rule 50
             if (reset_50) { rule_fifty_ply_clock = 0; } else { rule_fifty_ply_clock++; }
             // increment move count
-            if (!w_turn) { move_count++; };
+            if (!w_turn) { move_count++; }
             // change turn
             w_turn = !w_turn;
         }
@@ -390,9 +420,9 @@ class Board {
                     }
                 }
             }
-            result += (rule_fifty_ply_clock + '0');
+            result += std::to_string(rule_fifty_ply_clock);
             result += ' ';
-            result += (move_count + '0');
+            result += std::to_string(move_count);
             return result;
         }
 

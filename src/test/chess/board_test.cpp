@@ -101,6 +101,25 @@ TEST(BoardTest, apply_ply) {
 
     a.apply_ply(Ply("e8d8"));
     ASSERT_EQ("rnbk1bnr/ppp1pppp/8/3q4/8/8/PPPPKPPP/RNBQ1BNR w - - 2 4", a.to_fen());
+
+
+    Board b = Board("8/k3PPPP/8/8/8/8/K3pppp/8 w - - 0 100");
+    b.apply_ply(Ply("h7h8q"));
+    ASSERT_EQ("7Q/k3PPP1/8/8/8/8/K3pppp/8 b - - 0 100", b.to_fen());
+    b.apply_ply(Ply("h2h1q"));
+    ASSERT_EQ("7Q/k3PPP1/8/8/8/8/K3ppp1/7q w - - 0 101", b.to_fen());
+    b.apply_ply(Ply("g7g8n"));
+    ASSERT_EQ("6NQ/k3PP2/8/8/8/8/K3ppp1/7q b - - 0 101", b.to_fen());
+    b.apply_ply(Ply("g2g1n"));
+    ASSERT_EQ("6NQ/k3PP2/8/8/8/8/K3pp2/6nq w - - 0 102", b.to_fen());
+    b.apply_ply(Ply("f7f8b"));
+    ASSERT_EQ("5BNQ/k3P3/8/8/8/8/K3pp2/6nq b - - 0 102", b.to_fen());
+    b.apply_ply(Ply("f2f1b"));
+    ASSERT_EQ("5BNQ/k3P3/8/8/8/8/K3p3/5bnq w - - 0 103", b.to_fen());
+    b.apply_ply(Ply("e7e8r"));
+    ASSERT_EQ("4RBNQ/k7/8/8/8/8/K3p3/5bnq b - - 0 103", b.to_fen());
+    b.apply_ply(Ply("e2e1r"));
+    ASSERT_EQ("4RBNQ/k7/8/8/8/8/K7/4rbnq w - - 0 104", b.to_fen());
 }
 
 int main(int argc, char** argv) {
