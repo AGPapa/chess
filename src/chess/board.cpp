@@ -247,6 +247,24 @@ class Board {
             return b;
         }
 
+        Bitboard white_pieces() const {
+            Bitboard w = squarewise_or(
+                squarewise_or(squarewise_and(w_pawns, pawn_mask), w_rooks),
+                squarewise_or(w_knights, w_bishops)
+            );
+            w.set_square(w_king);
+            return w;
+        }
+
+        Bitboard black_pieces() const {
+            Bitboard b = squarewise_or(
+                squarewise_or(squarewise_and(b_pawns, pawn_mask), b_rooks),
+                squarewise_or(b_knights, b_bishops)
+            );
+            b.set_square(b_king);
+            return b;
+        }
+
         void apply_ply(Ply ply) {
             Square from = ply.from_square();
             Square to = ply.to_square();

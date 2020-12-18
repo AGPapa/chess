@@ -40,6 +40,48 @@ TEST(BoardTest, from_fen) {
     ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1", c.to_fen());
 }
 
+TEST(BoardTest, white_pieces) {
+    Board a = Board::default_board();
+    ASSERT_EQ(Bitboard(0x000000000000FFFF), a.white_pieces());
+
+    a.apply_ply(Ply("a2a3"));
+    ASSERT_EQ(Bitboard(0x000000000001FEFF), a.white_pieces());
+
+    Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
+    ASSERT_EQ(Bitboard(0x0000000080000001), b.white_pieces());
+
+    Board c = Board("k7/8/8/7p/8/8/8/7K w - h6 0 100");
+    ASSERT_EQ(Bitboard(0x0000000000000080), c.white_pieces());
+}
+
+TEST(BoardTest, black_pieces) {
+    Board a = Board::default_board();
+    ASSERT_EQ(Bitboard(0xFFFF000000000000), a.black_pieces());
+
+    a.apply_ply(Ply("a2a3"));
+    ASSERT_EQ(Bitboard(0xFFFF000000000000), a.black_pieces());
+
+    Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
+    ASSERT_EQ(Bitboard(0x0100000000000000), b.black_pieces());
+
+    Board c = Board("k7/8/8/7p/8/8/8/7K w - h6 0 100");
+    ASSERT_EQ(Bitboard(0x0100008000000000), c.black_pieces());
+}
+
+TEST(BoardTest, all_pieces) {
+    Board a = Board::default_board();
+    ASSERT_EQ(Bitboard(0xFFFF00000000FFFF), a.all_pieces());
+
+    a.apply_ply(Ply("a2a3"));
+    ASSERT_EQ(Bitboard(0xFFFF00000001FEFF), a.all_pieces());
+
+    Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
+    ASSERT_EQ(Bitboard(0x0100000080000001), b.all_pieces());
+
+    Board c = Board("k7/8/8/7p/8/8/8/7K w - h6 0 100");
+    ASSERT_EQ(Bitboard(0x0100008000000080), c.all_pieces());
+}
+
 TEST(BoardTest, apply_ply) {
     Board a = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     a.apply_ply(Ply("e2e4"));
