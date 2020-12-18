@@ -269,6 +269,13 @@ class Board {
             Square from = ply.from_square();
             Square to = ply.to_square();
 
+            bool reset_50;
+            if (w_turn) {
+                reset_50 = white_pawns().get_square(from);
+            } else {
+                reset_50 = black_pawns().get_square(from);
+            }
+
             // move king
             if (from == w_king) {
                 w_king = to;
@@ -305,18 +312,22 @@ class Board {
             }
 
             //clear capture
-             if (w_turn) {
+             if (w_turn && black_pieces().get_square(to)) {
+                reset_50 = true;
                 b_pawns.unset_square(to);
                 b_rooks.unset_square(to);
                 b_knights.unset_square(to);
                 b_bishops.unset_square(to);
-            } else {
+            } else if (!w_turn && white_pieces().get_square(to)) {
+                reset_50 = true;
                 w_pawns.unset_square(to);
                 w_rooks.unset_square(to);
                 w_knights.unset_square(to);
                 w_bishops.unset_square(to);
             }
 
+            // reset rule 50
+            if (reset_50) { rule_fifty_ply_clock = 0; } else { rule_fifty_ply_clock++; }
             // increment move count
             if (!w_turn) { move_count++; };
             // change turn
