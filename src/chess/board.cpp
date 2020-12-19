@@ -280,9 +280,23 @@ class Board {
             if (from == w_king) {
                 w_king = to;
                 castling.unset_white();
+                if (to == Square("g1") && from == Square("e1")) {
+                    w_rooks.unset_square(Square("h1"));
+                    w_rooks.set_square(Square("f1"));
+                } else if (to == Square("c1") && from == Square("e1")) {
+                    w_rooks.unset_square(Square("a1"));
+                    w_rooks.set_square(Square("d1"));
+                }
             } else if (from == b_king) {
                 b_king = to;
                 castling.unset_black();
+                if (to == Square("g8") && from == Square("e8")) {
+                    b_rooks.unset_square(Square("h8"));
+                    b_rooks.set_square(Square("f8"));
+                } else if (to == Square("c8") && from == Square("e8")) {
+                    b_rooks.unset_square(Square("a8"));
+                    b_rooks.set_square(Square("d8"));
+                }
             }
 
             // add to square 
