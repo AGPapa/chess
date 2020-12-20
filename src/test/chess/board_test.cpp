@@ -36,8 +36,8 @@ TEST(BoardTest, from_fen) {
     Board b = Board("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 2");
     ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq h6 0 2", b.to_fen());
 
-    Board c = Board("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1");
-    ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1", c.to_fen());
+    Board c = Board("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 10 100");
+    ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 10 100", c.to_fen());
 }
 
 TEST(BoardTest, white_pieces) {
