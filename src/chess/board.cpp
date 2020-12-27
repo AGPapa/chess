@@ -310,6 +310,13 @@ class Board {
                 castling.unset_black_kingside();
             }
 
+            // set en-passant flags
+            if (w_turn) {
+                w_pawns.set_square_if(Square(0, to.get_col()), w_pawns.get_square(from) && (to.get_row() - from.get_row()) == 2);
+            } else {
+                b_pawns.set_square_if(Square(7, to.get_col()), b_pawns.get_square(from) && (from.get_row() - to.get_row()) == 2);
+            }
+
             // add to square 
             if (w_turn) {
                 w_pawns.set_square_if(to, w_pawns.get_square(from));
@@ -381,6 +388,13 @@ class Board {
                 }
             }
 
+            //clears en-passant flags
+            if (w_turn) {
+                b_pawns = squarewise_and(b_pawns, pawn_mask);
+            } else {
+                w_pawns = squarewise_and(w_pawns, pawn_mask);
+            }
+
             // reset rule 50
             if (reset_50) { rule_fifty_ply_clock = 0; } else { rule_fifty_ply_clock++; }
             // increment move count
@@ -390,7 +404,6 @@ class Board {
         }
 
         std::string to_fen() const {
-            // TODO: Add 50 move rule, castling, en-passant
             std::string result;
             int empty = 0;
             for (int row = 7; row >= 0; row--) {
