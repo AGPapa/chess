@@ -299,6 +299,17 @@ class Board {
                 }
             }
 
+            // clear castling rights
+            if (w_turn && from == Square("a1")) {
+                castling.unset_white_queenside();
+            } else if (w_turn && from == Square("h1")) {
+                castling.unset_white_kingside();
+            } else if (!w_turn && from == Square("a8")) {
+                castling.unset_black_queenside();
+            } else if (!w_turn && from == Square("h8")) {
+                castling.unset_black_kingside();
+            }
+
             // add to square 
             if (w_turn) {
                 w_pawns.set_square_if(to, w_pawns.get_square(from));

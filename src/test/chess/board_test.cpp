@@ -127,6 +127,16 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("r3kbnr/pppqpppp/2n5/3p1b2/3P1B2/2N5/PPPQPPPP/2KR1BNR b kq - 7 5", d.to_fen());
     d.apply_ply(Ply("e8c8"));
     ASSERT_EQ("2kr1bnr/pppqpppp/2n5/3p1b2/3P1B2/2N5/PPPQPPPP/2KR1BNR w - - 8 6", d.to_fen());
+
+    Board e = Board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 100");
+    e.apply_ply(Ply("a1a2"));
+    ASSERT_EQ("r3k2r/8/8/8/8/8/R7/4K2R b Kkq - 1 100", e.to_fen());
+    e.apply_ply(Ply("a8a7"));
+    ASSERT_EQ("4k2r/r7/8/8/8/8/R7/4K2R w Kk - 2 101", e.to_fen());
+    e.apply_ply(Ply("h1h2"));
+    ASSERT_EQ("4k2r/r7/8/8/8/8/R6R/4K3 b k - 3 101", e.to_fen());
+    e.apply_ply(Ply("h8h7"));
+    ASSERT_EQ("4k3/r6r/8/8/8/8/R6R/4K3 w - - 4 102", e.to_fen());
 }
 
 int main(int argc, char** argv) {
