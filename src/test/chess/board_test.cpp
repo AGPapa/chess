@@ -137,6 +137,24 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("4k2r/r7/8/8/8/8/R6R/4K3 b k - 3 101", e.to_fen());
     e.apply_ply(Ply("h8h7"));
     ASSERT_EQ("4k3/r6r/8/8/8/8/R6R/4K3 w - - 4 102", e.to_fen());
+
+    Board f = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    f.apply_ply(Ply("a2a4"));
+    ASSERT_EQ("rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", f.to_fen());
+    f.apply_ply(Ply("h7h5"));
+    ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/P7/8/1PPPPPPP/RNBQKBNR w KQkq h6 0 2", f.to_fen());
+    f.apply_ply(Ply("a4a5"));
+    ASSERT_EQ("rnbqkbnr/ppppppp1/8/P6p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 2", f.to_fen());
+    f.apply_ply(Ply("b7b5"));
+    ASSERT_EQ("rnbqkbnr/p1ppppp1/8/Pp5p/8/8/1PPPPPPP/RNBQKBNR w KQkq b6 0 3", f.to_fen());
+    f.apply_ply(Ply("a5b6"));
+    ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/7p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 3", f.to_fen());
+    f.apply_ply(Ply("h5h4"));
+    ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/7p/8/1PPPPPPP/RNBQKBNR w KQkq - 0 4", f.to_fen());
+    f.apply_ply(Ply("g2g4"));
+    ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/6Pp/8/1PPPPP1P/RNBQKBNR b KQkq g3 0 4", f.to_fen());
+    f.apply_ply(Ply("h4g3"));
+    ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/8/6p1/1PPPPP1P/RNBQKBNR w KQkq - 0 5", f.to_fen());
 }
 
 int main(int argc, char** argv) {

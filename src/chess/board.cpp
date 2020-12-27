@@ -317,6 +317,13 @@ class Board {
                 b_pawns.set_square_if(Square(7, to.get_col()), b_pawns.get_square(from) && (from.get_row() - to.get_row()) == 2);
             }
 
+            // clear en-passant captures
+            if (w_turn && w_pawns.get_square(from) && (to.get_col() != from.get_col()) && b_pawns.get_square(7, to.get_col())) {
+                b_pawns.unset_square(Square(4, to.get_col()));
+            } else if (!w_turn && b_pawns.get_square(from) && (to.get_col() != from.get_col()) && w_pawns.get_square(0, to.get_col())) {
+                w_pawns.unset_square(Square(3, to.get_col()));
+            }
+
             // add to square 
             if (w_turn) {
                 w_pawns.set_square_if(to, w_pawns.get_square(from));
@@ -343,7 +350,7 @@ class Board {
                 b_bishops.unset_square(from);
             }
 
-            //clear capture
+            // clear capture
              if (w_turn && black_pieces().get_square(to)) {
                 reset_50 = true;
                 b_pawns.unset_square(to);
@@ -358,7 +365,7 @@ class Board {
                 w_bishops.unset_square(to);
             }
 
-            //promote pawns
+            // promote pawns
             Ply::Promotion promotion = ply.promotion();
             if (promotion != Ply::Promotion::None) {
                 if (w_turn) {
