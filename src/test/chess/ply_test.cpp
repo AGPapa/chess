@@ -50,6 +50,37 @@ TEST(SquareTest, promotion) {
     ASSERT_EQ(Ply::Promotion::Rook, p.promotion());
 }
 
+TEST(PlyTest, operator_equals) {
+    Ply a = Ply("e2e4");
+    Ply b = Ply(Square("e2"), Square("e4"));
+    ASSERT_EQ(true, a == b);
+
+    Ply c = Ply("e2e5");
+    ASSERT_EQ(false, a == c);
+
+    Ply d = Ply("e7e8q");
+    Ply e = Ply(Square("e7"), Square("e8"), Ply::Promotion::Queen);
+    ASSERT_EQ(true, d == e);
+
+    Ply f = Ply(Square("e7"), Square("e8"), Ply::Promotion::Knight);
+    ASSERT_EQ(false, d == f);
+}
+
+TEST(PlyTest, operator_not_equals) {
+    Ply a = Ply("e2e4");
+    Ply b = Ply(Square("e2"), Square("e4"));
+    ASSERT_EQ(false, a != b);
+
+    Ply c = Ply("e2e5");
+    ASSERT_EQ(true, a != c);
+
+    Ply d = Ply("e7e8q");
+    Ply e = Ply(Square("e7"), Square("e8"), Ply::Promotion::Queen);
+    ASSERT_EQ(false, d != e);
+
+    Ply f = Ply(Square("e7"), Square("e8"), Ply::Promotion::Knight);
+    ASSERT_EQ(true, d != f);
+}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

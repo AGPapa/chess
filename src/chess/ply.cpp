@@ -56,6 +56,14 @@ class Ply {
             return Promotion((ply & promotion_mask) >> 12);
         }
 
+        bool operator==(const Ply& other) const {
+            return ply == other.ply;
+        }
+
+        bool operator!=(const Ply& other) const {
+            return ply != other.ply;
+        }
+
         std::string to_string() const {
             std::string result;
             result += from_square().to_string();
