@@ -1,6 +1,7 @@
 #include "../../chess/board.cpp"
 
 #include <gtest/gtest.h>
+#include <algorithm>
 
 TEST(BoardTest, to_fen) {
     Bitboard w_pawns = Bitboard(0x0000000080007F00);
@@ -155,6 +156,35 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/6Pp/8/1PPPPP1P/RNBQKBNR b KQkq g3 0 4", f.to_fen());
     f.apply_ply(Ply("h4g3"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/8/6p1/1PPPPP1P/RNBQKBNR w KQkq - 0 5", f.to_fen());
+}
+
+TEST(BoardTest, generate_potential_plies) {
+    Board a = Board("8/7p/7P/1k6/8/1K6/8/8 w - - 0 100");
+    std::vector<Ply> expected = { Ply("b3b4"), Ply("b3c4"), Ply("b3c3"), Ply("b3c2"), Ply("b3b2"), Ply("b3a2"), Ply("b3a3"), Ply("b3a4") };
+    std::sort(expected.begin(), expected.end());
+    std::vector<Ply> actual = a.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    a.apply_ply(Ply("b3b2"));
+    expected = { Ply("b5b6"), Ply("b5c6"), Ply("b5c5"), Ply("b5c4"), Ply("b5b4"), Ply("b5a4"), Ply("b5a5"), Ply("b5a6") };
+    std::sort(expected.begin(), expected.end());
+    actual = a.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    //TODO: These asserts will need to change when pawn-moves are enabled
+    Board b = Board("7k/7p/8/8/8/8/7P/7K w - - 0 100");
+    expected = { Ply("h1g1"), Ply("h1g2") };
+    std::sort(expected.begin(), expected.end());
+    actual = b.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    b.apply_ply(Ply("h1g1"));
+    expected = { Ply("h8g8"), Ply("h8g7") };
+    std::sort(expected.begin(), expected.end());
+    actual = b.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
 }
 
 int main(int argc, char** argv) {

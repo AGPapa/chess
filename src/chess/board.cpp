@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include "bitboard.cpp"
 #include "castling.cpp"
 #include "ply.cpp"
@@ -408,6 +409,32 @@ class Board {
             if (!w_turn) { move_count++; }
             // change turn
             w_turn = !w_turn;
+        }
+
+        std::vector<Ply> generate_potential_plies() {
+            std::vector<Ply> ply_list;
+            ply_list.reserve(50);
+            // King moves
+            Square king;
+            Bitboard pieces;
+            if (w_turn) {
+                king = w_king;
+                pieces = white_pieces();
+            } else {
+                king = b_king;
+                pieces = black_pieces();
+            }
+            int row = king.get_row();
+            int col = king.get_col();
+            for (int r = row == 0 ? 0 : -1; r <= (row == 7 ? 0 : 1); r++) {
+                for (int c = col == 0 ? 0 : -1; c <= (col == 7 ? 0 : 1); c++) {
+                    if (r == 0 && c == 0) { continue; }
+                    Square to = Square(row + r, c + col);
+                    if (pieces.get_square(to)) { continue; }
+                    ply_list.push_back(Ply(king, to));
+                }
+            }
+            return ply_list;
         }
 
         std::string to_fen() const {
