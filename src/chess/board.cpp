@@ -448,7 +448,6 @@ class Board {
             }
 
             // Pawns
-            // TODO: implement en passant
             for (int r = 1; r <= 6; r++) {
                 for (int c = 0; c <= 7; c++) {
                     if (our_pawns.get_square(r, c)) {
@@ -468,11 +467,17 @@ class Board {
                             if (opponent_pieces.get_square(to)) {
                                add_pawn_plies(&ply_list, from, to);
                             }
+                            if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c + 1)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
                         }
                         if (c != 0) {
                             to = Square(r + forward, c - 1);
                             if (opponent_pieces.get_square(to)) {
                                 add_pawn_plies(&ply_list, from, to);
+                            }
+                            if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c - 1)) {
+                                ply_list.push_back(Ply(from, to));
                             }
                         }
                     }
