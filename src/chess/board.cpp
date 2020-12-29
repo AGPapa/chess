@@ -448,27 +448,32 @@ class Board {
             }
 
             // Pawns
-            // TODO: implement pawn captures
+            // TODO: implement en passant
             for (int r = 1; r <= 6; r++) {
                 for (int c = 0; c <= 7; c++) {
                     if (our_pawns.get_square(r, c)) {
                         Square to = Square(r + forward, c);
                         if (all.get_square(to)) { continue; }
                         Square from = Square(r, c);
-                        if (to.get_row() == 7 || to.get_row() == 0) {
-                            ply_list.push_back(Ply(from, to, Ply::Promotion::Queen));
-                            ply_list.push_back(Ply(from, to, Ply::Promotion::Knight));
-                            ply_list.push_back(Ply(from, to, Ply::Promotion::Rook));
-                            ply_list.push_back(Ply(from, to, Ply::Promotion::Bishop));
-                        } else {
-                            ply_list.push_back(Ply(from, to));
-                        }
+                        add_pawn_plies(&ply_list, from, to);
                         if ((w_turn && r == 1) || (!w_turn && r == 6)) {
                             to = Square(r + forward * 2, c);
                             if (!all.get_square(to)) {
                                 ply_list.push_back(Ply(from, to));
                              }
 
+                        }
+                        if (c != 7) {
+                            to = Square(r + forward, c + 1);
+                            if (opponent_pieces.get_square(to)) {
+                               add_pawn_plies(&ply_list, from, to);
+                            }
+                        }
+                        if (c != 0) {
+                            to = Square(r + forward, c - 1);
+                            if (opponent_pieces.get_square(to)) {
+                                add_pawn_plies(&ply_list, from, to);
+                            }
                         }
                     }
                 }
@@ -599,6 +604,17 @@ class Board {
                 return 'b';
             } else {
                 return '.';
+            }
+        }
+
+        void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) {
+            if (to.get_row() == 7 || to.get_row() == 0) {
+                ply_list->push_back(Ply(from, to, Ply::Promotion::Queen));
+                ply_list->push_back(Ply(from, to, Ply::Promotion::Knight));
+                ply_list->push_back(Ply(from, to, Ply::Promotion::Rook));
+                ply_list->push_back(Ply(from, to, Ply::Promotion::Bishop));
+            } else {
+                ply_list->push_back(Ply(from, to));
             }
         }
 };
