@@ -172,17 +172,29 @@ TEST(BoardTest, generate_potential_plies) {
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
 
-    //TODO: These asserts will need to change when pawn-moves are enabled
     Board b = Board("7k/7p/8/8/8/8/7P/7K w - - 0 100");
-    expected = { Ply("h1g1"), Ply("h1g2") };
+    expected = { Ply("h1g1"), Ply("h1g2"), Ply("h2h3"), Ply("h2h4") };
     std::sort(expected.begin(), expected.end());
     actual = b.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
     b.apply_ply(Ply("h1g1"));
-    expected = { Ply("h8g8"), Ply("h8g7") };
+    expected = { Ply("h8g8"), Ply("h8g7"), Ply("h7h6"), Ply("h7h5") };
     std::sort(expected.begin(), expected.end());
     actual = b.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    Board c = Board("7k/P6p/8/7P/7p/p1P5/P1Pp3P/7K w - - 0 100");
+    expected = { Ply("h1g1"), Ply("h1g2"), Ply("h2h3"), Ply("h5h6"), Ply("c3c4"), Ply("a7a8q"), Ply("a7a8n"), Ply("a7a8r"), Ply("a7a8b") };
+    std::sort(expected.begin(), expected.end());
+    actual = c.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    c.apply_ply(Ply("h1g1"));
+    expected = { Ply("h8g8"), Ply("h8g7"), Ply("h7h6"), Ply("h4h3"), Ply("d2d1q"), Ply("d2d1n"), Ply("d2d1r"), Ply("d2d1b") };
+    std::sort(expected.begin(), expected.end());
+    actual = c.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
 }

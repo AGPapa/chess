@@ -414,24 +414,63 @@ class Board {
         std::vector<Ply> generate_potential_plies() {
             std::vector<Ply> ply_list;
             ply_list.reserve(50);
-            // King moves
+            
             Square king;
-            Bitboard pieces;
+            Bitboard our_pieces;
+            Bitboard our_pawns;
+            Bitboard opponent_pieces;
+            int forward;
+            Bitboard all = all_pieces();
             if (w_turn) {
                 king = w_king;
-                pieces = white_pieces();
+                our_pawns = w_pawns;
+                our_pieces = white_pieces();
+                opponent_pieces = black_pieces();
+                forward = 1;
             } else {
                 king = b_king;
-                pieces = black_pieces();
+                our_pawns = b_pawns;
+                our_pieces = black_pieces();
+                opponent_pieces = white_pieces();
+                forward = -1;
             }
+
+            // King moves
             int row = king.get_row();
             int col = king.get_col();
             for (int r = row == 0 ? 0 : -1; r <= (row == 7 ? 0 : 1); r++) {
                 for (int c = col == 0 ? 0 : -1; c <= (col == 7 ? 0 : 1); c++) {
                     if (r == 0 && c == 0) { continue; }
                     Square to = Square(row + r, c + col);
-                    if (pieces.get_square(to)) { continue; }
+                    if (our_pieces.get_square(to)) { continue; }
                     ply_list.push_back(Ply(king, to));
+                }
+            }
+
+            // Pawns
+            // TODO: implement pawn captures
+            for (int r = 1; r <= 6; r++) {
+                for (int c = 0; c <= 7; c++) {
+                    if (our_pawns.get_square(r, c)) {
+                        Square to = Square(r + forward, c);
+                        if (all.get_square(to)) { continue; }
+                        Square from = Square(r, c);
+                        if (to.get_row() == 7 || to.get_row() == 0) {
+                            ply_list.push_back(Ply(from, to, Ply::Promotion::Queen));
+                            ply_list.push_back(Ply(from, to, Ply::Promotion::Knight));
+                            ply_list.push_back(Ply(from, to, Ply::Promotion::Rook));
+                            ply_list.push_back(Ply(from, to, Ply::Promotion::Bishop));
+                        } else {
+                            ply_list.push_back(Ply(from, to));
+                        }
+                        if ((w_turn && r == 1) || (!w_turn && r == 6)) {
+                            to = Square(r + forward * 2, c);
+                            if (!all.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                             }
+
+                        }
+                    }
                 }
             }
             return ply_list;
