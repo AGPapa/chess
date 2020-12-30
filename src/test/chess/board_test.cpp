@@ -212,12 +212,20 @@ TEST(BoardTest, generate_potential_plies) {
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
     e.apply_ply(Ply("a2a4"));
-    std::cout << e.to_fen();
     expected = { Ply("h8h7"), Ply("h8g7"), Ply("h8g8"), Ply("g5g4"), Ply("b4b3"), Ply("b4a3") };
     std::sort(expected.begin(), expected.end());
     actual = e.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+
+    Board f = Board("7k/8/8/7p/8/6N1/8/7K w - - 0 100");
+    expected = { Ply("h1h2"), Ply("h1g2"), Ply("h1g1"), Ply("g3f1"), Ply("g3e2"), Ply("g3e4"), Ply("g3f5"), Ply("g3h5")};
+    std::sort(expected.begin(), expected.end());
+    actual = f.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+
 }
 
 int main(int argc, char** argv) {

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "piece_attacks.hpp"
 #include "bitboard.cpp"
 #include "castling.cpp"
 #include "ply.cpp"
@@ -418,18 +419,21 @@ class Board {
             Square king;
             Bitboard our_pieces;
             Bitboard our_pawns;
+            Bitboard our_knights;
             Bitboard opponent_pieces;
             int forward;
             Bitboard all = all_pieces();
             if (w_turn) {
                 king = w_king;
                 our_pawns = w_pawns;
+                our_knights = w_knights;
                 our_pieces = white_pieces();
                 opponent_pieces = black_pieces();
                 forward = 1;
             } else {
                 king = b_king;
                 our_pawns = b_pawns;
+                our_knights = b_knights;
                 our_pieces = black_pieces();
                 opponent_pieces = white_pieces();
                 forward = -1;
@@ -447,9 +451,9 @@ class Board {
                 }
             }
 
-            // Pawns
-            for (int r = 1; r <= 6; r++) {
+            for (int r = 0; r <= 7; r++) {
                 for (int c = 0; c <= 7; c++) {
+                    // Pawn moves
                     if (our_pawns.get_square(r, c)) {
                         Square to = Square(r + forward, c);
                         if (all.get_square(to)) { continue; }
@@ -477,6 +481,15 @@ class Board {
                                 add_pawn_plies(&ply_list, from, to);
                             }
                             if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c - 1)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                        }
+                    }
+                    // Knight moves
+                    else if (our_knights.get_square(r, c)) {
+                        Square from = Square(r, c);
+                        for (Square to : knight_attacks[from.get_int_value()]) {
+                            if (!our_pieces.get_square(to)) {
                                 ply_list.push_back(Ply(from, to));
                             }
                         }
