@@ -241,6 +241,26 @@ TEST(BoardTest, generate_potential_plies) {
     actual = g.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+
+    Board h = Board("7k/1p6/1Pq5/8/8/5Bp1/6P1/K7 w - - 0 100");
+    expected = { Ply("a1b1"), Ply("a1b2"), Ply("a1a2"),
+                 Ply("f3e4"), Ply("f3d5"), Ply("f3c6"),
+                 Ply("f3g4"), Ply("f3h5"), Ply("f3e2"), Ply("f3d1") };
+    std::sort(expected.begin(), expected.end());
+    actual = h.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    h.apply_ply(Ply("h1g1"));
+
+    expected = { Ply("h8g8"), Ply("h8g7"), Ply("h8h7"),
+                 Ply("c6d5"), Ply("c6e4"), Ply("c6f3"),
+                 Ply("c6d7"), Ply("c6e8"), Ply("c6b5"), Ply("c6a4"),
+                 Ply("c6c7"), Ply("c6c8"), Ply("c6c5"), Ply("c6c4"), Ply("c6c3"), Ply("c6c2"), Ply("c6c1"),
+                 Ply("c6b6"), Ply("c6d6"), Ply("c6e6"), Ply("c6f6"), Ply("c6g6"), Ply("c6h6") };
+    std::sort(expected.begin(), expected.end());
+    actual = h.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
 }
 
 int main(int argc, char** argv) {

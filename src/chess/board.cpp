@@ -421,6 +421,7 @@ class Board {
             Bitboard our_pawns;
             Bitboard our_knights;
             Bitboard our_rooks;
+            Bitboard our_bishops;
             Bitboard opponent_pieces;
             int forward;
             Bitboard all = all_pieces();
@@ -429,6 +430,7 @@ class Board {
                 our_pawns = w_pawns;
                 our_knights = w_knights;
                 our_rooks = w_rooks;
+                our_bishops = w_bishops;
                 our_pieces = white_pieces();
                 opponent_pieces = black_pieces();
                 forward = 1;
@@ -437,6 +439,7 @@ class Board {
                 our_pawns = b_pawns;
                 our_knights = b_knights;
                 our_rooks = b_rooks;
+                our_bishops = b_bishops;
                 our_pieces = black_pieces();
                 opponent_pieces = white_pieces();
                 forward = -1;
@@ -456,6 +459,46 @@ class Board {
 
             for (int r = 0; r <= 7; r++) {
                 for (int c = 0; c <= 7; c++) {
+                    // Bishop moves (and Queens)
+                    if (our_bishops.get_square(r,c)) {
+                        Square from = Square(r, c);
+                        for (int diff = 1; (r + diff) <= 7 && (c + diff) <= 7; diff++) {
+                            Square to = Square(r + diff, c + diff);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int diff = 1; (r + diff) <= 7 && (c - diff) >= 0; diff++) {
+                            Square to = Square(r + diff, c - diff);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int diff = 1; (r - diff) >= 0 && (c + diff) <= 7; diff++) {
+                            Square to = Square(r - diff, c + diff);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int diff = 1; (r - diff) >= 0 && (c - diff) >= 0; diff++) {
+                            Square to = Square(r - diff, c - diff);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                    } // (no "else" b/c can be bishop and rook on same square)
                     // Pawn moves
                     if (our_pawns.get_square(r, c)) {
                         Square to = Square(r + forward, c);
@@ -497,7 +540,7 @@ class Board {
                             }
                         }
                     }
-                    // Rook moves
+                    // Rook moves (and Queens)
                     else if (our_rooks.get_square(r,c)) {
                         Square from = Square(r, c);
                         for (int r_target = r + 1; r_target <= 7; r_target++) {
