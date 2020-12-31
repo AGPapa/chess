@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 
 TEST(BoardTest, to_fen) {
     Bitboard w_pawns = Bitboard(0x0000000080007F00);
@@ -261,6 +263,31 @@ TEST(BoardTest, generate_potential_plies) {
     actual = h.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+}
+
+TEST(BoardTest, legal_plies_integration) {
+    std::ifstream game ("../src/test/fixtures/morphy_vs_duke_of_brunswick.txt");
+    Board b = Board::default_board();
+
+    for (std::string line; std::getline(game, line); ) {
+        std::vector<Ply> plies = b.generate_potential_plies();
+        // TODO: We need to generate valid castling moves
+        // and remove this addition here
+        plies.push_back(Ply("e1g1"));
+        plies.push_back(Ply("e1c1"));
+        plies.push_back(Ply("e8g8"));
+        plies.push_back(Ply("e8c8"));
+        Ply new_ply = Ply(line);
+        if (std::count(plies.begin(), plies.end(), new_ply) == 0) {
+            for (Ply p : plies) {
+                if (p.from_square() == Square("f3")) {
+                    std::cout << p.to_string() << '\n';
+                }
+            }
+        }
+        ASSERT_EQ(1, std::count(plies.begin(), plies.end(), new_ply));
+        b.apply_ply(new_ply);
+    }
 }
 
 int main(int argc, char** argv) {

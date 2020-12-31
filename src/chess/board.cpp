@@ -570,7 +570,7 @@ class Board {
                                 break;
                             }
                         }
-                        for (int c_target = c - 1; c_target >= 0; c_target++) {
+                        for (int c_target = c - 1; c_target >= 0; c_target--) {
                             Square to = Square(r, c_target);
                             if (!our_pieces.get_square(to)) {
                                 ply_list.push_back(Ply(from, to));
