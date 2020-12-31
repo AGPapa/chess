@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 TEST(BoardTest, to_fen) {
     Bitboard w_pawns = Bitboard(0x0000000080007F00);
@@ -207,14 +208,20 @@ TEST(BoardTest, generate_potential_plies) {
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
 
-    Board e = Board("7k/8/8/6pP/1p6/8/P7/7K w - g6 0 100");
-    expected = { Ply("h1h2"), Ply("h1g2"), Ply("h1g1"), Ply("h5h6"), Ply("h5g6"), Ply("a2a3"), Ply("a2a4") };
+    Board e = Board("7k/8/7p/6pP/1p6/8/P7/7K w - g6 0 100");
+    expected = { Ply("h1h2"), Ply("h1g2"), Ply("h1g1"), Ply("h5g6"), Ply("a2a3"), Ply("a2a4") };
     std::sort(expected.begin(), expected.end());
     actual = e.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
     e.apply_ply(Ply("a2a4"));
     expected = { Ply("h8h7"), Ply("h8g7"), Ply("h8g8"), Ply("g5g4"), Ply("b4b3"), Ply("b4a3") };
+    std::sort(expected.begin(), expected.end());
+    actual = e.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    e.apply_ply(Ply("h8h7"));
+    expected = { Ply("h1h2"), Ply("h1g2"), Ply("h1g1"), Ply("a4a5") };
     std::sort(expected.begin(), expected.end());
     actual = e.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
@@ -266,9 +273,8 @@ TEST(BoardTest, generate_potential_plies) {
 }
 
 TEST(BoardTest, legal_plies_integration) {
-    std::vector<std::string> games = { "morphy_vs_duke_of_brunswick", "fisher_vs_byrne" };
-    for (std::string name : games) {
-        std::ifstream game ("../src/test/fixtures/" + name + ".txt");
+    for (auto& p : std::__fs::filesystem::directory_iterator("../src/test/fixtures/games/")) {
+        std::ifstream game (p.path());
 
         Board b = Board::default_board();
 
