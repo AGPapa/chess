@@ -266,27 +266,24 @@ TEST(BoardTest, generate_potential_plies) {
 }
 
 TEST(BoardTest, legal_plies_integration) {
-    std::ifstream game ("../src/test/fixtures/morphy_vs_duke_of_brunswick.txt");
-    Board b = Board::default_board();
+    std::vector<std::string> games = { "morphy_vs_duke_of_brunswick", "fisher_vs_byrne" };
+    for (std::string name : games) {
+        std::ifstream game ("../src/test/fixtures/" + name + ".txt");
 
-    for (std::string line; std::getline(game, line); ) {
-        std::vector<Ply> plies = b.generate_potential_plies();
-        // TODO: We need to generate valid castling moves
-        // and remove this addition here
-        plies.push_back(Ply("e1g1"));
-        plies.push_back(Ply("e1c1"));
-        plies.push_back(Ply("e8g8"));
-        plies.push_back(Ply("e8c8"));
-        Ply new_ply = Ply(line);
-        if (std::count(plies.begin(), plies.end(), new_ply) == 0) {
-            for (Ply p : plies) {
-                if (p.from_square() == Square("f3")) {
-                    std::cout << p.to_string() << '\n';
-                }
-            }
+        Board b = Board::default_board();
+
+        for (std::string line; std::getline(game, line); ) {
+            std::vector<Ply> plies = b.generate_potential_plies();
+            // TODO: We need to generate valid castling moves
+            // and remove this addition here
+            plies.push_back(Ply("e1g1"));
+            plies.push_back(Ply("e1c1"));
+            plies.push_back(Ply("e8g8"));
+            plies.push_back(Ply("e8c8"));
+            Ply new_ply = Ply(line);
+            ASSERT_EQ(1, std::count(plies.begin(), plies.end(), new_ply));
+            b.apply_ply(new_ply);
         }
-        ASSERT_EQ(1, std::count(plies.begin(), plies.end(), new_ply));
-        b.apply_ply(new_ply);
     }
 }
 

@@ -501,16 +501,17 @@ class Board {
                     } // (no "else" b/c can be bishop and rook on same square)
                     // Pawn moves
                     if (our_pawns.get_square(r, c)) {
-                        Square to = Square(r + forward, c);
-                        if (all.get_square(to)) { continue; }
                         Square from = Square(r, c);
-                        add_pawn_plies(&ply_list, from, to);
-                        if ((w_turn && r == 1) || (!w_turn && r == 6)) {
-                            to = Square(r + forward * 2, c);
-                            if (!all.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
-                             }
+                        Square to = Square(r + forward, c);
+                        if (!all.get_square(to)) {
+                            add_pawn_plies(&ply_list, from, to);
+                            if ((w_turn && r == 1) || (!w_turn && r == 6)) {
+                                to = Square(r + forward * 2, c);
+                                if (!all.get_square(to)) {
+                                    ply_list.push_back(Ply(from, to));
+                                }
 
+                            }
                         }
                         if (c != 7) {
                             to = Square(r + forward, c + 1);
