@@ -19,16 +19,19 @@ class Board {
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
               bool w_t, Castling c, int r50_ply, int m_c) {
-            w_pawns = w_p;
-            w_rooks = w_r;
-            w_knights = w_n;
-            w_bishops = w_b;
-            w_king = w_k;
 
-            b_pawns = b_p;
-            b_rooks = b_r;
-            b_knights = b_n;
-            b_bishops = b_b;
+            w_pieces = squarewise_or(squarewise_or(squarewise_and(w_p, pawn_mask), w_r), squarewise_or(w_n, w_b));
+            w_pieces.set_square(w_k);
+
+            b_pieces = squarewise_or(squarewise_or(squarewise_and(b_p, pawn_mask), b_r), squarewise_or(b_n, b_b));
+            b_pieces.set_square(b_k);
+
+            pawns = squarewise_or(w_p, b_p);
+            bishops = squarewise_or(w_b, b_b);
+            rooks = squarewise_or(w_r, b_r);
+            knights = squarewise_or(w_n, b_n);
+
+            w_king = w_k;
             b_king = b_k;
 
             w_turn = w_t;
@@ -64,30 +67,42 @@ class Board {
             
                 if (c == 'K') {
                     w_king = Square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'Q') {
-                    w_bishops.set_square(row, col);
-                    w_rooks.set_square(row, col);
+                    bishops.set_square(row, col);
+                    rooks.set_square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'P') {
-                    w_pawns.set_square(row, col);
+                    pawns.set_square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'R') {
-                    w_rooks.set_square(row, col);
+                    rooks.set_square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'N') {
-                    w_knights.set_square(row, col);
+                    knights.set_square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'B') {
-                    w_bishops.set_square(row, col);
+                    bishops.set_square(row, col);
+                    w_pieces.set_square(row, col);
                 } else if (c == 'k') {
                     b_king = Square(row, col);
+                    b_pieces.set_square(row, col);
                 } else if (c == 'q') {
-                    b_bishops.set_square(row, col);
-                    b_rooks.set_square(row, col);
+                    bishops.set_square(row, col);
+                    rooks.set_square(row, col);
+                    b_pieces.set_square(row, col);
                 } else if (c == 'p') {
-                    b_pawns.set_square(row, col);
+                    pawns.set_square(row, col);
+                    b_pieces.set_square(row, col);
                 } else if (c == 'r') {
-                    b_rooks.set_square(row, col);
+                    rooks.set_square(row, col);
+                    b_pieces.set_square(row, col);
                 } else if (c == 'n') {
-                    b_knights.set_square(row, col);
+                    knights.set_square(row, col);
+                    b_pieces.set_square(row, col);
                 } else if (c == 'b') {
-                    b_bishops.set_square(row, col);
+                    bishops.set_square(row, col);
+                    b_pieces.set_square(row, col);
                 } else {
                     throw std::runtime_error("Bad fen string - invalid piece char: " + fen);
                 }
@@ -142,37 +157,37 @@ class Board {
            
             fen_stream >> en_passant;
             if (en_passant == "a3") {
-                w_pawns.set_square(0, 0);
+                pawns.set_square(0, 0);
             } else if (en_passant == "b3") {
-                w_pawns.set_square(0, 1);
+                pawns.set_square(0, 1);
             } else if (en_passant == "c3") {
-                w_pawns.set_square(0, 2);
+                pawns.set_square(0, 2);
             } else if (en_passant == "d3") {
-                w_pawns.set_square(0, 3);
+                pawns.set_square(0, 3);
             } else if (en_passant == "e3") {
-                w_pawns.set_square(0, 4);
+                pawns.set_square(0, 4);
             } else if (en_passant == "f3") {
-                w_pawns.set_square(0, 5);
+                pawns.set_square(0, 5);
             } else if (en_passant == "g3") {
-                w_pawns.set_square(0, 6);
+                pawns.set_square(0, 6);
             } else if (en_passant == "h3") {
-                w_pawns.set_square(0, 7);
+                pawns.set_square(0, 7);
             } else if (en_passant == "a6") {
-                b_pawns.set_square(7, 0);
+                pawns.set_square(7, 0);
             } else if (en_passant == "b6") {
-                b_pawns.set_square(7, 1);
+                pawns.set_square(7, 1);
             } else if (en_passant == "c6") {
-                b_pawns.set_square(7, 2);
+                pawns.set_square(7, 2);
             } else if (en_passant == "d6") {
-                b_pawns.set_square(7, 3);
+                pawns.set_square(7, 3);
             } else if (en_passant == "e6") {
-                b_pawns.set_square(7, 4);
+                pawns.set_square(7, 4);
             } else if (en_passant == "f6") {
-                b_pawns.set_square(7, 5);
+                pawns.set_square(7, 5);
             } else if (en_passant == "g6") {
-                b_pawns.set_square(7, 6);
+                pawns.set_square(7, 6);
             } else if (en_passant == "h6") {
-                b_pawns.set_square(7, 7);
+                pawns.set_square(7, 7);
             } else if (en_passant != "-") {
                 throw std::runtime_error("Bad fen string - invalid en_passant: " + fen);
             }
@@ -202,69 +217,50 @@ class Board {
         }
 
         Bitboard white_pawns() const {
-            return squarewise_and(w_pawns, pawn_mask);
+            return squarewise_and(w_pieces, squarewise_and(pawns, pawn_mask));
         }
 
         Bitboard black_pawns() const {
-            return squarewise_and(b_pawns, pawn_mask);
+            return squarewise_and(b_pieces, squarewise_and(pawns, pawn_mask));
         }
 
         Bitboard all_pawns() const {
-            return squarewise_and(squarewise_or(w_pawns, b_pawns), pawn_mask);
+            return squarewise_and(pawns, pawn_mask);
         }
 
         Bitboard white_queens() const {
-            return squarewise_and(w_bishops, w_rooks);
+            return squarewise_and(w_pieces, squarewise_and(bishops, rooks));
         }
 
         Bitboard black_queens() const {
-            return squarewise_and(b_bishops, b_rooks);
+            return squarewise_and(b_pieces, squarewise_and(bishops, rooks));
         }
 
         Bitboard white_en_passant() const {
-            return squarewise_and(w_pawns, en_passant_mask);
+            return squarewise_and(w_pieces, squarewise_and(pawns, en_passant_mask));
         }
 
         Bitboard black_en_passant() const {
-            return squarewise_and(b_pawns, en_passant_mask);
+            return squarewise_and(b_pieces, squarewise_and(pawns, en_passant_mask));
         }
 
         Bitboard all_en_passant() const {
-            return squarewise_and(squarewise_or(w_pawns, b_pawns), en_passant_mask);
+            return squarewise_and(pawns, en_passant_mask);
         }
 
         Bitboard all_pieces() const {
-            Bitboard b = squarewise_or(
-                squarewise_or(
-                    all_pawns(),
-                    squarewise_or(w_rooks, b_rooks)
-                ),
-                squarewise_or(
-                    squarewise_or(w_bishops, b_bishops),
-                    squarewise_or(w_knights, b_knights)
-                )
-            );
+            Bitboard b = squarewise_or(w_pieces, b_pieces);
             b.set_square(w_king);
             b.set_square(b_king);
             return b;
         }
 
         Bitboard white_pieces() const {
-            Bitboard w = squarewise_or(
-                squarewise_or(squarewise_and(w_pawns, pawn_mask), w_rooks),
-                squarewise_or(w_knights, w_bishops)
-            );
-            w.set_square(w_king);
-            return w;
+            return w_pieces;
         }
 
         Bitboard black_pieces() const {
-            Bitboard b = squarewise_or(
-                squarewise_or(squarewise_and(b_pawns, pawn_mask), b_rooks),
-                squarewise_or(b_knights, b_bishops)
-            );
-            b.set_square(b_king);
-            return b;
+            return b_pieces;
         }
 
         void apply_ply(Ply ply) {
@@ -280,24 +276,34 @@ class Board {
 
             // move king
             if (from == w_king) {
+                w_pieces.unset_square(from);
+                w_pieces.set_square(to);
                 w_king = to;
                 castling.unset_white();
                 if (to == Square("g1") && from == Square("e1")) {
-                    w_rooks.unset_square(Square("h1"));
-                    w_rooks.set_square(Square("f1"));
+                    rooks.unset_square(Square("h1"));
+                    w_pieces.unset_square(Square("h1"));
+                    rooks.set_square(Square("f1"));
+                    w_pieces.set_square(Square("f1"));
                 } else if (to == Square("c1") && from == Square("e1")) {
-                    w_rooks.unset_square(Square("a1"));
-                    w_rooks.set_square(Square("d1"));
+                    rooks.unset_square(Square("a1"));
+                    w_pieces.unset_square(Square("a1"));
+                    rooks.set_square(Square("d1"));
+                    w_pieces.set_square(Square("d1"));
                 }
             } else if (from == b_king) {
                 b_king = to;
                 castling.unset_black();
                 if (to == Square("g8") && from == Square("e8")) {
-                    b_rooks.unset_square(Square("h8"));
-                    b_rooks.set_square(Square("f8"));
+                    rooks.unset_square(Square("h8"));
+                    b_pieces.unset_square(Square("h8"));
+                    rooks.set_square(Square("f8"));
+                    b_pieces.set_square(Square("f8"));
                 } else if (to == Square("c8") && from == Square("e8")) {
-                    b_rooks.unset_square(Square("a8"));
-                    b_rooks.set_square(Square("d8"));
+                    rooks.unset_square(Square("a8"));
+                    b_pieces.unset_square(Square("a8"));
+                    rooks.set_square(Square("d8"));
+                    b_pieces.set_square(Square("d8"));
                 }
             }
 
@@ -312,96 +318,72 @@ class Board {
                 castling.unset_black_kingside();
             }
 
+            // clear en-passant captures
+            if (w_turn && pawns.get_square(from) && (to.get_col() != from.get_col()) && pawns.get_square(7, to.get_col())) {
+                pawns.unset_square(Square(4, to.get_col()));
+                b_pieces.unset_square(Square(4, to.get_col()));
+            } else if (!w_turn && pawns.get_square(from) && (to.get_col() != from.get_col()) && pawns.get_square(0, to.get_col())) {
+                pawns.unset_square(Square(3, to.get_col()));
+                w_pieces.unset_square(Square(3, to.get_col()));
+            }
+
+            //clears en-passant flags
+            pawns = squarewise_and(pawns, pawn_mask);
+
             // set en-passant flags
             if (w_turn) {
-                w_pawns.set_square_if(Square(0, to.get_col()), w_pawns.get_square(from) && (to.get_row() - from.get_row()) == 2);
+                pawns.set_square_if(Square(0, to.get_col()), pawns.get_square(from) && (to.get_row() - from.get_row()) == 2);
             } else {
-                b_pawns.set_square_if(Square(7, to.get_col()), b_pawns.get_square(from) && (from.get_row() - to.get_row()) == 2);
-            }
-
-            // clear en-passant captures
-            if (w_turn && w_pawns.get_square(from) && (to.get_col() != from.get_col()) && b_pawns.get_square(7, to.get_col())) {
-                b_pawns.unset_square(Square(4, to.get_col()));
-            } else if (!w_turn && b_pawns.get_square(from) && (to.get_col() != from.get_col()) && w_pawns.get_square(0, to.get_col())) {
-                w_pawns.unset_square(Square(3, to.get_col()));
-            }
-
-            // add to square 
-            if (w_turn) {
-                w_pawns.set_square_if(to, w_pawns.get_square(from));
-                w_rooks.set_square_if(to, w_rooks.get_square(from));
-                w_knights.set_square_if(to, w_knights.get_square(from));
-                w_bishops.set_square_if(to, w_bishops.get_square(from));
-            } else {
-                b_pawns.set_square_if(to, b_pawns.get_square(from));
-                b_rooks.set_square_if(to, b_rooks.get_square(from));
-                b_knights.set_square_if(to, b_knights.get_square(from));
-                b_bishops.set_square_if(to, b_bishops.get_square(from));
-            }
-
-            // clear from square
-            if (w_turn) {
-                w_pawns.unset_square(from);
-                w_rooks.unset_square(from);
-                w_knights.unset_square(from);
-                w_bishops.unset_square(from);
-            } else {
-                b_pawns.unset_square(from);
-                b_rooks.unset_square(from);
-                b_knights.unset_square(from);
-                b_bishops.unset_square(from);
+                pawns.set_square_if(Square(7, to.get_col()), pawns.get_square(from) && (from.get_row() - to.get_row()) == 2);
             }
 
             // clear capture
-             if (w_turn && black_pieces().get_square(to)) {
+            if (w_turn && black_pieces().get_square(to)) {
                 reset_50 = true;
-                b_pawns.unset_square(to);
-                b_rooks.unset_square(to);
-                b_knights.unset_square(to);
-                b_bishops.unset_square(to);
+                pawns.unset_square(to);
+                rooks.unset_square(to);
+                knights.unset_square(to);
+                bishops.unset_square(to);
+                b_pieces.unset_square(to);
             } else if (!w_turn && white_pieces().get_square(to)) {
                 reset_50 = true;
-                w_pawns.unset_square(to);
-                w_rooks.unset_square(to);
-                w_knights.unset_square(to);
-                w_bishops.unset_square(to);
+                pawns.unset_square(to);
+                rooks.unset_square(to);
+                knights.unset_square(to);
+                bishops.unset_square(to);
+                w_pieces.unset_square(to);
             }
+
+            // add to square
+            pawns.set_square_if(to, pawns.get_square(from));
+            rooks.set_square_if(to, rooks.get_square(from));
+            knights.set_square_if(to, knights.get_square(from));
+            bishops.set_square_if(to, bishops.get_square(from));
+            w_pieces.set_square_if(to, w_turn);
+            b_pieces.set_square_if(to, !w_turn);
+
+            // clear from square
+            pawns.unset_square(from);
+            rooks.unset_square(from);
+            knights.unset_square(from);
+            bishops.unset_square(from);
+            w_pieces.unset_square(from);
+            b_pieces.unset_square(from);
 
             // promote pawns
             Ply::Promotion promotion = ply.promotion();
             if (promotion != Ply::Promotion::None) {
-                if (w_turn) {
-                    w_pawns.unset_square(to);
-                    if (promotion == Ply::Promotion::Queen) {
-                        w_bishops.set_square(to);
-                        w_rooks.set_square(to);
-                    } else if (promotion == Ply::Promotion::Knight) {
-                        w_knights.set_square(to);
-                    } else if (promotion == Ply::Promotion::Rook) {
-                        w_rooks.set_square(to);
-                    } else if (promotion == Ply::Promotion::Bishop) {
-                        w_bishops.set_square(to);
-                    }
-                } else {
-                    b_pawns.unset_square(to);
-                    if (promotion == Ply::Promotion::Queen) {
-                        b_bishops.set_square(to);
-                        b_rooks.set_square(to);
-                    } else if (promotion == Ply::Promotion::Knight) {
-                        b_knights.set_square(to);
-                    } else if (promotion == Ply::Promotion::Rook) {
-                        b_rooks.set_square(to);
-                    } else if (promotion == Ply::Promotion::Bishop) {
-                        b_bishops.set_square(to);
-                    }
+                pawns.unset_square(to);
+                if (promotion == Ply::Promotion::Queen) {
+                    bishops.set_square(to);
+                    rooks.set_square(to);
+                } else if (promotion == Ply::Promotion::Knight) {
+                    knights.set_square(to);
+                } else if (promotion == Ply::Promotion::Rook) {
+                    rooks.set_square(to);
+                } else if (promotion == Ply::Promotion::Bishop) {
+                    bishops.set_square(to);
                 }
-            }
-
-            //clears en-passant flags
-            if (w_turn) {
-                b_pawns = squarewise_and(b_pawns, pawn_mask);
-            } else {
-                w_pawns = squarewise_and(w_pawns, pawn_mask);
             }
 
             // reset rule 50
@@ -427,19 +409,19 @@ class Board {
             Bitboard all = all_pieces();
             if (w_turn) {
                 king = w_king;
-                our_pawns = w_pawns;
-                our_knights = w_knights;
-                our_rooks = w_rooks;
-                our_bishops = w_bishops;
+                our_pawns = white_pawns();
+                our_knights = squarewise_and(w_pieces, knights);
+                our_rooks = squarewise_and(w_pieces, rooks);
+                our_bishops = squarewise_and(w_pieces, bishops);
                 our_pieces = white_pieces();
                 opponent_pieces = black_pieces();
                 forward = 1;
             } else {
                 king = b_king;
-                our_pawns = b_pawns;
-                our_knights = b_knights;
-                our_rooks = b_rooks;
-                our_bishops = b_bishops;
+                our_pawns = black_pawns();
+                our_knights = squarewise_and(b_pieces, knights);
+                our_rooks = squarewise_and(b_pieces, rooks);
+                our_bishops = squarewise_and(b_pieces, bishops);
                 our_pieces = black_pieces();
                 opponent_pieces = white_pieces();
                 forward = -1;
@@ -626,7 +608,7 @@ class Board {
                 result += "- ";
             } else if (!white_en_passant().empty()) {
                 for (int col = 0; col < 8; col++) {
-                    if (w_pawns.get_square(0, col)) {
+                    if (pawns.get_square(0, col)) {
                         result += (col + 'a');
                         result += "3 ";
                         break;
@@ -634,7 +616,7 @@ class Board {
                 }
             } else if (!black_en_passant().empty()) {
                 for (int col = 0; col < 8; col++) {
-                    if (b_pawns.get_square(7, col)) {
+                    if (pawns.get_square(7, col)) {
                         result += (col + 'a');
                         result += "6 ";
                         break;
@@ -663,16 +645,14 @@ class Board {
         const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
         const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
 
-        Bitboard w_pawns;
-        Bitboard w_rooks; // includes Queens
-        Bitboard w_knights;
-        Bitboard w_bishops; // includes Queens
-        Square w_king;
+        Bitboard w_pieces;
+        Bitboard b_pieces;
 
-        Bitboard b_pawns;
-        Bitboard b_rooks; // includes Queens
-        Bitboard b_knights;
-        Bitboard b_bishops; // includes Queens
+        Bitboard pawns;
+        Bitboard rooks; // includes Queens
+        Bitboard knights;
+        Bitboard bishops; // includes Queens
+        Square w_king;
         Square b_king;
 
         bool w_turn;
@@ -689,11 +669,11 @@ class Board {
                 return 'Q';
             } else if (white_pawns().get_square(row, col)) {
                 return 'P';
-            } else if (w_rooks.get_square(row, col)) {
+            } else if (squarewise_and(w_pieces, rooks).get_square(row, col)) {
                 return 'R';
-            } else if (w_knights.get_square(row, col)) {
+            } else if (squarewise_and(w_pieces, knights).get_square(row, col)) {
                 return 'N';
-            } else if (w_bishops.get_square(row, col)) {
+            } else if (squarewise_and(w_pieces, bishops).get_square(row, col)) {
                 return 'B';
             } else if (row == b_king.get_row() && col == b_king.get_col()) {
                 return 'k';
@@ -701,11 +681,11 @@ class Board {
                 return 'q';
             } else if (black_pawns().get_square(row, col)) {
                 return 'p';
-            } else if (b_rooks.get_square(row, col)) {
+            } else if (squarewise_and(b_pieces, rooks).get_square(row, col)) {
                 return 'r';
-            } else if (b_knights.get_square(row, col)) {
+            } else if (squarewise_and(b_pieces, knights).get_square(row, col)) {
                 return 'n';
-            } else if (b_bishops.get_square(row, col)) {
+            } else if (squarewise_and(b_pieces, bishops).get_square(row, col)) {
                 return 'b';
             } else {
                 return '.';
