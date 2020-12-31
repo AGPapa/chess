@@ -420,6 +420,7 @@ class Board {
             Bitboard our_pieces;
             Bitboard our_pawns;
             Bitboard our_knights;
+            Bitboard our_rooks;
             Bitboard opponent_pieces;
             int forward;
             Bitboard all = all_pieces();
@@ -427,6 +428,7 @@ class Board {
                 king = w_king;
                 our_pawns = w_pawns;
                 our_knights = w_knights;
+                our_rooks = w_rooks;
                 our_pieces = white_pieces();
                 opponent_pieces = black_pieces();
                 forward = 1;
@@ -434,6 +436,7 @@ class Board {
                 king = b_king;
                 our_pawns = b_pawns;
                 our_knights = b_knights;
+                our_rooks = b_rooks;
                 our_pieces = black_pieces();
                 opponent_pieces = white_pieces();
                 forward = -1;
@@ -491,6 +494,46 @@ class Board {
                         for (Square to : knight_attacks[from.get_int_value()]) {
                             if (!our_pieces.get_square(to)) {
                                 ply_list.push_back(Ply(from, to));
+                            }
+                        }
+                    }
+                    // Rook moves
+                    else if (our_rooks.get_square(r,c)) {
+                        Square from = Square(r, c);
+                        for (int r_target = r + 1; r_target <= 7; r_target++) {
+                            Square to = Square(r_target, c);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int r_target = r - 1; r_target >= 0; r_target--) {
+                            Square to = Square(r_target, c);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int c_target = c + 1; c_target <= 7; c_target++) {
+                            Square to = Square(r, c_target);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
+                            }
+                        }
+                        for (int c_target = c - 1; c_target >= 0; c_target++) {
+                            Square to = Square(r, c_target);
+                            if (!our_pieces.get_square(to)) {
+                                ply_list.push_back(Ply(from, to));
+                            }
+                            if (all.get_square(to)) {
+                                break;
                             }
                         }
                     }

@@ -225,7 +225,22 @@ TEST(BoardTest, generate_potential_plies) {
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
 
-
+    Board g = Board("1k6/8/8/8/8/1r6/8/1R4K1 w - - 0 100");
+    expected = { Ply("g1f1"), Ply("g1f2"), Ply("g1g2"), Ply("g1h2"), Ply("g1h1"),
+                 Ply("b1a1"), Ply("b1c1"), Ply("b1d1"), Ply("b1e1"), Ply("b1f1"),
+                 Ply("b1b2"), Ply("b1b3")};
+    std::sort(expected.begin(), expected.end());
+    actual = g.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    g.apply_ply(Ply("b1f1"));
+    expected = { Ply("b8a8"), Ply("b8a7"), Ply("b8b7"), Ply("b8c7"), Ply("b8c8"),
+                 Ply("b3b2"), Ply("b3b1"), Ply("b3b4"), Ply("b3b5"), Ply("b3b6"), Ply("b3b7"),
+                 Ply("b3a3"), Ply("b3c3"), Ply("b3d3"), Ply("b3e3"), Ply("b3f3"), Ply("b3g3"), Ply("b3h3")};
+    std::sort(expected.begin(), expected.end());
+    actual = g.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
 }
 
 int main(int argc, char** argv) {
