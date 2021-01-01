@@ -394,6 +394,25 @@ class Board {
             w_turn = !w_turn;
         }
 
+        bool square_under_attack(Square s) {
+            Bitboard their_knights;
+            if (w_turn) {
+                their_knights = squarewise_and(b_pieces, knights);
+            } else {
+                their_knights = squarewise_and(w_pieces, knights);
+            }
+
+            // Knights
+            if (!their_knights.empty()) {
+                for (Square to : knight_attacks[s.get_int_value()]) {
+                    if (their_knights.get_square(to)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         std::vector<Ply> generate_potential_plies() {
             std::vector<Ply> ply_list;
             ply_list.reserve(50);

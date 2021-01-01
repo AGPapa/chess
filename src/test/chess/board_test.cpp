@@ -161,6 +161,27 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/8/6p1/1PPPPP1P/RNBQKBNR w KQkq - 0 5", f.to_fen());
 }
 
+TEST(BoardTest, square_under_attack) {
+    Board a = Board("7k/8/8/8/3nN3/8/8/7k w - - 0 100");
+    ASSERT_EQ(true, a.square_under_attack(Square("b5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("c6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("e6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f3")));
+    ASSERT_EQ(true, a.square_under_attack(Square("e2")));
+    ASSERT_EQ(true, a.square_under_attack(Square("c2")));
+    ASSERT_EQ(false, a.square_under_attack(Square("c3")));
+    a.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, a.square_under_attack(Square("c5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("d6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("g5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("g3")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f2")));
+    ASSERT_EQ(true, a.square_under_attack(Square("d2")));
+    ASSERT_EQ(false, a.square_under_attack(Square("c2")));
+}
+
 TEST(BoardTest, generate_potential_plies) {
     Board a = Board("8/7p/7P/1k6/8/1K6/8/8 w - - 0 100");
     std::vector<Ply> expected = { Ply("b3b4"), Ply("b3c4"), Ply("b3c3"), Ply("b3c2"), Ply("b3b2"), Ply("b3a2"), Ply("b3a3"), Ply("b3a4") };
