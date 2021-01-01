@@ -395,11 +395,18 @@ class Board {
         }
 
         bool square_under_attack(Square s) {
+            int r = s.get_row();
+            int c = s.get_col();
+
             Bitboard their_knights;
+            Bitboard their_rooks;
+            Bitboard all = squarewise_or(w_pieces, b_pieces);
             if (w_turn) {
                 their_knights = squarewise_and(b_pieces, knights);
+                their_rooks = squarewise_and(b_pieces, rooks);
             } else {
                 their_knights = squarewise_and(w_pieces, knights);
+                their_rooks = squarewise_and(w_pieces, rooks);
             }
 
             // Knights
@@ -407,6 +414,46 @@ class Board {
                 for (Square to : knight_attacks[s.get_int_value()]) {
                     if (their_knights.get_square(to)) {
                         return true;
+                    }
+                }
+            }
+
+            // Rooks
+            if (!their_rooks.empty()) {
+                for (int r_target = r + 1; r_target <= 7; r_target++) {
+                    Square to = Square(r_target, c);
+                    if (their_rooks.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int r_target = r - 1; r_target >= 0; r_target--) {
+                    Square to = Square(r_target, c);
+                    if (their_rooks.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int c_target = c + 1; c_target <= 7; c_target++) {
+                    Square to = Square(r, c_target);
+                    if (their_rooks.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int c_target = c - 1; c_target >= 0; c_target--) {
+                    Square to = Square(r, c_target);
+                    if (their_rooks.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
                     }
                 }
             }

@@ -162,7 +162,7 @@ TEST(BoardTest, apply_ply) {
 }
 
 TEST(BoardTest, square_under_attack) {
-    Board a = Board("7k/8/8/8/3nN3/8/8/7k w - - 0 100");
+    Board a = Board("7k/8/8/8/3nN3/8/8/7K w - - 0 100");
     ASSERT_EQ(true, a.square_under_attack(Square("b5")));
     ASSERT_EQ(true, a.square_under_attack(Square("c6")));
     ASSERT_EQ(true, a.square_under_attack(Square("e6")));
@@ -180,6 +180,33 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, a.square_under_attack(Square("f2")));
     ASSERT_EQ(true, a.square_under_attack(Square("d2")));
     ASSERT_EQ(false, a.square_under_attack(Square("c2")));
+
+    Board b = Board("7k/8/8/8/1p1rR1P1/8/8/7K w - - 0 100");
+    ASSERT_EQ(true, b.square_under_attack(Square("d3")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d2")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d1")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d5")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d6")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d7")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d8")));
+    ASSERT_EQ(true, b.square_under_attack(Square("c4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("b4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("a4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("f4")));
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.square_under_attack(Square("e3")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e2")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e1")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e5")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e6")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e7")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e8")));
+    ASSERT_EQ(true, b.square_under_attack(Square("f4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("g4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("h4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("c4")));
 }
 
 TEST(BoardTest, generate_potential_plies) {
