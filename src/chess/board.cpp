@@ -401,15 +401,21 @@ class Board {
             Bitboard their_knights;
             Bitboard their_rooks;
             Bitboard their_bishops;
+            Bitboard their_pawns;
+            int their_forward;
             Bitboard all = squarewise_or(w_pieces, b_pieces);
             if (w_turn) {
+                their_forward = -1;
                 their_knights = squarewise_and(b_pieces, knights);
                 their_rooks = squarewise_and(b_pieces, rooks);
                 their_bishops = squarewise_and(b_pieces, bishops);
+                their_pawns = squarewise_and(b_pieces, pawns);
             } else {
+                their_forward = 1;
                 their_knights = squarewise_and(w_pieces, knights);
                 their_rooks = squarewise_and(w_pieces, rooks);
                 their_bishops = squarewise_and(w_pieces, bishops);
+                their_pawns = squarewise_and(w_pieces, pawns);
             }
 
             // Knights
@@ -421,7 +427,7 @@ class Board {
                 }
             }
 
-            // Rooks
+            // Rooks (and Queens)
             if (!their_rooks.empty()) {
                 for (int r_target = r + 1; r_target <= 7; r_target++) {
                     Square to = Square(r_target, c);
@@ -461,7 +467,7 @@ class Board {
                 }
             }
 
-            // Bishop moves (and Queens)
+            // Bishops (and Queens)
             if (!their_bishops.empty()) {
                 Square from = Square(r, c);
                 for (int diff = 1; (r + diff) <= 7 && (c + diff) <= 7; diff++) {
@@ -500,6 +506,14 @@ class Board {
                         break;
                     }
                 }
+            }
+
+            // Pawns - does not consider en-passant!! (doesn't need to for our uses)
+            if (c != 7 && their_pawns.get_square(r - their_forward, c + 1)) {
+                return true;
+            }
+            if (c != 0 && their_pawns.get_square(r - their_forward, c - 1)) {
+                return true;
             }
             return false;
         }

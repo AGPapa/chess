@@ -231,7 +231,14 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(false, c.square_under_attack(Square("b8")));
     ASSERT_EQ(false, c.square_under_attack(Square("f3")));
 
-
+    Board d = Board("7k/8/8/4p3/4P3/8/8/7K w - - 0 100");
+    ASSERT_EQ(true, d.square_under_attack(Square("d4")));
+    ASSERT_EQ(true, d.square_under_attack(Square("f4")));
+    ASSERT_EQ(false, d.square_under_attack(Square("e4")));
+    d.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, d.square_under_attack(Square("d5")));
+    ASSERT_EQ(true, d.square_under_attack(Square("f5")));
+    ASSERT_EQ(false, d.square_under_attack(Square("e5")));
 }
 
 TEST(BoardTest, generate_potential_plies) {
