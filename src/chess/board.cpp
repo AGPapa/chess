@@ -308,13 +308,22 @@ class Board {
             }
 
             // clear castling rights
-            if (w_turn && from == Square("a1")) {
+            if (from == Square("a1")) {
                 castling.unset_white_queenside();
-            } else if (w_turn && from == Square("h1")) {
+            } else if (from == Square("h1")) {
                 castling.unset_white_kingside();
-            } else if (!w_turn && from == Square("a8")) {
+            } else if (from == Square("a8")) {
                 castling.unset_black_queenside();
-            } else if (!w_turn && from == Square("h8")) {
+            } else if (from == Square("h8")) {
+                castling.unset_black_kingside();
+            }
+            if (to == Square("a1")) {
+                castling.unset_white_queenside();
+            } else if (to == Square("h1")) {
+                castling.unset_white_kingside();
+            } else if (to == Square("a8")) {
+                castling.unset_black_queenside();
+            } else if (to == Square("h8")) {
                 castling.unset_black_kingside();
             }
 

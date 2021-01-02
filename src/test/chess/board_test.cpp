@@ -159,6 +159,12 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/6Pp/8/1PPPPP1P/RNBQKBNR b KQkq g3 0 4", f.to_fen());
     f.apply_ply(Ply("h4g3"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/8/6p1/1PPPPP1P/RNBQKBNR w KQkq - 0 5", f.to_fen());
+
+    Board g = Board("rnbqk2r/8/8/8/8/8/1B7/RN1QK2R w KQkq - 0 20");
+    g.apply_ply(Ply("b2h8"));
+    ASSERT_EQ("rnbqk2B/8/8/8/8/8/8/RN1QK2R b KQq - 0 20", g.to_fen());
+    g.apply_ply(Ply("a8a1"));
+    ASSERT_EQ("1nbqk2B/8/8/8/8/8/8/rN1QK2R w K - 0 21", g.to_fen());
 }
 
 TEST(BoardTest, square_under_attack) {
