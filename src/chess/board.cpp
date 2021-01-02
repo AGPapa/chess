@@ -400,13 +400,16 @@ class Board {
 
             Bitboard their_knights;
             Bitboard their_rooks;
+            Bitboard their_bishops;
             Bitboard all = squarewise_or(w_pieces, b_pieces);
             if (w_turn) {
                 their_knights = squarewise_and(b_pieces, knights);
                 their_rooks = squarewise_and(b_pieces, rooks);
+                their_bishops = squarewise_and(b_pieces, bishops);
             } else {
                 their_knights = squarewise_and(w_pieces, knights);
                 their_rooks = squarewise_and(w_pieces, rooks);
+                their_bishops = squarewise_and(w_pieces, bishops);
             }
 
             // Knights
@@ -450,6 +453,47 @@ class Board {
                 for (int c_target = c - 1; c_target >= 0; c_target--) {
                     Square to = Square(r, c_target);
                     if (their_rooks.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+            }
+
+            // Bishop moves (and Queens)
+            if (!their_bishops.empty()) {
+                Square from = Square(r, c);
+                for (int diff = 1; (r + diff) <= 7 && (c + diff) <= 7; diff++) {
+                    Square to = Square(r + diff, c + diff);
+                    if (their_bishops.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int diff = 1; (r + diff) <= 7 && (c - diff) >= 0; diff++) {
+                    Square to = Square(r + diff, c - diff);
+                    if (their_bishops.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int diff = 1; (r - diff) >= 0 && (c + diff) <= 7; diff++) {
+                    Square to = Square(r - diff, c + diff);
+                    if (their_bishops.get_square(to)) {
+                        return true;
+                    }
+                    if (all.get_square(to)) {
+                        break;
+                    }
+                }
+                for (int diff = 1; (r - diff) >= 0 && (c - diff) >= 0; diff++) {
+                    Square to = Square(r - diff, c - diff);
+                    if (their_bishops.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
