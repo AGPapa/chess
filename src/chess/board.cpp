@@ -407,43 +407,43 @@ class Board {
             int r = s.get_row();
             int c = s.get_col();
 
-            Bitboard their_knights;
-            Bitboard their_rooks;
-            Bitboard their_bishops;
-            Bitboard their_pawns;
-            Square their_king;
-            int their_forward;
+            Bitboard our_knights;
+            Bitboard our_rooks;
+            Bitboard our_bishops;
+            Bitboard our_pawns;
+            Square our_king;
+            int our_forward;
             Bitboard all = squarewise_or(w_pieces, b_pieces);
             if (w_turn) {
-                their_forward = -1;
-                their_knights = squarewise_and(b_pieces, knights);
-                their_rooks = squarewise_and(b_pieces, rooks);
-                their_bishops = squarewise_and(b_pieces, bishops);
-                their_pawns = squarewise_and(b_pieces, pawns);
-                their_king = b_king;
+                our_forward = 1;
+                our_knights = squarewise_and(w_pieces, knights);
+                our_rooks = squarewise_and(w_pieces, rooks);
+                our_bishops = squarewise_and(w_pieces, bishops);
+                our_pawns = squarewise_and(w_pieces, pawns);
+                our_king = w_king;
             } else {
-                their_forward = 1;
-                their_knights = squarewise_and(w_pieces, knights);
-                their_rooks = squarewise_and(w_pieces, rooks);
-                their_bishops = squarewise_and(w_pieces, bishops);
-                their_pawns = squarewise_and(w_pieces, pawns);
-                their_king = w_king;
+                our_forward = -1;
+                our_knights = squarewise_and(b_pieces, knights);
+                our_rooks = squarewise_and(b_pieces, rooks);
+                our_bishops = squarewise_and(b_pieces, bishops);
+                our_pawns = squarewise_and(b_pieces, pawns);
+                our_king = b_king;
             }
 
             // Knights
-            if (!their_knights.empty()) {
+            if (!our_knights.empty()) {
                 for (Square to : knight_attacks[s.get_int_value()]) {
-                    if (their_knights.get_square(to)) {
+                    if (our_knights.get_square(to)) {
                         return true;
                     }
                 }
             }
 
             // Rooks (and Queens)
-            if (!their_rooks.empty()) {
+            if (!our_rooks.empty()) {
                 for (int r_target = r + 1; r_target <= 7; r_target++) {
                     Square to = Square(r_target, c);
-                    if (their_rooks.get_square(to)) {
+                    if (our_rooks.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -452,7 +452,7 @@ class Board {
                 }
                 for (int r_target = r - 1; r_target >= 0; r_target--) {
                     Square to = Square(r_target, c);
-                    if (their_rooks.get_square(to)) {
+                    if (our_rooks.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -461,7 +461,7 @@ class Board {
                 }
                 for (int c_target = c + 1; c_target <= 7; c_target++) {
                     Square to = Square(r, c_target);
-                    if (their_rooks.get_square(to)) {
+                    if (our_rooks.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -470,7 +470,7 @@ class Board {
                 }
                 for (int c_target = c - 1; c_target >= 0; c_target--) {
                     Square to = Square(r, c_target);
-                    if (their_rooks.get_square(to)) {
+                    if (our_rooks.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -480,11 +480,11 @@ class Board {
             }
 
             // Bishops (and Queens)
-            if (!their_bishops.empty()) {
+            if (!our_bishops.empty()) {
                 Square from = Square(r, c);
                 for (int diff = 1; (r + diff) <= 7 && (c + diff) <= 7; diff++) {
                     Square to = Square(r + diff, c + diff);
-                    if (their_bishops.get_square(to)) {
+                    if (our_bishops.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -493,7 +493,7 @@ class Board {
                 }
                 for (int diff = 1; (r + diff) <= 7 && (c - diff) >= 0; diff++) {
                     Square to = Square(r + diff, c - diff);
-                    if (their_bishops.get_square(to)) {
+                    if (our_bishops.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -502,7 +502,7 @@ class Board {
                 }
                 for (int diff = 1; (r - diff) >= 0 && (c + diff) <= 7; diff++) {
                     Square to = Square(r - diff, c + diff);
-                    if (their_bishops.get_square(to)) {
+                    if (our_bishops.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -511,7 +511,7 @@ class Board {
                 }
                 for (int diff = 1; (r - diff) >= 0 && (c - diff) >= 0; diff++) {
                     Square to = Square(r - diff, c - diff);
-                    if (their_bishops.get_square(to)) {
+                    if (our_bishops.get_square(to)) {
                         return true;
                     }
                     if (all.get_square(to)) {
@@ -521,15 +521,15 @@ class Board {
             }
 
             // Pawns - does not consider en-passant!! (doesn't need to for our uses)
-            if (c != 7 && their_pawns.get_square(r - their_forward, c + 1)) {
+            if (c != 7 && our_pawns.get_square(r - our_forward, c + 1)) {
                 return true;
             }
-            if (c != 0 && their_pawns.get_square(r - their_forward, c - 1)) {
+            if (c != 0 && our_pawns.get_square(r - our_forward, c - 1)) {
                 return true;
             }
 
             // King - does not consider if king would be in check!! (doesn't need to for our uses)
-            if (std::abs(r - their_king.get_row()) <= 1 && std::abs(c - their_king.get_col()) <= 1 ) {
+            if (std::abs(r - our_king.get_row()) <= 1 && std::abs(c - our_king.get_col()) <= 1 ) {
                 return true;
             }
             return false;
@@ -576,7 +576,7 @@ class Board {
                     if (r == 0 && c == 0) { continue; }
                     Square to = Square(row + r, c + col);
                     if (our_pieces.get_square(to)) { continue; }
-                    ply_list.push_back(Ply(king, to));
+                    add_ply_if_king_not_in_check(&ply_list, Ply(king, to));
                 }
             }
 
@@ -588,7 +588,7 @@ class Board {
                         for (int diff = 1; (r + diff) <= 7 && (c + diff) <= 7; diff++) {
                             Square to = Square(r + diff, c + diff);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -597,7 +597,7 @@ class Board {
                         for (int diff = 1; (r + diff) <= 7 && (c - diff) >= 0; diff++) {
                             Square to = Square(r + diff, c - diff);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -606,7 +606,7 @@ class Board {
                         for (int diff = 1; (r - diff) >= 0 && (c + diff) <= 7; diff++) {
                             Square to = Square(r - diff, c + diff);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -615,7 +615,7 @@ class Board {
                         for (int diff = 1; (r - diff) >= 0 && (c - diff) >= 0; diff++) {
                             Square to = Square(r - diff, c - diff);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -631,7 +631,7 @@ class Board {
                             if ((w_turn && r == 1) || (!w_turn && r == 6)) {
                                 to = Square(r + forward * 2, c);
                                 if (!all.get_square(to)) {
-                                    ply_list.push_back(Ply(from, to));
+                                    add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                                 }
 
                             }
@@ -642,7 +642,7 @@ class Board {
                                add_pawn_plies(&ply_list, from, to);
                             }
                             if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c + 1)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                         }
                         if (c != 0) {
@@ -651,7 +651,7 @@ class Board {
                                 add_pawn_plies(&ply_list, from, to);
                             }
                             if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c - 1)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                         }
                     }
@@ -660,7 +660,7 @@ class Board {
                         Square from = Square(r, c);
                         for (Square to : knight_attacks[from.get_int_value()]) {
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                         }
                     }
@@ -670,7 +670,7 @@ class Board {
                         for (int r_target = r + 1; r_target <= 7; r_target++) {
                             Square to = Square(r_target, c);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -679,7 +679,7 @@ class Board {
                         for (int r_target = r - 1; r_target >= 0; r_target--) {
                             Square to = Square(r_target, c);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -688,7 +688,7 @@ class Board {
                         for (int c_target = c + 1; c_target <= 7; c_target++) {
                             Square to = Square(r, c_target);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -697,7 +697,7 @@ class Board {
                         for (int c_target = c - 1; c_target >= 0; c_target--) {
                             Square to = Square(r, c_target);
                             if (!our_pieces.get_square(to)) {
-                                ply_list.push_back(Ply(from, to));
+                                add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                             if (all.get_square(to)) {
                                 break;
@@ -833,14 +833,24 @@ class Board {
             }
         }
 
+        void add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) {
+            Board b = Board(*this);
+            b.apply_ply(ply);
+            Square king = w_turn ? b.w_king : b.b_king;
+            if (!b.square_under_attack(king)) {
+                ply_list->push_back(ply);
+            }
+        }
+
+        // TODO: potential speed improvement since we don't need add_ply_if_king_not_in_check for every one
         void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) {
             if (to.get_row() == 7 || to.get_row() == 0) {
-                ply_list->push_back(Ply(from, to, Ply::Promotion::Queen));
-                ply_list->push_back(Ply(from, to, Ply::Promotion::Knight));
-                ply_list->push_back(Ply(from, to, Ply::Promotion::Rook));
-                ply_list->push_back(Ply(from, to, Ply::Promotion::Bishop));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Queen));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Knight));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Rook));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Bishop));
             } else {
-                ply_list->push_back(Ply(from, to));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to));
             }
         }
 };

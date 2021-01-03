@@ -169,15 +169,6 @@ TEST(BoardTest, apply_ply) {
 
 TEST(BoardTest, square_under_attack) {
     Board a = Board("7k/8/8/8/3nN3/8/8/7K w - - 0 100");
-    ASSERT_EQ(true, a.square_under_attack(Square("b5")));
-    ASSERT_EQ(true, a.square_under_attack(Square("c6")));
-    ASSERT_EQ(true, a.square_under_attack(Square("e6")));
-    ASSERT_EQ(true, a.square_under_attack(Square("f5")));
-    ASSERT_EQ(true, a.square_under_attack(Square("f3")));
-    ASSERT_EQ(true, a.square_under_attack(Square("e2")));
-    ASSERT_EQ(true, a.square_under_attack(Square("c2")));
-    ASSERT_EQ(false, a.square_under_attack(Square("c3")));
-    a.apply_ply(Ply("h1h2"));
     ASSERT_EQ(true, a.square_under_attack(Square("c5")));
     ASSERT_EQ(true, a.square_under_attack(Square("d6")));
     ASSERT_EQ(true, a.square_under_attack(Square("f6")));
@@ -186,21 +177,17 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, a.square_under_attack(Square("f2")));
     ASSERT_EQ(true, a.square_under_attack(Square("d2")));
     ASSERT_EQ(false, a.square_under_attack(Square("c2")));
+    a.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, a.square_under_attack(Square("b5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("c6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("e6")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f5")));
+    ASSERT_EQ(true, a.square_under_attack(Square("f3")));
+    ASSERT_EQ(true, a.square_under_attack(Square("e2")));
+    ASSERT_EQ(true, a.square_under_attack(Square("c2")));
+    ASSERT_EQ(false, a.square_under_attack(Square("c3")));
 
     Board b = Board("7k/8/8/8/1p1rR1P1/8/8/7K w - - 0 100");
-    ASSERT_EQ(true, b.square_under_attack(Square("d3")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d2")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d1")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d5")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d6")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d7")));
-    ASSERT_EQ(true, b.square_under_attack(Square("d8")));
-    ASSERT_EQ(true, b.square_under_attack(Square("c4")));
-    ASSERT_EQ(true, b.square_under_attack(Square("e4")));
-    ASSERT_EQ(true, b.square_under_attack(Square("b4")));
-    ASSERT_EQ(false, b.square_under_attack(Square("a4")));
-    ASSERT_EQ(false, b.square_under_attack(Square("f4")));
-    b.apply_ply(Ply("h1h2"));
     ASSERT_EQ(true, b.square_under_attack(Square("e3")));
     ASSERT_EQ(true, b.square_under_attack(Square("e2")));
     ASSERT_EQ(true, b.square_under_attack(Square("e1")));
@@ -213,19 +200,21 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, b.square_under_attack(Square("g4")));
     ASSERT_EQ(false, b.square_under_attack(Square("h4")));
     ASSERT_EQ(false, b.square_under_attack(Square("c4")));
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.square_under_attack(Square("d3")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d2")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d1")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d5")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d6")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d7")));
+    ASSERT_EQ(true, b.square_under_attack(Square("d8")));
+    ASSERT_EQ(true, b.square_under_attack(Square("c4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("e4")));
+    ASSERT_EQ(true, b.square_under_attack(Square("b4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("a4")));
+    ASSERT_EQ(false, b.square_under_attack(Square("f4")));
 
     Board c = Board("7k/2p5/1b6/8/8/6B1/5P2/7K w - - 0 100");
-    ASSERT_EQ(true, c.square_under_attack(Square("a7")));
-    ASSERT_EQ(true, c.square_under_attack(Square("a5")));
-    ASSERT_EQ(true, c.square_under_attack(Square("c7")));
-    ASSERT_EQ(false, c.square_under_attack(Square("d8")));
-    ASSERT_EQ(true, c.square_under_attack(Square("c5")));
-    ASSERT_EQ(true, c.square_under_attack(Square("d4")));
-    ASSERT_EQ(true, c.square_under_attack(Square("e3")));
-    ASSERT_EQ(true, c.square_under_attack(Square("f2")));
-    ASSERT_EQ(false, c.square_under_attack(Square("g2")));
-    ASSERT_EQ(false, c.square_under_attack(Square("c6")));
-    c.apply_ply(Ply("h1h2"));
     ASSERT_EQ(true, c.square_under_attack(Square("h2")));
     ASSERT_EQ(true, c.square_under_attack(Square("f2")));
     ASSERT_EQ(false, c.square_under_attack(Square("e1")));
@@ -236,27 +225,28 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, c.square_under_attack(Square("c7")));
     ASSERT_EQ(false, c.square_under_attack(Square("b8")));
     ASSERT_EQ(false, c.square_under_attack(Square("f3")));
+    c.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, c.square_under_attack(Square("a7")));
+    ASSERT_EQ(true, c.square_under_attack(Square("a5")));
+    ASSERT_EQ(true, c.square_under_attack(Square("c7")));
+    ASSERT_EQ(false, c.square_under_attack(Square("d8")));
+    ASSERT_EQ(true, c.square_under_attack(Square("c5")));
+    ASSERT_EQ(true, c.square_under_attack(Square("d4")));
+    ASSERT_EQ(true, c.square_under_attack(Square("e3")));
+    ASSERT_EQ(true, c.square_under_attack(Square("f2")));
+    ASSERT_EQ(false, c.square_under_attack(Square("g2")));
+    ASSERT_EQ(false, c.square_under_attack(Square("c6")));
 
     Board d = Board("7k/8/8/4p3/4P3/8/8/7K w - - 0 100");
-    ASSERT_EQ(true, d.square_under_attack(Square("d4")));
-    ASSERT_EQ(true, d.square_under_attack(Square("f4")));
-    ASSERT_EQ(false, d.square_under_attack(Square("e4")));
-    d.apply_ply(Ply("h1h2"));
     ASSERT_EQ(true, d.square_under_attack(Square("d5")));
     ASSERT_EQ(true, d.square_under_attack(Square("f5")));
     ASSERT_EQ(false, d.square_under_attack(Square("e5")));
+    d.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, d.square_under_attack(Square("d4")));
+    ASSERT_EQ(true, d.square_under_attack(Square("f4")));
+    ASSERT_EQ(false, d.square_under_attack(Square("e4")));
 
-    Board e = Board("8/3k4/8/8/8/8/4K3/8 w - - 0 100");
-    ASSERT_EQ(true, e.square_under_attack(Square("c8")));
-    ASSERT_EQ(true, e.square_under_attack(Square("d8")));
-    ASSERT_EQ(true, e.square_under_attack(Square("e8")));
-    ASSERT_EQ(true, e.square_under_attack(Square("e7")));
-    ASSERT_EQ(true, e.square_under_attack(Square("e6")));
-    ASSERT_EQ(true, e.square_under_attack(Square("d6")));
-    ASSERT_EQ(true, e.square_under_attack(Square("c6")));
-    ASSERT_EQ(true, e.square_under_attack(Square("c7")));
-    ASSERT_EQ(false, e.square_under_attack(Square("d5")));
-    e.apply_ply(Ply("e2d2"));
+    Board e = Board("8/3k4/8/8/8/8/3K4/8 w - - 0 100");
     ASSERT_EQ(true, e.square_under_attack(Square("c1")));
     ASSERT_EQ(true, e.square_under_attack(Square("d1")));
     ASSERT_EQ(true, e.square_under_attack(Square("e1")));
@@ -266,12 +256,22 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, e.square_under_attack(Square("c3")));
     ASSERT_EQ(true, e.square_under_attack(Square("c2")));
     ASSERT_EQ(false, e.square_under_attack(Square("d4")));
+    e.apply_ply(Ply("e2d2"));
+    ASSERT_EQ(true, e.square_under_attack(Square("c8")));
+    ASSERT_EQ(true, e.square_under_attack(Square("d8")));
+    ASSERT_EQ(true, e.square_under_attack(Square("e8")));
+    ASSERT_EQ(true, e.square_under_attack(Square("e7")));
+    ASSERT_EQ(true, e.square_under_attack(Square("e6")));
+    ASSERT_EQ(true, e.square_under_attack(Square("d6")));
+    ASSERT_EQ(true, e.square_under_attack(Square("c6")));
+    ASSERT_EQ(true, e.square_under_attack(Square("c7")));
+    ASSERT_EQ(false, e.square_under_attack(Square("d5")));
 
 }
 
 TEST(BoardTest, generate_potential_plies) {
     Board a = Board("8/7p/7P/1k6/8/1K6/8/8 w - - 0 100");
-    std::vector<Ply> expected = { Ply("b3b4"), Ply("b3c4"), Ply("b3c3"), Ply("b3c2"), Ply("b3b2"), Ply("b3a2"), Ply("b3a3"), Ply("b3a4") };
+    std::vector<Ply> expected = { Ply("b3c3"), Ply("b3c2"), Ply("b3b2"), Ply("b3a2"), Ply("b3a3") };
     std::sort(expected.begin(), expected.end());
     std::vector<Ply> actual = a.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
@@ -376,6 +376,18 @@ TEST(BoardTest, generate_potential_plies) {
                  Ply("c6b6"), Ply("c6d6"), Ply("c6e6"), Ply("c6f6"), Ply("c6g6"), Ply("c6h6") };
     std::sort(expected.begin(), expected.end());
     actual = h.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    Board i = Board("7k/8/8/8/8/8/r7/7K w - - 0 100");
+    expected = { Ply("h1g1") };
+    actual = i.generate_potential_plies();
+    ASSERT_EQ(expected, actual);
+
+    Board j = Board("7k/7p/6PR/8/8/8/8/7K b - - 0 100");
+    expected = { Ply("h8g8"), Ply("h8g7") };
+    std::sort(expected.begin(), expected.end());
+    actual = j.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
 }
