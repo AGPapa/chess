@@ -411,6 +411,7 @@ class Board {
             Bitboard their_rooks;
             Bitboard their_bishops;
             Bitboard their_pawns;
+            Square their_king;
             int their_forward;
             Bitboard all = squarewise_or(w_pieces, b_pieces);
             if (w_turn) {
@@ -419,12 +420,14 @@ class Board {
                 their_rooks = squarewise_and(b_pieces, rooks);
                 their_bishops = squarewise_and(b_pieces, bishops);
                 their_pawns = squarewise_and(b_pieces, pawns);
+                their_king = b_king;
             } else {
                 their_forward = 1;
                 their_knights = squarewise_and(w_pieces, knights);
                 their_rooks = squarewise_and(w_pieces, rooks);
                 their_bishops = squarewise_and(w_pieces, bishops);
                 their_pawns = squarewise_and(w_pieces, pawns);
+                their_king = w_king;
             }
 
             // Knights
@@ -522,6 +525,11 @@ class Board {
                 return true;
             }
             if (c != 0 && their_pawns.get_square(r - their_forward, c - 1)) {
+                return true;
+            }
+
+            // King - does not consider if king would be in check!! (doesn't need to for our uses)
+            if (std::abs(r - their_king.get_row()) <= 1 && std::abs(c - their_king.get_col()) <= 1 ) {
                 return true;
             }
             return false;
