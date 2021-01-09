@@ -404,6 +404,10 @@ class Board {
         }
 
         bool square_under_attack(Square s) {
+            return square_under_attack(s, w_turn);
+        }
+
+        bool square_under_attack(Square s, bool white_turn) {
             int r = s.get_row();
             int c = s.get_col();
 
@@ -414,7 +418,7 @@ class Board {
             Square our_king;
             int our_forward;
             Bitboard all = squarewise_or(w_pieces, b_pieces);
-            if (w_turn) {
+            if (white_turn) {
                 our_forward = 1;
                 our_knights = squarewise_and(w_pieces, knights);
                 our_rooks = squarewise_and(w_pieces, rooks);
@@ -577,6 +581,41 @@ class Board {
                     Square to = Square(row + r, c + col);
                     if (our_pieces.get_square(to)) { continue; }
                     add_ply_if_king_not_in_check(&ply_list, Ply(king, to));
+                }
+            }
+            // Castling
+            if (w_turn && castling.get_white_kingside()) {
+                if (!all.get_square(0, 5) && !all.get_square(0, 6)
+                    && !square_under_attack(king, !w_turn)
+                    && !square_under_attack(Square(0, 5), !w_turn)
+                    && !square_under_attack(Square(0, 6), !w_turn)
+                ) {
+                    ply_list.push_back(Ply(king, Square(0, 6)));
+                }
+            } else if (!w_turn && castling.get_black_kingside()) {
+                if (!all.get_square(7, 5) && !all.get_square(7, 6)
+                    && !square_under_attack(king, !w_turn)
+                    && !square_under_attack(Square(7, 5), !w_turn)
+                    && !square_under_attack(Square(7, 6), !w_turn)
+                ) {
+                    ply_list.push_back(Ply(king, Square(7, 6)));
+                }
+            }
+            if (w_turn && castling.get_white_queenside()) {
+                if (!all.get_square(0, 1) && !all.get_square(0, 2) && !all.get_square(0, 3)
+                    && !square_under_attack(king, !w_turn)
+                    && !square_under_attack(Square(0, 2), !w_turn)
+                    && !square_under_attack(Square(0, 3), !w_turn)
+                ) {
+                    ply_list.push_back(Ply(king, Square(0, 2)));
+                }
+            } else if (!w_turn && castling.get_black_queenside()) {
+                if (!all.get_square(7, 1) && !all.get_square(7, 2) && !all.get_square(7, 3)
+                    && !square_under_attack(king, !w_turn)
+                    && !square_under_attack(Square(7, 2), !w_turn)
+                    && !square_under_attack(Square(7, 3), !w_turn)
+                ) {
+                    ply_list.push_back(Ply(king, Square(7, 2)));
                 }
             }
 

@@ -390,6 +390,80 @@ TEST(BoardTest, generate_potential_plies) {
     actual = j.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+
+    // All castling is legal
+    Board k = Board("r3k2r/p6p/8/8/8/8/P6P/R3K2R w KQkq - 0 100");
+    expected = { Ply("a1b1"), Ply("a1c1"), Ply("a1d1"), Ply("h1g1"), Ply("h1f1"),
+                 Ply("a2a3"), Ply("a2a4"), Ply("h2h3"), Ply("h2h4"),
+                 Ply("e1d1"), Ply("e1d2"), Ply("e1e2"), Ply("e1f2"), Ply("e1f1"),
+                 Ply("e1c1"), Ply("e1g1") };
+    std::sort(expected.begin(), expected.end());
+    actual = k.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    k.apply_ply(Ply("a2a3"));
+    expected = { Ply("a8b8"), Ply("a8c8"), Ply("a8d8"), Ply("h8g8"), Ply("h8f8"),
+                 Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
+                 Ply("e8d8"), Ply("e8d7"), Ply("e8e7"), Ply("e8f7"), Ply("e8f8"),
+                 Ply("e8c8"), Ply("e8g8") };
+    std::sort(expected.begin(), expected.end());
+    actual = k.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    // Square under attack prevents castling kingside
+    Board l = Board("1r2k1r1/p6p/8/8/8/8/P6P/R3K2R w KQ - 0 100");
+    expected = { Ply("a1b1"), Ply("a1c1"), Ply("a1d1"), Ply("h1g1"), Ply("h1f1"),
+                 Ply("a2a3"), Ply("a2a4"), Ply("h2h3"), Ply("h2h4"),
+                 Ply("e1d1"), Ply("e1d2"), Ply("e1e2"), Ply("e1f2"), Ply("e1f1"),
+                 Ply("e1c1") };
+    std::sort(expected.begin(), expected.end());
+    actual = l.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    // Some castling is not legal because peices moved
+    Board m = Board("r3k2r/p6p/8/8/8/8/P6P/R3K2R w Kq - 0 100");
+    expected = { Ply("a1b1"), Ply("a1c1"), Ply("a1d1"), Ply("h1g1"), Ply("h1f1"),
+                 Ply("a2a3"), Ply("a2a4"), Ply("h2h3"), Ply("h2h4"),
+                 Ply("e1d1"), Ply("e1d2"), Ply("e1e2"), Ply("e1f2"), Ply("e1f1"),
+                 Ply("e1g1") };
+    std::sort(expected.begin(), expected.end());
+    actual = m.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    m.apply_ply(Ply("a2a3"));
+    expected = { Ply("a8b8"), Ply("a8c8"), Ply("a8d8"), Ply("h8g8"), Ply("h8f8"),
+                 Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
+                 Ply("e8d8"), Ply("e8d7"), Ply("e8e7"), Ply("e8f7"), Ply("e8f8"),
+                 Ply("e8c8") };
+    std::sort(expected.begin(), expected.end());
+    actual = m.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
+    // Pieces in the way prevent castling
+    Board n = Board("rn2k2r/p6p/8/8/8/8/P6P/R3K1NR w KQkq - 0 100");
+    expected = { Ply("a1b1"), Ply("a1c1"), Ply("a1d1"),
+                 Ply("a2a3"), Ply("a2a4"), Ply("h2h3"), Ply("h2h4"),
+                 Ply("g1h3"), Ply("g1f3"), Ply("g1e2"),
+                 Ply("e1d1"), Ply("e1d2"), Ply("e1e2"), Ply("e1f2"), Ply("e1f1"),
+                 Ply("e1c1") };
+    std::sort(expected.begin(), expected.end());
+    actual = n.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+    n.apply_ply(Ply("a2a3"));
+    expected = { Ply("h8g8"), Ply("h8f8"),
+                 Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
+                 Ply("b8a6"), Ply("b8c6"), Ply("b8d7"),
+                 Ply("e8d8"), Ply("e8d7"), Ply("e8e7"), Ply("e8f7"), Ply("e8f8"),
+                 Ply("e8g8") };
+    std::sort(expected.begin(), expected.end());
+    actual = n.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
 }
 
 TEST(BoardTest, legal_plies_integration) {
@@ -400,12 +474,6 @@ TEST(BoardTest, legal_plies_integration) {
 
         for (std::string line; std::getline(game, line); ) {
             std::vector<Ply> plies = b.generate_potential_plies();
-            // TODO: We need to generate valid castling moves
-            // and remove this addition here
-            plies.push_back(Ply("e1g1"));
-            plies.push_back(Ply("e1c1"));
-            plies.push_back(Ply("e8g8"));
-            plies.push_back(Ply("e8c8"));
             Ply new_ply = Ply(line);
             ASSERT_EQ(1, std::count(plies.begin(), plies.end(), new_ply));
             b.apply_ply(new_ply);
