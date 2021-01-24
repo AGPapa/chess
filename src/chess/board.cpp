@@ -815,8 +815,8 @@ class Board {
     
     private:
        // ranks 1 and 8 on pawns track en-passant
-        const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
-        const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
+        Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
+        Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
 
         Bitboard w_pieces;
         Bitboard b_pieces;

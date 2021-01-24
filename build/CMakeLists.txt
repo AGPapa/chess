@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
+
+project(Chess)
  
 # Set C++11
 set (CMAKE_CXX_STANDARD 11)
@@ -14,9 +16,11 @@ add_executable(runCastlingTests ../src/test/chess/castling_test.cpp)
 add_executable(runBoardTests ../src/test/chess/board_test.cpp)
 add_executable(runPlyTests ../src/test/chess/ply_test.cpp)
 add_executable(runPieceAttacksTests ../src/test/chess/piece_attacks_test.cpp)
+add_executable(runNodeTests ../src/test/search/node_test.cpp)
 target_link_libraries(runBitBoardTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runSquareTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runCastlingTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runBoardTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runPlyTests ${GTEST_LIBRARIES} pthread)
 target_link_libraries(runPieceAttacksTests ${GTEST_LIBRARIES} pthread)
+target_link_libraries(runNodeTests ${GTEST_LIBRARIES} pthread)
