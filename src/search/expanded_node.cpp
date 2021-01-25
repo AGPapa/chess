@@ -1,6 +1,7 @@
 #pragma once
 
 #include "node.cpp"
+#include "node_iterator.cpp"
 #include "../chess/board.cpp"
 
 class ExpandedNode : public Node {
@@ -17,4 +18,9 @@ class ExpandedNode : public Node {
             _visits = 1;
             _score = score;
         };
+
+        NodeIterator children() {
+            Node* first_child = _child.get();
+            return NodeIterator(&first_child);
+        }
 };

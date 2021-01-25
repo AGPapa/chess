@@ -14,7 +14,7 @@ class LeafNode : public Node {
             ExpandedNode new_node;
             
             Board board = Board(b);
-            std::unique_ptr<Node> previous_leaf;
+            std::unique_ptr<Node> previous_leaf = nullptr;
             Ply previous_ply;
             for (Ply p : board.generate_potential_plies()) {
                 std::unique_ptr<Node> node = std::unique_ptr<Node>(new LeafNode(this, std::move(previous_leaf), p));

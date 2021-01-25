@@ -25,8 +25,10 @@ TEST(NodeTest, convert_node_constructor) {
     ASSERT_EQ(new_root._sibling.get(), nullptr);
     ASSERT_EQ(new_root._parent, nullptr);
     ASSERT_EQ(new_root._child.get(), grandchild);
-    ASSERT_EQ(new_root._child->_parent, &new_root);
-    ASSERT_EQ(new_root._child->_sibling->_parent, &new_root);
+
+    for (Node *child : new_root.children()) {
+      ASSERT_EQ(child->_parent, &new_root);
+    }
 }
 
 int main(int argc, char** argv) {
