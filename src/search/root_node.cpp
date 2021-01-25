@@ -17,7 +17,7 @@ class RootNode : public ExpandedNode {
             _child = std::move(previous_leaf);
         };
 
-        RootNode(const Board board, ExpandedNode *node_to_convert) : ExpandedNode(nullptr, nullptr, std::move(node_to_convert->_child), Ply()) {
+        RootNode(const Board board, ExpandedNode *node_to_convert) : ExpandedNode(nullptr, nullptr, std::move(node_to_convert->_child), Ply(), node_to_convert->_score) {
             _board = Board(board);
             _board.apply_ply(node_to_convert->_ply);
 

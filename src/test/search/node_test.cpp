@@ -17,6 +17,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     ((LeafNode *) (root._child.get()))->expand(b, owner);
     ASSERT_EQ(root._child->is_leaf(), false);
+    ASSERT_EQ(((ExpandedNode *) (root._child.get()))->_visits, 1);
 
     Node* grandchild = ((ExpandedNode *) (root._child.get()))->_child.get();
 

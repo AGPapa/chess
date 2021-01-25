@@ -22,6 +22,9 @@ class LeafNode : public Node {
                 previous_ply = p;
             }
 
-            (*owner).reset(new ExpandedNode(_parent, std::move(_sibling), std::move(previous_leaf), previous_ply));
+            // TODO: evaluate network to get scores and probailities
+            float score = 0.0;
+
+            (*owner).reset(new ExpandedNode(_parent, std::move(_sibling), std::move(previous_leaf), previous_ply, score));
         }
 };
