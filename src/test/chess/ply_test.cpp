@@ -20,34 +20,34 @@ TEST(SquareTest, string_constructor) {
 
 TEST(SquareTest, promotion) {
     Ply p = Ply("e2e4");
-    ASSERT_EQ(Ply::Promotion::None, p.promotion());
+    ASSERT_EQ(Ply::MiscInfo::NoInfo, p.promotion());
 
     p = Ply("e7e8q");
-    ASSERT_EQ(Ply::Promotion::Queen, p.promotion());
+    ASSERT_EQ(Ply::MiscInfo::QueenPromote, p.promotion());
 
     p = Ply("e7e8n");
-    ASSERT_EQ(Ply::Promotion::Knight, p.promotion());
+    ASSERT_EQ(Ply::MiscInfo::KnightPromote, p.promotion());
 
     p = Ply("e7e8b");
-    ASSERT_EQ(Ply::Promotion::Bishop, p.promotion());
+    ASSERT_EQ(Ply::MiscInfo::BishopPromote, p.promotion());
 
     p = Ply("e7e8r");
-    ASSERT_EQ(Ply::Promotion::Rook, p.promotion());
+    ASSERT_EQ(Ply::MiscInfo::RookPromote, p.promotion());
 
     Square from = Square(6, 0);
     Square to = Square(7,0);
 
-    p = Ply(from, to, Ply::Promotion::Queen);
-    ASSERT_EQ(Ply::Promotion::Queen, p.promotion());
+    p = Ply(from, to, Ply::MiscInfo::QueenPromote);
+    ASSERT_EQ(Ply::MiscInfo::QueenPromote, p.promotion());
 
-    p = Ply(from, to, Ply::Promotion::Knight);
-    ASSERT_EQ(Ply::Promotion::Knight, p.promotion());
+    p = Ply(from, to, Ply::MiscInfo::KnightPromote);
+    ASSERT_EQ(Ply::MiscInfo::KnightPromote, p.promotion());
 
-    p = Ply(from, to, Ply::Promotion::Bishop);
-    ASSERT_EQ(Ply::Promotion::Bishop, p.promotion());
+    p = Ply(from, to, Ply::MiscInfo::BishopPromote);
+    ASSERT_EQ(Ply::MiscInfo::BishopPromote, p.promotion());
 
-    p = Ply(from, to, Ply::Promotion::Rook);
-    ASSERT_EQ(Ply::Promotion::Rook, p.promotion());
+    p = Ply(from, to, Ply::MiscInfo::RookPromote);
+    ASSERT_EQ(Ply::MiscInfo::RookPromote, p.promotion());
 }
 
 TEST(PlyTest, operator_equals) {
@@ -59,10 +59,10 @@ TEST(PlyTest, operator_equals) {
     ASSERT_EQ(false, a == c);
 
     Ply d = Ply("e7e8q");
-    Ply e = Ply(Square("e7"), Square("e8"), Ply::Promotion::Queen);
+    Ply e = Ply(Square("e7"), Square("e8"), Ply::MiscInfo::QueenPromote);
     ASSERT_EQ(true, d == e);
 
-    Ply f = Ply(Square("e7"), Square("e8"), Ply::Promotion::Knight);
+    Ply f = Ply(Square("e7"), Square("e8"), Ply::MiscInfo::KnightPromote);
     ASSERT_EQ(false, d == f);
 }
 
@@ -75,10 +75,10 @@ TEST(PlyTest, operator_not_equals) {
     ASSERT_EQ(true, a != c);
 
     Ply d = Ply("e7e8q");
-    Ply e = Ply(Square("e7"), Square("e8"), Ply::Promotion::Queen);
+    Ply e = Ply(Square("e7"), Square("e8"), Ply::MiscInfo::QueenPromote);
     ASSERT_EQ(false, d != e);
 
-    Ply f = Ply(Square("e7"), Square("e8"), Ply::Promotion::Knight);
+    Ply f = Ply(Square("e7"), Square("e8"), Ply::MiscInfo::KnightPromote);
     ASSERT_EQ(true, d != f);
 }
 

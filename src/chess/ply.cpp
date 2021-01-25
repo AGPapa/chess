@@ -7,7 +7,8 @@
 
 class Ply {
     public:
-        enum class Promotion : std::uint8_t { None, Queen, Rook, Bishop, Knight };
+        enum class MiscInfo : std::uint8_t { NoInfo, QueenPromote, RookPromote, BishopPromote, KnightPromote,
+                                             PawnMove, KnightMove, BishopMove, RookMove, QueenMove, KingMove, Castling };
 
         Ply() {};
 
@@ -15,7 +16,7 @@ class Ply {
             ply = (to.get_int_value() + (from.get_int_value() << 6));
         }
 
-        Ply(const Square from, const Square to, const Promotion promotion) {
+        Ply(const Square from, const Square to, const MiscInfo promotion) {
             ply = (to.get_int_value() + (from.get_int_value() << 6) + (static_cast<uint8_t>(promotion) << 12));
         }
 
@@ -27,16 +28,16 @@ class Ply {
                 if (str.size() != 5) throw std::runtime_error("Invalid ply - invalid length: " + str);
                 switch (str[4]) {
                     case 'q':
-                        ply += (static_cast<uint8_t>(Promotion::Queen) << 12);
+                        ply += (static_cast<uint8_t>(MiscInfo::QueenPromote) << 12);
                         break;
                     case 'n':
-                        ply += (static_cast<uint8_t>(Promotion::Knight) << 12);
+                        ply += (static_cast<uint8_t>(MiscInfo::KnightPromote) << 12);
                         break;
                     case 'b':
-                        ply += (static_cast<uint8_t>(Promotion::Bishop) << 12);
+                        ply += (static_cast<uint8_t>(MiscInfo::BishopPromote) << 12);
                         break;
                     case 'r':
-                        ply += (static_cast<uint8_t>(Promotion::Rook) << 12);
+                        ply += (static_cast<uint8_t>(MiscInfo::RookPromote) << 12);
                         break;
                     default:
                         throw std::runtime_error("Invalid ply - invalid promotion: " + str);
@@ -52,8 +53,8 @@ class Ply {
             return Square(ply & to_mask);
         }
 
-        Promotion promotion() const {
-            return Promotion((ply & promotion_mask) >> 12);
+        MiscInfo promotion() const {
+            return MiscInfo((ply & misc_info_mask) >> 12);
         }
 
         bool operator==(const Ply& other) const {
@@ -73,16 +74,16 @@ class Ply {
             result += from_square().to_string();
             result += to_square().to_string();
             switch (promotion()) {
-                case Promotion::None:
-                    return result;
-                case Promotion::Queen:
+                case MiscInfo::QueenPromote:
                     return result + 'q';
-                case Promotion::Knight:
+                case MiscInfo::KnightPromote:
                     return result + 'n';
-                case Promotion::Bishop:
+                case MiscInfo::BishopPromote:
                     return result + 'b';
-                case Promotion::Rook:
+                case MiscInfo::RookPromote:
                     return result + 'r';
+                default:
+                    return result;
             };
         }
 
@@ -94,5 +95,5 @@ class Ply {
 
         static const std::uint16_t to_mask = 0b0000000000111111;
         static const std::uint16_t from_mask = 0b0000111111000000;
-        static const std::uint16_t promotion_mask = 0b0111000000000000;
+        static const std::uint16_t misc_info_mask = 0b0111000000000000;
 };

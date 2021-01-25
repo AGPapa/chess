@@ -383,19 +383,20 @@ class Board {
             b_pieces.unset_square(from);
 
             // promote pawns
-            Ply::Promotion promotion = ply.promotion();
-            if (promotion != Ply::Promotion::None) {
+            Ply::MiscInfo promotion = ply.promotion();
+            if (promotion == Ply::MiscInfo::QueenPromote) {
                 pawns.unset_square(to);
-                if (promotion == Ply::Promotion::Queen) {
-                    bishops.set_square(to);
-                    rooks.set_square(to);
-                } else if (promotion == Ply::Promotion::Knight) {
-                    knights.set_square(to);
-                } else if (promotion == Ply::Promotion::Rook) {
-                    rooks.set_square(to);
-                } else if (promotion == Ply::Promotion::Bishop) {
-                    bishops.set_square(to);
-                }
+                bishops.set_square(to);
+                rooks.set_square(to);
+            } else if (promotion == Ply::MiscInfo::KnightPromote) {
+                pawns.unset_square(to);
+                knights.set_square(to);
+            } else if (promotion == Ply::MiscInfo::RookPromote) {
+                pawns.unset_square(to);
+                rooks.set_square(to);
+            } else if (promotion == Ply::MiscInfo::BishopPromote) {
+                pawns.unset_square(to);
+                bishops.set_square(to);
             }
 
             // reset rule 50
@@ -876,10 +877,10 @@ class Board {
         // TODO: potential speed improvement since we don't need add_ply_if_king_not_in_check for every one
         void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) {
             if (to.get_row() == 7 || to.get_row() == 0) {
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Queen));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Knight));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Rook));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Bishop));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::MiscInfo::QueenPromote));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::MiscInfo::KnightPromote));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::MiscInfo::RookPromote));
+                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::MiscInfo::BishopPromote));
             } else {
                 add_ply_if_king_not_in_check(ply_list, Ply(from, to));
             }
