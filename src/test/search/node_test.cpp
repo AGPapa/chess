@@ -15,9 +15,12 @@ TEST(NodeTest, convert_node_constructor) {
     std::unique_ptr<Node>* owner = &(root._child);
     ASSERT_EQ(root._child->is_leaf(), true);
 
+    float leaf_probability = root._child->_probability;
+
     ((LeafNode *) (root._child.get()))->expand(b, owner);
     ASSERT_EQ(root._child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root._child.get()))->_visits, 1);
+    ASSERT_EQ(root._child->_probability, leaf_probability);
 
     Node* grandchild = ((ExpandedNode *) (root._child.get()))->_child.get();
 

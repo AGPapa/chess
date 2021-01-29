@@ -6,7 +6,7 @@ class LeafNode : public Node {
     public:
         LeafNode() : Node() {};
 
-        LeafNode(Node* parent, std::unique_ptr<Node> sibling, Ply ply) : Node(parent, std::move(sibling), ply) {};
+        LeafNode(Node* parent, std::unique_ptr<Node> sibling, Ply ply, float probability) : Node(parent, std::move(sibling), ply, probability) {};
 
         bool is_leaf() { return true; };
 
@@ -17,7 +17,7 @@ class LeafNode : public Node {
             std::unique_ptr<Node> previous_leaf = nullptr;
             Ply previous_ply;
             for (Ply p : board.generate_potential_plies()) {
-                std::unique_ptr<Node> node = std::unique_ptr<Node>(new LeafNode(this, std::move(previous_leaf), p));
+                std::unique_ptr<Node> node = std::unique_ptr<Node>(new LeafNode(this, std::move(previous_leaf), p, 0.0));
                 previous_leaf = std::move(node);
                 previous_ply = p;
             }
@@ -25,6 +25,6 @@ class LeafNode : public Node {
             // TODO: evaluate network to get scores and probailities
             float score = 0.0;
 
-            (*owner).reset(new ExpandedNode(_parent, std::move(_sibling), std::move(previous_leaf), previous_ply, score));
+            (*owner).reset(new ExpandedNode(_parent, std::move(_sibling), std::move(previous_leaf), previous_ply, score, _probability));
         }
 };

@@ -13,7 +13,7 @@ class ExpandedNode : public Node {
 
         ExpandedNode() : Node() { _visits = 1; _score = 0; };
 
-        ExpandedNode(Node *parent, std::unique_ptr<Node> sibling, std::unique_ptr<Node> child, Ply ply, float score) : Node(parent, std::move(sibling), ply) {
+        ExpandedNode(Node *parent, std::unique_ptr<Node> sibling, std::unique_ptr<Node> child, Ply ply, float score, float probability) : Node(parent, std::move(sibling), ply, probability) {
             _child = std::move(child);
             _visits = 1;
             _score = score;
