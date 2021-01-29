@@ -2,7 +2,6 @@
 
 #include "node.cpp"
 #include "node_iterator.cpp"
-#include "../chess/board.cpp"
 
 class ExpandedNode : public Node {
 

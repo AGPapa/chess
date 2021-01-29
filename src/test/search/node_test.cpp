@@ -17,7 +17,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     float leaf_probability = root._child->_probability;
 
-    ((LeafNode *) (root._child.get()))->expand(b, owner);
+    ((LeafNode *) (root._child.get()))->convert_to_expanded_node(b, owner);
     ASSERT_EQ(root._child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root._child.get()))->_visits, 1);
     ASSERT_EQ(root._child->_probability, leaf_probability);

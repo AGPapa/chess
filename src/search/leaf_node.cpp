@@ -10,21 +10,21 @@ class LeafNode : public Node {
 
         bool is_leaf() { return true; };
 
-        void expand(Board b, std::unique_ptr<Node> *owner) {
-            ExpandedNode new_node;
-            
-            Board board = Board(b);
-            std::unique_ptr<Node> previous_leaf = nullptr;
-            Ply previous_ply;
-            for (Ply p : board.generate_potential_plies()) {
-                std::unique_ptr<Node> node = std::unique_ptr<Node>(new LeafNode(this, std::move(previous_leaf), p, 0.0));
-                previous_leaf = std::move(node);
-                previous_ply = p;
+        void convert_to_expanded_node(Board b, std::unique_ptr<Node> *owner) {
+            std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new ExpandedNode(_parent, std::move(_sibling), nullptr, Ply(), 0.0, _probability));
+            evaluate_and_expand(b, (ExpandedNode*) new_node.get());
+            (*owner) = std::move(new_node);
+        }
+
+        static void evaluate_and_expand(Board b, ExpandedNode *node) {
+            // TODO: replace this placeholder implementation with something real
+
+            std::unique_ptr<Node> previous_leaf;
+            for (Ply p : b.generate_potential_plies()) {
+                std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(node, std::move(previous_leaf), p, rand()));
+                previous_leaf = std::move(new_node);
             }
-
-            // TODO: evaluate network to get scores and probailities
-            float score = 0.0;
-
-            (*owner).reset(new ExpandedNode(_parent, std::move(_sibling), std::move(previous_leaf), previous_ply, score, _probability));
+            node->_child = std::move(previous_leaf);
+            //TODO: backwards pass
         }
 };
