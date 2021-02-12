@@ -10,7 +10,10 @@ class Node : public std::enable_shared_from_this<Node>{
         Ply _ply;
         float _probability;
 
-        Node() {};
+        Node() {
+            _parent = nullptr;
+            _sibling = nullptr;
+        };
 
         Node(Node* parent, std::unique_ptr<Node> sibling, const Ply ply, float probability) {
             _parent = parent;
