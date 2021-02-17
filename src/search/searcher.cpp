@@ -8,6 +8,10 @@ class Searcher {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
         };
 
+        Searcher(Board starting_board) {
+            _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
+        };
+
         Ply find_best_ply(int nodes) {
             for (int i = 0; i < nodes; i++) {
                 ExpandedNode* node = _root.get();

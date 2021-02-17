@@ -16,6 +16,13 @@ TEST(SearcherTest, apply_ply) {
     ASSERT_EQ(p.from_square().get_row() > 5, true);
 }
 
+TEST(SearcherTest, initial_board_constructor) {
+    Board b = Board("7k/7p/8/8/8/8/P7/K7 b - - 0 100");
+    Searcher s = Searcher(b);
+    Ply p = s.find_best_ply(1000);
+    ASSERT_EQ(p.from_square().get_row() > 5, true);
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
