@@ -5,6 +5,8 @@
 class RootNode : public ExpandedNode {
 
     public:
+        Board _board;
+
         RootNode() : ExpandedNode() {};
 
         RootNode(const Board board) : ExpandedNode() {
@@ -24,7 +26,4 @@ class RootNode : public ExpandedNode {
                 c = c->_sibling.get();
             } while (c != nullptr);
         };
-
-    private:
-        Board _board;
 };

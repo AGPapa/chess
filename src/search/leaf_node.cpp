@@ -11,10 +11,12 @@ class LeafNode : public Node {
         bool is_leaf() { return true; };
 
         void convert_to_expanded_node(Board b, std::unique_ptr<Node> *owner) {
-            std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new ExpandedNode(_parent, std::move(_sibling), nullptr, Ply(), 0.0, _probability));
+            std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new ExpandedNode(_parent, std::move(_sibling), nullptr, _ply, 0.0, _probability));
             evaluate_and_expand(b, (ExpandedNode*) new_node.get());
             (*owner) = std::move(new_node);
         }
+
+        float score() { return _probability + sqrt(_parent->visits()); }
 
         static void evaluate_and_expand(Board b, ExpandedNode *node) {
             // TODO: replace this placeholder implementation with something real

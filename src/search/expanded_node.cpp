@@ -22,4 +22,9 @@ class ExpandedNode : public Node {
             Node* first_child = _child.get();
             return NodeIterator(&first_child);
         }
+
+        float score() { return _score/_visits + sqrt(_parent->visits())/_visits; }
+
+        int visits() { return _visits; };
+
 };

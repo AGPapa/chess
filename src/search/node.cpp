@@ -23,4 +23,9 @@ class Node : public std::enable_shared_from_this<Node>{
         };
 
         virtual bool is_leaf() { return false; };
+
+        virtual float score() { return -100.0; };
+
+        virtual int visits() { return 0; };
+
 };
