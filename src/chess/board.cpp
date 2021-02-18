@@ -406,6 +406,10 @@ class Board {
             w_turn = !w_turn;
         }
 
+        bool is_king_in_check() {
+            return square_under_attack(w_turn ? w_king : b_king, !w_turn);
+        }
+
         bool square_under_attack(Square s) {
             return square_under_attack(s, w_turn);
         }

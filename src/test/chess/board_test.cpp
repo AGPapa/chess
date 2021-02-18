@@ -266,8 +266,23 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, e.square_under_attack(Square("c6")));
     ASSERT_EQ(true, e.square_under_attack(Square("c7")));
     ASSERT_EQ(false, e.square_under_attack(Square("d5")));
+}
+
+TEST(BoardTest, is_king_in_check) {
+    Board a = Board("7k/6RQ/8/8/8/8/8/7K b - - 0 100");
+    ASSERT_EQ(true, a.is_king_in_check());
+
+    Board b = Board("7k/8/8/8/8/8/6rq/7K w - - 0 100");
+    ASSERT_EQ(true, b.is_king_in_check());
+
+    Board c = Board("7k/6R1/7K/8/8/8/8/8 b - - 0 100");
+    ASSERT_EQ(false, c.is_king_in_check());
+
+    Board d = Board("8/8/8/8/8/7k/6r1/7K w - - 0 100");
+    ASSERT_EQ(false, d.is_king_in_check());
 
 }
+
 
 TEST(BoardTest, generate_potential_plies) {
     Board a = Board("8/7p/7P/1k6/8/1K6/8/8 w - - 0 100");

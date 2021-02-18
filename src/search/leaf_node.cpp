@@ -23,7 +23,7 @@ class LeafNode : public Node {
             float score = 0.5;
             node->_score = score;
 
-            std::unique_ptr<Node> previous_leaf;
+            std::unique_ptr<Node> previous_leaf = nullptr;
             for (Ply p : b.generate_potential_plies()) {
                 std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(node, std::move(previous_leaf), p, 0.1));
                 previous_leaf = std::move(new_node);
