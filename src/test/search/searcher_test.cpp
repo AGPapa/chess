@@ -14,6 +14,11 @@ TEST(SearcherTest, apply_ply) {
     s.apply_ply(Ply("e2e4"));
     Ply p = s.find_best_ply(1000);
     ASSERT_EQ(p.from_square().get_row() > 5, true);
+
+    s = Searcher();
+    s.apply_ply(Ply("e2e4"));
+    p = s.find_best_ply(1000);
+    ASSERT_EQ(p.from_square().get_row() > 5, true);
 }
 
 TEST(SearcherTest, initial_board_constructor) {

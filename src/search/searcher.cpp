@@ -59,7 +59,9 @@ class Searcher {
             for (Node* child : _root->children()) {
                 if (child->_ply == p) {
                     if (child->is_leaf()) {
-                        //TODO: handle this case
+                        Board new_board = _root->_board;
+                        new_board.apply_ply(p);
+                        _root = std::unique_ptr<RootNode>(new RootNode(new_board));
                         break;
                     } else {
                         Board new_board = _root->_board;
