@@ -1,4 +1,5 @@
 #include "root_node.cpp"
+#include "leaf_node.cpp"
 
 class Searcher {
 
@@ -38,7 +39,7 @@ class Searcher {
                         } else {
                             if (temp_board.is_black_king_in_check()) { result = -1; }
                         }
-                        LeafNode::backpropagate(result, node, temp_board.is_white_turn());
+                        Expander::backpropagate(result, node, temp_board.is_white_turn());
                         keep_going = false;
                     } else if (best_child->is_leaf()) {
                         temp_board.apply_ply(best_child->_ply);

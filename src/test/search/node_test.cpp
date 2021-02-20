@@ -1,4 +1,5 @@
 #include "../../search/root_node.cpp"
+#include "../../search/leaf_node.cpp"
 
 #include <gtest/gtest.h>
 
