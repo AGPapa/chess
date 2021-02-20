@@ -13,6 +13,9 @@ TEST(NodeTest, new_node_constructor) {
 TEST(NodeTest, convert_node_constructor) {
     Board b = Board::default_board();
     RootNode root = RootNode(b);
+    std::vector<ExpandedNode*> lineage = std::vector<ExpandedNode*>();
+    lineage.push_back(&root);
+
     std::unique_ptr<Node>* owner = &(root._child);
     ASSERT_EQ(root._child->is_leaf(), true);
     ASSERT_EQ(root._visits, 1);
@@ -20,7 +23,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     float leaf_probability = root._child->_probability;
 
-    ((LeafNode *) (root._child.get()))->convert_to_expanded_node(b, owner);
+    ((LeafNode *) (root._child.get()))->convert_to_expanded_node(b, owner, lineage);
     ASSERT_EQ(root._visits, 2);
     ASSERT_EQ(root._score, initial_score - ((ExpandedNode *) (root._child.get()))->_score);
     ASSERT_EQ(root._child->is_leaf(), false);

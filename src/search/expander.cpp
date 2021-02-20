@@ -4,7 +4,7 @@
 
 class Expander {
     public:
-        static void evaluate_and_expand(Board b, ExpandedNode *node) {
+            static void evaluate_and_expand(Board b, ExpandedNode *node, std::vector<ExpandedNode*> lineage) {
                 // TODO: replace this placeholder implementation with something real
                 float score = 0.01;
 
@@ -15,18 +15,19 @@ class Expander {
                 }
                 node->_child = std::move(previous_leaf);
 
-                backpropagate(score, node, b.is_white_turn());
+                lineage.push_back(node);
+                backpropagate(score, lineage, b.is_white_turn());
             }
 
-            static void backpropagate(float score, ExpandedNode *node, bool white_to_play) {
-                while (node != nullptr) {
-                    if (white_to_play) { // potential improvement: skip this part for draws
-                        node->_score += score;
+            static void backpropagate(float score, std::vector<ExpandedNode*> lineage, const bool is_white_turn) {
+                bool white_to_play = is_white_turn;
+                for (std::vector<ExpandedNode*>::reverse_iterator node = lineage.rbegin(); node != lineage.rend(); ++node ) {
+                   if (white_to_play) { // potential improvement: skip this part for draws
+                        (*node)->_score += score;
                     } else {
-                        node->_score -= score;
+                        (*node)->_score -= score;
                     }
-                    node->_visits += 1;
-                    node = (ExpandedNode*) node->_parent;
+                    (*node)->_visits += 1;
                     white_to_play = !white_to_play;
                 }
             }

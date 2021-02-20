@@ -15,7 +15,9 @@ class Searcher {
 
         Ply find_best_ply(int nodes) {
             for (int i = 0; i < nodes; i++) {
+                std::vector<ExpandedNode*> lineage = std::vector<ExpandedNode*>();
                 ExpandedNode* node = _root.get();
+                lineage.push_back(node);
                 Board temp_board = Board(_root->_board);
                 bool keep_going = true;
                 while(keep_going) {
@@ -39,15 +41,16 @@ class Searcher {
                         } else {
                             if (temp_board.is_black_king_in_check()) { result = -1; }
                         }
-                        Expander::backpropagate(result, node, temp_board.is_white_turn());
+                        Expander::backpropagate(result, lineage, temp_board.is_white_turn());
                         keep_going = false;
                     } else if (best_child->is_leaf()) {
                         temp_board.apply_ply(best_child->_ply);
-                        ((LeafNode*) best_child)->convert_to_expanded_node(temp_board, best_child_owner);
+                        ((LeafNode*) best_child)->convert_to_expanded_node(temp_board, best_child_owner, lineage);
                         keep_going = false;
                     } else {
                         temp_board.apply_ply(best_child->_ply);
                         node = (ExpandedNode*) best_child;
+                        lineage.push_back(node);
                     }
                 }
             }

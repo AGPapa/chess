@@ -12,7 +12,7 @@ class LeafNode : public Node {
 
         bool is_leaf() { return true; };
 
-        void convert_to_expanded_node(Board b, std::unique_ptr<Node> *owner);
+        void convert_to_expanded_node(Board b, std::unique_ptr<Node> *owner, std::vector<ExpandedNode*> lineage);
 
         float score() { return _probability + sqrt(_parent->visits()); }
 
