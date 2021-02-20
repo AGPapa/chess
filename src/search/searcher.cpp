@@ -32,7 +32,13 @@ class Searcher {
                         previous_owner = &(child->_sibling);
                     }
                     if (best_child == nullptr) {
-                        //TODO: Handle terminal node
+                        float result = 0;
+                        if (temp_board.is_white_turn()) {
+                            if (temp_board.is_white_king_in_check()) { result = 1; }
+                        } else {
+                            if (temp_board.is_black_king_in_check()) { result = -1; }
+                        }
+                        LeafNode::backpropagate(result, node, temp_board.is_white_turn());
                         keep_going = false;
                     } else if (best_child->is_leaf()) {
                         temp_board.apply_ply(best_child->_ply);
@@ -44,6 +50,7 @@ class Searcher {
                     }
                 }
             }
+
             Node* best_child = nullptr;
             int most_visits = 0;
             for (Node* child : _root->children()) {
@@ -59,14 +66,12 @@ class Searcher {
             for (Node* child : _root->children()) {
                 if (child->_ply == p) {
                     if (child->is_leaf()) {
-                        Board new_board = _root->_board;
+                        Board new_board = Board(_root->_board);
                         new_board.apply_ply(p);
                         _root = std::unique_ptr<RootNode>(new RootNode(new_board));
                         break;
                     } else {
-                        Board new_board = _root->_board;
-                        new_board.apply_ply(p);
-                        _root = std::unique_ptr<RootNode>(new RootNode(new_board, ((ExpandedNode*) child)));
+                        _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, ((ExpandedNode*) child)));
                         break;
                     }
                 }

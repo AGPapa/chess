@@ -44,6 +44,14 @@ TEST(BoardTest, from_fen) {
     ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 10 100", c.to_fen());
 }
 
+TEST(BoardTest, is_white_turn) {
+    Board a = Board::default_board();
+    ASSERT_EQ(true, a.is_white_turn());
+
+    a.apply_ply(Ply("e2e4"));
+    ASSERT_EQ(false, a.is_white_turn());
+}
+
 TEST(BoardTest, white_pieces) {
     Board a = Board::default_board();
     ASSERT_EQ(Bitboard(0x000000000000FFFF), a.white_pieces());
@@ -268,21 +276,21 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(false, e.square_under_attack(Square("d5")));
 }
 
-TEST(BoardTest, is_king_in_check) {
-    Board a = Board("7k/6RQ/8/8/8/8/8/7K b - - 0 100");
-    ASSERT_EQ(true, a.is_king_in_check());
+TEST(BoardTest, is_white_king_in_check) {
+    Board a = Board("7k/8/8/8/8/8/6rq/7K w - - 0 100");
+    ASSERT_EQ(true, a.is_white_king_in_check());
 
-    Board b = Board("7k/8/8/8/8/8/6rq/7K w - - 0 100");
-    ASSERT_EQ(true, b.is_king_in_check());
-
-    Board c = Board("7k/6R1/7K/8/8/8/8/8 b - - 0 100");
-    ASSERT_EQ(false, c.is_king_in_check());
-
-    Board d = Board("8/8/8/8/8/7k/6r1/7K w - - 0 100");
-    ASSERT_EQ(false, d.is_king_in_check());
-
+    Board b = Board("8/8/8/8/8/7k/6r1/7K w - - 0 100");
+    ASSERT_EQ(false, b.is_white_king_in_check());
 }
 
+TEST(BoardTest, is_black_king_in_check) {
+    Board a = Board("7k/6RQ/8/8/8/8/8/7K b - - 0 100");
+    ASSERT_EQ(true, a.is_black_king_in_check());
+
+    Board b = Board("7k/6R1/7K/8/8/8/8/8 b - - 0 100");
+    ASSERT_EQ(false, b.is_black_king_in_check());
+}
 
 TEST(BoardTest, generate_potential_plies) {
     Board a = Board("8/7p/7P/1k6/8/1K6/8/8 w - - 0 100");

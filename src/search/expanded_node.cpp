@@ -10,11 +10,11 @@ class ExpandedNode : public Node {
         int _visits;
         float _score;
 
-        ExpandedNode() : Node() { _visits = 1; _score = 0; };
+        ExpandedNode() : Node() { _visits = 0; _score = 0; _child = nullptr; };
 
         ExpandedNode(Node *parent, std::unique_ptr<Node> sibling, std::unique_ptr<Node> child, Ply ply, float score, float probability) : Node(parent, std::move(sibling), ply, probability) {
             _child = std::move(child);
-            _visits = 1;
+            _visits = 0;
             _score = score;
         };
 

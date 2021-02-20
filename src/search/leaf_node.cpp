@@ -20,8 +20,7 @@ class LeafNode : public Node {
 
         static void evaluate_and_expand(Board b, ExpandedNode *node) {
             // TODO: replace this placeholder implementation with something real
-            float score = 0.5;
-            node->_score = score;
+            float score = 0.01;
 
             std::unique_ptr<Node> previous_leaf = nullptr;
             for (Ply p : b.generate_potential_plies()) {
@@ -30,11 +29,19 @@ class LeafNode : public Node {
             }
             node->_child = std::move(previous_leaf);
 
-            ExpandedNode* parent = (ExpandedNode*) (node->_parent);
-            while (parent != nullptr) {
-                parent->_score += score;
-                parent->_visits += 1;
-                parent = (ExpandedNode*) parent->_parent;
+            backpropagate(score, node, b.is_white_turn());
+        }
+
+        static void backpropagate(float score, ExpandedNode *node, bool white_to_play) {
+            while (node != nullptr) {
+                if (white_to_play) { // potential improvement: skip this part for draws
+                    node->_score += score;
+                } else {
+                    node->_score -= score;
+                }
+                node->_visits += 1;
+                node = (ExpandedNode*) node->_parent;
+                white_to_play = !white_to_play;
             }
         }
 };

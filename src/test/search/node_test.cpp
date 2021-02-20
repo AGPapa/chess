@@ -21,7 +21,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     ((LeafNode *) (root._child.get()))->convert_to_expanded_node(b, owner);
     ASSERT_EQ(root._visits, 2);
-    ASSERT_EQ(root._score, initial_score + ((ExpandedNode *) (root._child.get()))->_score);
+    ASSERT_EQ(root._score, initial_score - ((ExpandedNode *) (root._child.get()))->_score);
     ASSERT_EQ(root._child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root._child.get()))->_visits, 1);
     ASSERT_EQ(root._child->_probability, leaf_probability);

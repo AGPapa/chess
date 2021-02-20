@@ -266,6 +266,10 @@ class Board {
             return b_pieces;
         }
 
+        bool is_white_turn() const {
+            return w_turn;
+        }
+
         void apply_ply(Ply ply) {
             Square from = ply.from_square();
             Square to = ply.to_square();
@@ -406,8 +410,12 @@ class Board {
             w_turn = !w_turn;
         }
 
-        bool is_king_in_check() {
-            return square_under_attack(w_turn ? w_king : b_king, !w_turn);
+        bool is_white_king_in_check() {
+            return square_under_attack(w_king, !w_turn);
+        }
+
+        bool is_black_king_in_check() {
+            return square_under_attack(b_king, !w_turn);
         }
 
         bool square_under_attack(Square s) {
