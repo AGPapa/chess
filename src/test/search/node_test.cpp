@@ -21,14 +21,14 @@ TEST(NodeTest, convert_node_constructor) {
     ASSERT_EQ(root._visits, 1);
     float initial_score = root._score;
 
-    float leaf_probability = root._child->_probability;
+    float leaf_prior = root._child->_prior;
 
     ((LeafNode *) (root._child.get()))->convert_to_expanded_node(b, owner, lineage);
     ASSERT_EQ(root._visits, 2);
     ASSERT_EQ(root._score, initial_score - ((ExpandedNode *) (root._child.get()))->_score);
     ASSERT_EQ(root._child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root._child.get()))->_visits, 1);
-    ASSERT_EQ(root._child->_probability, leaf_probability);
+    ASSERT_EQ(root._child->_prior, leaf_prior);
 
     Node* grandchild = ((ExpandedNode *) (root._child.get()))->_child.get();
 

@@ -1,0 +1,1 @@
+const float exploration_factor = 2.1;
