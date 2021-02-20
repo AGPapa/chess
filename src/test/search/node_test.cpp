@@ -34,12 +34,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     RootNode new_root = RootNode(b, (ExpandedNode *) root._child.get());
     ASSERT_EQ(new_root._sibling.get(), nullptr);
-    ASSERT_EQ(new_root._parent, nullptr);
     ASSERT_EQ(new_root._child.get(), grandchild);
-
-    for (Node *child : new_root.children()) {
-      ASSERT_EQ(child->_parent, &new_root);
-    }
 }
 
 int main(int argc, char** argv) {

@@ -26,7 +26,7 @@ class Searcher {
                     float best_score = -100.0; //max negative float
                     std::unique_ptr<Node>* previous_owner = &(node->_child);
                     for (Node* child : node->children()) {
-                        float score = child->score();
+                        float score = child->score(node->_visits);
                         if (score > best_score) {
                             best_score = score;
                             best_child = child;

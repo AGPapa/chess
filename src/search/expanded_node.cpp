@@ -12,7 +12,7 @@ class ExpandedNode : public Node {
 
         ExpandedNode() : Node() { _visits = 0; _score = 0; _child = nullptr; };
 
-        ExpandedNode(Node *parent, std::unique_ptr<Node> sibling, std::unique_ptr<Node> child, Ply ply, float score, float probability) : Node(parent, std::move(sibling), ply, probability) {
+        ExpandedNode(std::unique_ptr<Node> sibling, std::unique_ptr<Node> child, Ply ply, float score, float probability) : Node(std::move(sibling), ply, probability) {
             _child = std::move(child);
             _visits = 0;
             _score = score;
@@ -23,7 +23,7 @@ class ExpandedNode : public Node {
             return NodeIterator(&first_child);
         }
 
-        float score() { return _score/_visits + sqrt(_parent->visits())/_visits; }
+        float score(int parent_visits) { return _score/_visits + sqrt(parent_visits)/_visits; }
 
         int visits() { return _visits; };
 
