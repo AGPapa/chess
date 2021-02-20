@@ -14,6 +14,6 @@ class LeafNode : public Node {
 
         void convert_to_expanded_node(Board b, std::unique_ptr<Node> *owner, std::vector<ExpandedNode*> lineage);
 
-        float score(int parent_visits) { return _prior; }
+        float score(int parent_visits) { return exploration_factor * _prior * sqrt(parent_visits); }
 
 };
