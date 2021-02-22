@@ -31,10 +31,14 @@ TEST(ExpanderTest, backpropagate) {
 
     prior_visits = root._visits;
     prior_score = root._score;
+    int prior_child_visits = expanded_child->_visits;
+    float prior_child_score = expanded_child->_score;
     Expander::backpropagate(score_increment, lineage, b.is_white_turn());
 
     ASSERT_EQ(root._visits, prior_visits + 1);
     ASSERT_EQ(root._score, prior_score + score_increment);
+    ASSERT_EQ(expanded_child->_visits, prior_child_visits + 1);
+    ASSERT_EQ(expanded_child->_score, prior_child_score - score_increment);
 }
 
 int main(int argc, char** argv) {
