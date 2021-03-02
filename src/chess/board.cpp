@@ -11,8 +11,8 @@
 #include "ply.cpp"
 
 // ranks 1 and 8 on pawns track en-passant
-const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
-const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
+static const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
+static const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
 
 class Board {
 
