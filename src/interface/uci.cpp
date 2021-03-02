@@ -17,7 +17,7 @@ class UCI {
             input >> token;
 
             if (token != "startpos") {
-                throw std::runtime_error("Bad position command - only startpos is currenlt supported");
+                throw std::runtime_error("Bad position command - only startpos is currently supported");
             }
 
             token = "";

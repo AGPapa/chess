@@ -17,7 +17,7 @@ bool is_bestmove_valid(Board b, std::string output) {
     return false;
 }
 
-TEST(UCITest, foo) {
+TEST(UCITest, integration) {
     Board b = Board::default_board();
     UCI engine = UCI();
 

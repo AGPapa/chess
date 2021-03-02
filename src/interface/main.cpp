@@ -1,17 +1,13 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <fstream>
 #include "uci.cpp"
 
 int main(int argc, char** argv) {
-    std::ofstream myfile;
-    myfile.open ("/Users/antoniopapa/code/chess/build/log.txt");
     std::string line;
     UCI engine = UCI();
     do {
         if (getline(std::cin, line)) {
-            myfile << line << std::endl;
 
             std::istringstream line_stream = std::istringstream(line);
             std::string token;

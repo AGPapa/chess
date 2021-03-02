@@ -73,13 +73,14 @@ class Searcher {
                         Board new_board = Board(_root->_board);
                         new_board.apply_ply(p);
                         _root = std::unique_ptr<RootNode>(new RootNode(new_board));
-                        break;
+                        return;
                     } else {
                         _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, ((ExpandedNode*) child)));
-                        break;
+                        return;
                     }
                 }
             }
+            std::runtime_error("Ply not found in tree");
         }
     
     private:
