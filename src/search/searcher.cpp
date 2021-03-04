@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "root_node.cpp"
 #include "leaf_node.cpp"
 
@@ -7,14 +9,62 @@ class Searcher {
 
         Searcher() {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
+            _state = SearcherState::Stop;
         };
 
         Searcher(Board starting_board) {
             _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
+            _state = SearcherState::Stop;
         };
 
-        Ply find_best_ply(int nodes) {
-            for (int i = 0; i < nodes; i++) {
+        Ply find_best_ply() {
+            Node* best_child = nullptr;
+            int most_visits = 0;
+            for (Node* child : _root->children()) {
+                if (child->visits() > most_visits) {
+                    most_visits = child->visits();
+                    best_child = child;
+                }
+            }
+            return best_child->_ply;
+        }
+
+        void apply_ply(Ply p) {
+            for (Node* child : _root->children()) {
+                if (child->_ply == p) {
+                    if (child->is_leaf()) {
+                        Board new_board = Board(_root->_board);
+                        new_board.apply_ply(p);
+                        _root = std::unique_ptr<RootNode>(new RootNode(new_board));
+                        return;
+                    } else {
+                        _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, ((ExpandedNode*) child)));
+                        return;
+                    }
+                }
+            }
+            std::runtime_error("Ply not found in tree");
+        }
+
+        void start_searching() {
+            _state = SearcherState::Go;
+            _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
+        }
+
+        void stop_searching() {
+            _state = SearcherState::Stop;
+            _searching_thread->join();
+        }
+
+    private:
+        enum class SearcherState : std::uint8_t { Stop, Go };
+
+        std::unique_ptr<RootNode> _root;
+        SearcherState _state;
+        std::unique_ptr<std::thread> _searching_thread;
+
+        void _search() {
+            while (_state == SearcherState::Go) {
                 std::vector<ExpandedNode*> lineage = std::vector<ExpandedNode*>();
                 ExpandedNode* node = _root.get();
                 lineage.push_back(node);
@@ -54,35 +104,5 @@ class Searcher {
                     }
                 }
             }
-
-            Node* best_child = nullptr;
-            int most_visits = 0;
-            for (Node* child : _root->children()) {
-                if (child->visits() > most_visits) {
-                    most_visits = child->visits();
-                    best_child = child;
-                }
-            }
-            return best_child->_ply;
         }
-
-        void apply_ply(Ply p) {
-            for (Node* child : _root->children()) {
-                if (child->_ply == p) {
-                    if (child->is_leaf()) {
-                        Board new_board = Board(_root->_board);
-                        new_board.apply_ply(p);
-                        _root = std::unique_ptr<RootNode>(new RootNode(new_board));
-                        return;
-                    } else {
-                        _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, ((ExpandedNode*) child)));
-                        return;
-                    }
-                }
-            }
-            std::runtime_error("Ply not found in tree");
-        }
-    
-    private:
-        std::unique_ptr<RootNode> _root;
 };

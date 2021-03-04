@@ -53,7 +53,11 @@ class UCI {
             std::string token;
             input >> token;
 
-            _best_ply = _searcher.find_best_ply(10000);
+            _searcher.start_searching();
+            std::this_thread::sleep_for (std::chrono::milliseconds(100));
+            _searcher.stop_searching();
+
+            _best_ply = _searcher.find_best_ply();
 
             output << "bestmove " + _best_ply.to_string() + '\n';
         }
