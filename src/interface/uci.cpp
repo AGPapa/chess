@@ -8,11 +8,38 @@ class UCI {
     public:
         UCI() {};
 
-        std::string uci() {
+        bool parse_line(std::string line, std::ostream& output) {
+            std::istringstream input_stream = std::istringstream(line);
+            std::string token;
+            input_stream >> token;
+
+            if (token == "uci") {
+                output << _uci();
+            } else if (token == "isready") {
+                output << _is_ready();
+            } else if (token == "ucinewgame") {
+                _new_game();
+            } else if (token == "position") {
+                _position(input_stream);
+            } else if (token == "go") {
+                _go(input_stream, output);
+            } else if (token == "stop") {
+                output << _stop();
+               return true;
+            }
+            return false;
+        }
+
+    private:
+        Searcher _searcher;
+        Ply _best_ply;
+        int _num_moves;
+
+        std::string _uci() {
             return "id name TBDEngineName\nid author Antonio Papa, Viveque Ramji\nuciok\n";  
         }
 
-        void position(std::istringstream& input) {
+        void _position(std::istringstream& input) {
             std::string token;
             input >> token;
 
@@ -42,13 +69,13 @@ class UCI {
             }
         }
 
-        void new_game() {
+        void _new_game() {
             _searcher = Searcher();
             _best_ply = Ply();
             _num_moves = 0;
         }
 
-        void go(std::istringstream& input, std::ostream& output) {
+        void _go(std::istringstream& input, std::ostream& output) {
             // TODO: support additional parameters
             std::string token;
             input >> token;
@@ -62,16 +89,11 @@ class UCI {
             output << "bestmove " + _best_ply.to_string() + '\n';
         }
 
-        std::string is_ready() {
+        std::string _is_ready() {
             return "readyok\n";
         }
 
-        std::string stop() {
+        std::string _stop() {
             return "bestmove " + _best_ply.to_string() + '\n';
         }
-
-    private:
-        Searcher _searcher;
-        Ply _best_ply;
-        int _num_moves;
 };

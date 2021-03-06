@@ -20,38 +20,35 @@ bool is_bestmove_valid(Board b, std::string output) {
 TEST(UCITest, integration) {
     Board b = Board::default_board();
     UCI engine = UCI();
+    std::ostringstream out = std::ostringstream();
 
-    engine.uci();
-    engine.is_ready();
-    engine.new_game();
+    engine.parse_line("uci", out);
+    engine.parse_line("isready", out);
+    engine.parse_line("ucinewgame", out);
 
-    std::istringstream input_stream = std::istringstream("startpos");
-    std::ostringstream output_stream = std::ostringstream();
-    engine.position(input_stream);
-    engine.is_ready();
-    input_stream = std::istringstream("wtime 300000 btime 300000 movestogo 40");
-    engine.go(input_stream, output_stream);
-    ASSERT_EQ(true, is_bestmove_valid(b, output_stream.str()));
+    engine.parse_line("position startpos", out);
+    engine.parse_line("isready", out);
 
-    output_stream = std::ostringstream();
-    input_stream = std::istringstream("startpos moves h2h4 d7d5");
+    out = std::ostringstream();
+    engine.parse_line("go wtime 300000 btime 300000 movestogo 40", out);
+    ASSERT_EQ(true, is_bestmove_valid(b, out.str()));
+
+    out = std::ostringstream();
     b.apply_ply(Ply("h2h4"));
     b.apply_ply(Ply("d7d5"));
-    engine.position(input_stream);
-    engine.is_ready();
-    input_stream = std::istringstream("wtime 300000 btime 300000 movestogo 39");
-    engine.go(input_stream, output_stream);
-    ASSERT_EQ(true, is_bestmove_valid(b, output_stream.str()));
+    engine.parse_line("position startpos moves h2h4 d7d5", out);
+    engine.parse_line("isready", out);
+    out = std::ostringstream();
+    engine.parse_line("go wtime 300000 btime 300000 movestogo 39", out);
+    ASSERT_EQ(true, is_bestmove_valid(b, out.str()));
 
-    output_stream = std::ostringstream();
-    input_stream = std::istringstream("startpos moves h2h4 d7d5 h4h5 e7e5");
     b.apply_ply(Ply("h4h5"));
     b.apply_ply(Ply("e7e5"));
-    engine.position(input_stream);
-    engine.is_ready();
-    input_stream = std::istringstream("wtime 300000 btime 300000 movestogo 38");
-    engine.go(input_stream, output_stream);
-    ASSERT_EQ(true, is_bestmove_valid(b, output_stream.str()));
+    engine.parse_line("position startpos moves h2h4 d7d5 h4h5 e7e5", out);
+    engine.parse_line("isready", out);
+    out = std::ostringstream();
+    engine.parse_line("go wtime 300000 btime 300000 movestogo 38", out);
+    ASSERT_EQ(true, is_bestmove_valid(b, out.str()));
 }
 
 int main(int argc, char** argv) {
