@@ -9,12 +9,12 @@ class Searcher {
 
         Searcher() {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
-            _state = SearcherState::Stop;
+            _state = SearcherState::Stopped;
         };
 
         Searcher(Board starting_board) {
             _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
-            _state = SearcherState::Stop;
+            _state = SearcherState::Stopped;
         };
 
         Ply find_best_ply() {
@@ -43,21 +43,25 @@ class Searcher {
                     }
                 }
             }
-            std::runtime_error("Ply not found in tree");
+            throw std::runtime_error("Ply not found in tree");
         }
 
         void start_searching() {
-            _state = SearcherState::Go;
+            if (_state != SearcherState::Stopped) {
+                throw std::runtime_error("Starting search while search is still running");
+            }
+            _state = SearcherState::Searching;
             _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
         }
 
         void stop_searching() {
-            _state = SearcherState::Stop;
+            _state = SearcherState::Stopping;
             _searching_thread->join();
+            _state = SearcherState::Stopped;
         }
 
     private:
-        enum class SearcherState : std::uint8_t { Stop, Go };
+        enum class SearcherState : std::uint8_t { Stopped, Stopping, Searching };
 
         std::unique_ptr<RootNode> _root;
         SearcherState _state;
@@ -69,7 +73,7 @@ class Searcher {
         int _b_inc;
 
         void _search() {
-            while (_state == SearcherState::Go) {
+            while (_state == SearcherState::Searching) {
                 std::vector<ExpandedNode*> lineage = std::vector<ExpandedNode*>();
                 ExpandedNode* node = _root.get();
                 lineage.push_back(node);
