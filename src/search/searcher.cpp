@@ -62,6 +62,11 @@ class Searcher {
         std::unique_ptr<RootNode> _root;
         SearcherState _state;
         std::unique_ptr<std::thread> _searching_thread;
+        int _w_time;
+        int _b_time;
+        int _moves_to_next_time_control;
+        int _w_inc;
+        int _b_inc;
 
         void _search() {
             while (_state == SearcherState::Go) {

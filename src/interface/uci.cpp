@@ -76,9 +76,37 @@ class UCI {
         }
 
         void _go(std::istringstream& input, std::ostream& output) {
-            // TODO: support additional parameters
-            std::string token;
+            int w_time = 0;
+            int b_time = 0;
+            int moves_to_next_time_control = 0;
+            int w_inc = 0;
+            int b_inc = 0;
+            std::string token = "";
+
             input >> token;
+            while (token != "") {
+                if (token == "wtime") {
+                    input >> token;
+                    w_time = std::stoi( token );
+                } else if (token == "btime") {
+                    input >> token;
+                    b_time = std::stoi( token );
+                } else if (token == "movestogo") {
+                    input >> token;
+                    moves_to_next_time_control = std::stoi( token );
+                } else if (token == "winc") {
+                    input >> token;
+                    w_inc = std::stoi( token );
+                } else if (token == "binc") {
+                    input >> token;
+                    b_inc = std::stoi( token );
+                } else {
+                    throw std::runtime_error("Bad go command - unsuported option " + token + " detected");
+                }
+                token = "";
+                input >> token;
+            }
+
 
             _searcher.start_searching();
             std::this_thread::sleep_for (std::chrono::milliseconds(100));
