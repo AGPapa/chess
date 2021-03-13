@@ -47,17 +47,21 @@ class Searcher {
         }
 
         void start_searching() {
+            _state_mutex.lock();
             if (_state != SearcherState::Stopped) {
                 throw std::runtime_error("Starting search while search is still running");
             }
             _state = SearcherState::Searching;
+            _state_mutex.unlock();
             _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
         }
 
         void stop_searching() {
+            _state_mutex.lock();
             _state = SearcherState::Stopping;
             _searching_thread->join();
             _state = SearcherState::Stopped;
+            _state_mutex.unlock();
         }
 
     private:
@@ -66,6 +70,7 @@ class Searcher {
         std::unique_ptr<RootNode> _root;
         SearcherState _state;
         std::unique_ptr<std::thread> _searching_thread;
+        std::mutex _state_mutex;
         int _w_time;
         int _b_time;
         int _moves_to_next_time_control;
