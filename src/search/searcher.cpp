@@ -10,12 +10,12 @@ class Searcher {
         Searcher() {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
             _state = SearcherState::Stopped;
-        };
+        }
 
         Searcher(Board starting_board) {
             _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
             _state = SearcherState::Stopped;
-        };
+        }
 
         Ply find_best_ply() {
             Node* best_child = nullptr;
@@ -54,12 +54,15 @@ class Searcher {
             _state = SearcherState::Searching;
             _state_mutex.unlock();
             _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
+            _time_managing_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_manage_time, this));
         }
 
         void stop_searching() {
             _state_mutex.lock();
             _state = SearcherState::Stopping;
+            _time_managing_variable.notify_one();
             _searching_thread->join();
+            _time_managing_thread->join();
             _state = SearcherState::Stopped;
             _state_mutex.unlock();
         }
@@ -69,8 +72,10 @@ class Searcher {
 
         std::unique_ptr<RootNode> _root;
         SearcherState _state;
-        std::unique_ptr<std::thread> _searching_thread;
         std::mutex _state_mutex;
+        std::unique_ptr<std::thread> _searching_thread;
+        std::unique_ptr<std::thread> _time_managing_thread;
+        std::condition_variable _time_managing_variable;
         int _w_time;
         int _b_time;
         int _moves_to_next_time_control;
@@ -117,6 +122,14 @@ class Searcher {
                         lineage.push_back(node);
                     }
                 }
+            }
+        }
+
+        void _manage_time() {
+            std::mutex mutex;
+            std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(mutex);
+            while (_state == SearcherState::Searching) {
+                _time_managing_variable.wait_for(lock, std::chrono::milliseconds(1000));
             }
         }
 };
