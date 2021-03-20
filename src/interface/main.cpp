@@ -5,11 +5,11 @@
 
 int main(int argc, char** argv) {
     std::string line;
-    UCI engine = UCI();
+    UCI engine = UCI(std::cout);
     do {
         if (getline(std::cin, line)) {
             std::istringstream line_stream = std::istringstream(line);
-            bool stop = engine.parse_line(line, std::cout);
+            bool stop = engine.parse_line(line);
             if (stop) { break; }
         } else {
             break;

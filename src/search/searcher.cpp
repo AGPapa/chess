@@ -1,4 +1,5 @@
 #include <thread>
+#include <sstream>
 
 #include "root_node.cpp"
 #include "leaf_node.cpp"
@@ -7,14 +8,16 @@ class Searcher {
 
     public:
 
-        Searcher() {
+        Searcher(std::ostream *output) {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
             _state = SearcherState::Stopped;
+            _output = output;
         }
 
-        Searcher(Board starting_board) {
+        Searcher(Board starting_board, std::ostream *output) {
             _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
             _state = SearcherState::Stopped;
+            _output = output;
         }
 
         Ply find_best_ply() {
@@ -51,20 +54,24 @@ class Searcher {
             if (_state != SearcherState::Stopped) {
                 throw std::runtime_error("Starting search while search is still running");
             }
+            if (_time_managing_thread != nullptr && _time_managing_thread->joinable()) {
+                _time_managing_thread->join();
+            }
             _state = SearcherState::Searching;
-            _state_mutex.unlock();
             _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
             _time_managing_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_manage_time, this));
+            _state_mutex.unlock();
         }
 
         void stop_searching() {
-            _state_mutex.lock();
-            _state = SearcherState::Stopping;
-            _time_managing_variable.notify_one();
-            _searching_thread->join();
-            _time_managing_thread->join();
-            _state = SearcherState::Stopped;
-            _state_mutex.unlock();
+            if (_state == SearcherState::Searching) {
+                _time_managing_variable.notify_one();
+                _time_managing_thread->join();
+            } else {
+                if (_time_managing_thread != nullptr && _time_managing_thread->joinable()) {
+                   _time_managing_thread->join();
+                }
+            }
         }
 
     private:
@@ -76,6 +83,7 @@ class Searcher {
         std::unique_ptr<std::thread> _searching_thread;
         std::unique_ptr<std::thread> _time_managing_thread;
         std::condition_variable _time_managing_variable;
+        std::ostream *_output;
         int _w_time;
         int _b_time;
         int _moves_to_next_time_control;
@@ -126,10 +134,30 @@ class Searcher {
         }
 
         void _manage_time() {
-            std::mutex mutex;
-            std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(mutex);
+            std::mutex time_managing_mutex;
+            std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(time_managing_mutex);
             while (_state == SearcherState::Searching) {
                 _time_managing_variable.wait_for(lock, std::chrono::milliseconds(1000));
+                if (_state == SearcherState::Searching) {
+                    _stop_searching();
+                }
             }
+        }
+
+        void _stop_searching() {
+            _state_mutex.lock();
+            if (_state == SearcherState::Searching) {
+                _state = SearcherState::Stopping;
+                _searching_thread->join();
+                _state = SearcherState::Stopped;
+                _output_bestmove();
+            }
+            _state_mutex.unlock();
+        }
+
+        void _output_bestmove() {
+            std::ostream& output = *_output;
+            Ply best_ply = find_best_ply();
+            output << "bestmove " + best_ply.to_string() + '\n';
         }
 };

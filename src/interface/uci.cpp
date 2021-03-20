@@ -1,4 +1,3 @@
-#include <sstream>
 #include <string>
 
 #include "../search/searcher.cpp"
@@ -6,12 +5,15 @@
 class UCI {
 
     public:
-        UCI() {};
+        UCI(std::ostream& output) {
+            _output = &output;
+        };
 
-        bool parse_line(std::string line, std::ostream& output) {
+        bool parse_line(std::string line) {
             std::istringstream input_stream = std::istringstream(line);
             std::string token;
             input_stream >> token;
+            std::ostream& output = *_output;
 
             if (token == "uci") {
                 output << _uci();
@@ -22,9 +24,9 @@ class UCI {
             } else if (token == "position") {
                 _position(input_stream);
             } else if (token == "go") {
-                _go(input_stream, output);
+                _go(input_stream);
             } else if (token == "stop") {
-                output << _stop();
+                _stop();
                return true;
             }
             return false;
@@ -32,6 +34,7 @@ class UCI {
 
     private:
         std::unique_ptr<Searcher> _searcher;
+        std::ostream *_output;
         Ply _best_ply;
         int _num_moves;
 
@@ -70,12 +73,12 @@ class UCI {
         }
 
         void _new_game() {
-            _searcher = std::unique_ptr<Searcher>(new Searcher());
+            _searcher = std::unique_ptr<Searcher>(new Searcher(_output));
             _best_ply = Ply();
             _num_moves = 0;
         }
 
-        void _go(std::istringstream& input, std::ostream& output) {
+        void _go(std::istringstream& input) {
             int w_time = 0;
             int b_time = 0;
             int moves_to_next_time_control = 0;
@@ -107,21 +110,14 @@ class UCI {
                 input >> token;
             }
 
-
             _searcher->start_searching();
-            std::this_thread::sleep_for (std::chrono::milliseconds(100));
-            _searcher->stop_searching();
-
-            _best_ply = _searcher->find_best_ply();
-
-            output << "bestmove " + _best_ply.to_string() + '\n';
         }
 
         std::string _is_ready() {
             return "readyok\n";
         }
 
-        std::string _stop() {
-            return "bestmove " + _best_ply.to_string() + '\n';
+        void _stop() {
+            _searcher->stop_searching();
         }
 };
