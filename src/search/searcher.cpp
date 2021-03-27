@@ -158,6 +158,6 @@ class Searcher {
         void _output_bestmove() {
             std::ostream& output = *_output;
             Ply best_ply = find_best_ply();
-            output << "bestmove " + best_ply.to_string() + '\n';
+            output << "bestmove " << best_ply.to_string() << std::endl;
         }
 };
