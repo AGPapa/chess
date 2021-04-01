@@ -1,22 +1,24 @@
 #pragma once
 
 #include "leaf_node.hpp"
+#include "../evaluation/evaluator.cpp"
 
 class Expander {
     public:
             static void evaluate_and_expand(Board b, ExpandedNode *node, std::vector<ExpandedNode*> lineage) {
                 // TODO: replace this placeholder implementation with something real
                 float score = 0.01;
+                Policy policy = Evaluator::evaluate(b);
 
                 std::unique_ptr<Node> previous_leaf = nullptr;
-                for (Ply p : b.generate_potential_plies()) {
-                    std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(std::move(previous_leaf), p, 0.1));
+                for (Action a : policy.actions()) {
+                    std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(std::move(previous_leaf), a.ply(), a.probability()));
                     previous_leaf = std::move(new_node);
                 }
                 node->_child = std::move(previous_leaf);
 
                 lineage.push_back(node);
-                backpropagate(score, lineage, b.is_white_turn());
+                backpropagate(policy.value(), lineage, b.is_white_turn());
             }
 
             static void backpropagate(float score, std::vector<ExpandedNode*> lineage, const bool is_white_turn) {
