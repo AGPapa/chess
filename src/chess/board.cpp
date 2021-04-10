@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <list>
 #include "piece_attacks.hpp"
 #include "bitboard.cpp"
 #include "castling.cpp"
@@ -18,6 +19,25 @@ class Board {
 
     public:
         Board() {};
+
+        Board(Bitboard w_p, Bitboard b_p, Bitboard p, Bitboard b, Bitboard r, Bitboard n,
+              Square w_k, Square b_k, bool w_t, Castling c, int r50_ply, int m_c) {
+            w_pieces = w_p;
+            b_pieces = b_p;
+            pawns = p;
+            bishops = b;
+            rooks = r;
+            knights = n;
+
+            w_king = w_k;
+            b_king = b_k;
+
+            w_turn = w_t;
+            castling = c;
+
+            rule_fifty_ply_clock = r50_ply;
+            move_count = m_c;
+        };
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
@@ -219,6 +239,11 @@ class Board {
                          true, c, 0, 1);
         }
 
+        Board copy_without_history() {
+            return Board(w_pieces, b_pieces, pawns, bishops, rooks, knights,
+                w_king, b_king, w_turn, castling, rule_fifty_ply_clock, move_count);
+        }
+
         Bitboard white_pawns() const {
             return squarewise_and(w_pieces, squarewise_and(pawns, pawn_mask));
         }
@@ -271,6 +296,11 @@ class Board {
         }
 
         void apply_ply(Ply ply) {
+            board_history.push_front(copy_without_history());
+            apply_ply_without_history(ply);
+        }
+
+        void apply_ply_without_history(Ply ply) {
             Square from = ply.from_square();
             Square to = ply.to_square();
 
@@ -403,7 +433,7 @@ class Board {
             }
 
             // reset rule 50
-            if (reset_50) { rule_fifty_ply_clock = 0; } else { rule_fifty_ply_clock++; }
+            if (reset_50) { rule_fifty_ply_clock = 0; board_history.clear(); } else { rule_fifty_ply_clock++; }
             // increment move count
             if (!w_turn) { move_count++; }
             // change turn
@@ -827,6 +857,43 @@ class Board {
             }
             return result;
         }
+
+        // TODO: Replace this with a hash of pieces, possibly a seperate class (don't need pawns)
+        bool is_repetition(const Board b) const {
+            return b.w_turn == w_turn
+                && b.w_pieces == w_pieces
+                && b.b_pieces == b_pieces
+                && b.pawns == pawns
+                && b.rooks == rooks
+                && b.knights == knights
+                && b.bishops == bishops
+                && b.w_king == w_king
+                && b.b_king == b_king
+                && b.castling == castling;
+        }
+
+
+        // TODO: Improve effiency of this method (skipping for turns and skip after we find a repetition)
+        // 0 - w turn
+        // 1 - b turn
+        // 2 - w turn (can't be rep)
+        // 3 - b turn
+        // 4 - w turn (rep)
+        // 5 - b turn
+        // 6 - w turn (can't be rep if 4 was rep, could be if 4 wasn't rep)
+        // 7 - b turn
+        // 8 - w turn (rep)
+        bool is_threefold_repetition() const {
+            if (board_history.size() < 8) return false;
+            int repetition_count = 1;
+            for (Board b : board_history) {
+                if (is_repetition(b)) {
+                    if (repetition_count == 2) return true;
+                    repetition_count++;
+                }
+            }
+            return false;
+        }
     
     private:
         Bitboard w_pieces;
@@ -845,6 +912,8 @@ class Board {
 
         int rule_fifty_ply_clock = 0;
         int move_count = 1;
+
+        std::list<Board> board_history;
 
         char square_to_char(int row, int col) const {
             if (row == w_king.get_row() && col == w_king.get_col()) {
@@ -877,8 +946,8 @@ class Board {
         }
 
         void add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) {
-            Board b = Board(*this);
-            b.apply_ply(ply);
+            Board b = copy_without_history();
+            b.apply_ply_without_history(ply);
             Square king = w_turn ? b.w_king : b.b_king;
             if (!b.square_under_attack(king)) {
                 ply_list->push_back(ply);

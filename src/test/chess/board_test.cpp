@@ -486,7 +486,38 @@ TEST(BoardTest, generate_potential_plies) {
     actual = n.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+}
 
+TEST(BoardTest, is_repetition) {
+    Board a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
+    Board b = Board("7k/6p1/8/8/8/8/8/7K b - - 17 62");
+    ASSERT_EQ(true, a.is_repetition(b));
+
+    a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
+    b = Board("7k/6p1/8/8/8/8/8/6K1 b - - 17 62");
+    ASSERT_EQ(false, a.is_repetition(b));
+
+    a = Board("K7/8/8/8/8/8/8/R3K2R w K - 0 100");
+    b = Board("K7/8/8/8/8/8/8/R3K2R w KQ - 0 100");
+    ASSERT_EQ(false, a.is_repetition(b));
+}
+
+// TODO: Add more tests to this method
+TEST(BoardTest, is_threefold_repetition) {
+    Board a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
+    ASSERT_EQ(false, a.is_threefold_repetition());
+    a.apply_ply(Ply("h8f8"));
+    a.apply_ply(Ply("h1f1"));
+    ASSERT_EQ(false, a.is_threefold_repetition());
+    a.apply_ply(Ply("f8h8"));
+    a.apply_ply(Ply("f1h1"));
+    ASSERT_EQ(false, a.is_threefold_repetition());
+    a.apply_ply(Ply("h8f8"));
+    a.apply_ply(Ply("h1f1"));
+    ASSERT_EQ(false, a.is_threefold_repetition());
+    a.apply_ply(Ply("f8h8"));
+    a.apply_ply(Ply("f1h1"));
+    ASSERT_EQ(true, a.is_threefold_repetition());
 }
 
 TEST(BoardTest, legal_plies_integration) {

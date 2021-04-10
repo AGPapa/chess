@@ -190,6 +190,23 @@ TEST(SquareTest, unset_black) {
     ASSERT_EQ(false, c.get_black_queenside());
 }
 
+TEST(CastlingTest, operator_equals) {
+    Castling a = Castling(true, false, false, false);
+    Castling b = Castling(true, true, false, false);
+    ASSERT_EQ(false, a == b);
+
+    b.unset_white_queenside();
+    ASSERT_EQ(true, a == b);
+}
+
+TEST(CastlingTest, operator_not_equals) {
+    Castling a = Castling(true, false, false, false);
+    Castling b = Castling(true, true, false, false);
+    ASSERT_EQ(true, a != b);
+
+    b.unset_white_queenside();
+    ASSERT_EQ(false, a != b);
+}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

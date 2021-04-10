@@ -29,6 +29,10 @@ class Castling {
         void unset_white() { castling &= ~std::uint64_t(3); }
         void unset_black() { castling &= ~std::uint64_t(12); }
 
+        bool operator==(const Castling& other) const { return castling == other.castling; }
+        bool operator!=(const Castling& other) const { return castling != other.castling; }
+
+
     private:
         // - Bit 0 -- white kingside castle.
         // - Bit 1 -- white queenside castle.
