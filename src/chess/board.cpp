@@ -7,8 +7,7 @@
 #include <vector>
 #include <list>
 #include "piece_attacks.hpp"
-#include "bitboard.cpp"
-#include "castling.cpp"
+#include "board_signature.cpp"
 #include "ply.cpp"
 
 // ranks 1 and 8 on pawns track en-passant
@@ -239,9 +238,13 @@ class Board {
                          true, c, 0, 1);
         }
 
-        Board copy_without_history() {
+        Board copy_without_history() const {
             return Board(w_pieces, b_pieces, pawns, bishops, rooks, knights,
                 w_king, b_king, w_turn, castling, rule_fifty_ply_clock, move_count);
+        }
+
+        BoardSignature signature() const {
+            return BoardSignature(w_pieces, b_pieces, bishops, rooks, knights, w_king, b_king, castling);
         }
 
         Bitboard white_pawns() const {
@@ -296,7 +299,7 @@ class Board {
         }
 
         void apply_ply(Ply ply) {
-            board_history.push_front(copy_without_history());
+            board_history.push_front(signature());
             apply_ply_without_history(ply);
         }
 
@@ -858,37 +861,15 @@ class Board {
             return result;
         }
 
-        // TODO: Replace this with a hash of pieces, possibly a seperate class (don't need pawns)
-        bool is_repetition(const Board b) const {
-            return b.w_turn == w_turn
-                && b.w_pieces == w_pieces
-                && b.b_pieces == b_pieces
-                && b.pawns == pawns
-                && b.rooks == rooks
-                && b.knights == knights
-                && b.bishops == bishops
-                && b.w_king == w_king
-                && b.b_king == b_king
-                && b.castling == castling;
-        }
-
-
-        // TODO: Improve effiency of this method (skipping for turns and skip after we find a repetition)
-        // 0 - w turn
-        // 1 - b turn
-        // 2 - w turn (can't be rep)
-        // 3 - b turn
-        // 4 - w turn (rep)
-        // 5 - b turn
-        // 6 - w turn (can't be rep if 4 was rep, could be if 4 wasn't rep)
-        // 7 - b turn
-        // 8 - w turn (rep)
         bool is_threefold_repetition() const {
             if (board_history.size() < 8) return false;
+            BoardSignature current_board = signature();
             int repetition_count = 1;
-            for (Board b : board_history) {
-                if (is_repetition(b)) {
+            // jumps two board signatures at a time to skip white and black turns
+            for (std::list<BoardSignature>::const_iterator b = ++board_history.begin(); b != board_history.end(); ++b, ++b) {
+                if (current_board.is_repetition(*b)) {
                     if (repetition_count == 2) return true;
+                    ++b; ++b; // skips two board signatures after we find a repetition
                     repetition_count++;
                 }
             }
@@ -913,7 +894,7 @@ class Board {
         int rule_fifty_ply_clock = 0;
         int move_count = 1;
 
-        std::list<Board> board_history;
+        std::list<BoardSignature> board_history;
 
         char square_to_char(int row, int col) const {
             if (row == w_king.get_row() && col == w_king.get_col()) {
