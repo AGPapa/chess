@@ -7,7 +7,6 @@ class Expander {
     public:
             static void evaluate_and_expand(Board b, ExpandedNode *node, std::vector<ExpandedNode*> lineage) {
                 // TODO: replace this placeholder implementation with something real
-                float score = 0.01;
                 Policy policy = Evaluator::evaluate(b);
 
                 std::unique_ptr<Node> previous_leaf = nullptr;

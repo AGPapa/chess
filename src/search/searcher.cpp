@@ -113,7 +113,7 @@ class Searcher {
                     }
                     if (best_child == nullptr) {
                         float result = 0;
-                        if (temp_board.is_white_turn()) {
+                        if (temp_board.is_white_turn()) { // TODO: Move checkmake checks into the Evaluator, use the prior as the result here
                             if (temp_board.is_white_king_in_check()) { result = 1; }
                         } else {
                             if (temp_board.is_black_king_in_check()) { result = -1; }
