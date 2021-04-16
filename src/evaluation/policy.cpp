@@ -15,6 +15,10 @@ class Policy {
             _action_list.push_back(Action(p, probability));
         }
 
+        void set_value(float value) {
+            _value = value;
+        }
+
         const float value() {
             return _value;
         }

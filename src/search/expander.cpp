@@ -24,9 +24,9 @@ class Expander {
                 bool white_to_play = is_white_turn;
                 for (std::vector<ExpandedNode*>::reverse_iterator node = lineage.rbegin(); node != lineage.rend(); ++node ) {
                    if (white_to_play) { // potential improvement: skip this part for draws
-                        (*node)->_score += score;
-                    } else {
                         (*node)->_score -= score;
+                    } else {
+                        (*node)->_score += score;
                     }
                     (*node)->_visits += 1;
                     white_to_play = !white_to_play;

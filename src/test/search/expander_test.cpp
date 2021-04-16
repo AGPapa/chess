@@ -22,7 +22,7 @@ TEST(ExpanderTest, backpropagate) {
     Expander::backpropagate(score_increment, lineage, b.is_white_turn());
 
     ASSERT_EQ(root._visits, prior_visits + 1);
-    ASSERT_EQ(root._score, prior_score + score_increment);
+    ASSERT_EQ(root._score, prior_score - score_increment);
 
     b.apply_ply(expanded_child->_child->_ply);
     ((LeafNode*) expanded_child->_child.get())->convert_to_expanded_node(b, &(expanded_child->_child), lineage);
@@ -36,9 +36,9 @@ TEST(ExpanderTest, backpropagate) {
     Expander::backpropagate(score_increment, lineage, b.is_white_turn());
 
     ASSERT_EQ(root._visits, prior_visits + 1);
-    ASSERT_EQ(root._score, prior_score + score_increment);
+    ASSERT_EQ(root._score, prior_score - score_increment);
     ASSERT_EQ(expanded_child->_visits, prior_child_visits + 1);
-    ASSERT_EQ(expanded_child->_score, prior_child_score - score_increment);
+    ASSERT_EQ(expanded_child->_score, prior_child_score + score_increment);
 }
 
 int main(int argc, char** argv) {

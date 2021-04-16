@@ -14,6 +14,17 @@ class Evaluator {
                 policy.add_action(p, 0.1);
             }
 
+            // checkmate or stalemate
+            if (policy.actions().empty()) {
+                float result = 0;
+                if (b.is_white_turn()) {
+                    if (b.is_white_king_in_check()) { result = -1; }
+                } else {
+                    if (b.is_black_king_in_check()) { result = 1; }
+                }
+                policy.set_value(result);
+            }
+
             return policy;
         }
 };

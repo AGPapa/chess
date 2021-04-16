@@ -14,6 +14,15 @@ TEST(PolicyTest, add_action) {
     ASSERT_EQ(policy.actions().front().probability(), prob);
 }
 
+TEST(PolicyTest, set_value) {
+    float value = 0.23;
+    Policy policy = Policy(0.24);
+    ASSERT_NE(policy.value(), value);
+
+    policy.set_value(value);
+    ASSERT_EQ(policy.value(), value);
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
