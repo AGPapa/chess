@@ -114,11 +114,10 @@ class Searcher {
                     if (best_child == nullptr) {
                         float result = 0;
                         if (temp_board.is_white_turn()) {
-                            result = (node->_score > 0) - (node->_score < 0);
+                            result = (node->_score < 0) - (node->_score > 0);
                         } else {
-                            result = ((node->_score < 0) - (node->_score > 0));
+                            result = (node->_score > 0) - (node->_score < 0);
                         }
-                        lineage.push_back(node);
                         Expander::backpropagate(result, lineage, temp_board.is_white_turn());
                         keep_going = false;
                     } else if (best_child->is_leaf()) {

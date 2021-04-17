@@ -77,6 +77,14 @@ TEST(SearcherTest, checkmate_in_one) {
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("h7h6"));
+
+    Board d = Board("K7/3q4/2k5/8/8/8/8/8 b - - 0 100");
+    s = std::unique_ptr<Searcher>(new Searcher(d, &out));
+    s->start_searching();
+    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    s->stop_searching();
+    p = s->find_best_ply();
+    ASSERT_EQ(p, Ply("d7b7"));
 }
 
 TEST(SearcherTest, checkmate_in_two) {
