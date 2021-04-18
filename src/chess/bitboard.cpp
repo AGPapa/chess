@@ -52,6 +52,10 @@ class Bitboard {
             return board == 0;
         }
 
+        int count() const {
+            return __builtin_popcountll(board);
+        }
+
         friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {
             return Bitboard(a.board | b.board);
         }

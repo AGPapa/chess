@@ -102,6 +102,20 @@ TEST(BitboardTest, empty) {
     ASSERT_EQ(true, a.empty());
 }
 
+TEST(BitboardTest, count) {
+    Bitboard a;
+    ASSERT_EQ(0, a.count());
+
+    a.set_square(6, 4);
+    ASSERT_EQ(1, a.count());
+
+    a.set_square(7, 7);
+    ASSERT_EQ(2, a.count());
+
+    a.unset_square(6, 4);
+    ASSERT_EQ(1, a.count());
+}
+
 TEST(BitboardTest, squarewise_or) {
     Bitboard a;
     a.set_square(6,4);
