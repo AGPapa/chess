@@ -875,6 +875,10 @@ class Board {
             }
             return false;
         }
+
+        bool is_fifty_move_draw() const {
+            return rule_fifty_ply_clock >= 100;
+        }
     
     private:
         Bitboard w_pieces;

@@ -59,6 +59,20 @@ TEST(EvaluatorTest, evaluate_stalemate) {
     ASSERT_EQ(0, p.actions().size());
 }
 
+TEST(EvaluatorTest, evaluate_fifty_move_draw) {
+  Board b = Board("7k/8/8/8/8/6r1/8/7K w - - 99 100");
+  Policy p = Evaluator::evaluate(b);
+
+  ASSERT_NE(0, p.value());
+  ASSERT_NE(0, p.actions().size());
+
+  b.apply_ply(Ply("h1h2"));
+  p = Evaluator::evaluate(b);
+
+  ASSERT_EQ(0, p.value());
+  ASSERT_EQ(0, p.actions().size());
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -541,7 +541,18 @@ TEST(BoardTest, is_threefold_repetition) {
     a.apply_ply(Ply("h7h8"));
     ASSERT_EQ("7k/6p1/8/8/8/8/8/7K w - - 9 105", a.to_fen());
     ASSERT_EQ(false, a.is_threefold_repetition());
+}
 
+TEST(BoardTest, is_fifty_move_draw) {
+    Board b = Board("7k/7r/8/8/8/8/7R/7K w - - 99 105");
+    ASSERT_EQ(false, b.is_fifty_move_draw());
+    b.apply_ply(Ply("h1f1"));
+    ASSERT_EQ(true, b.is_fifty_move_draw());
+
+    b = Board("7k/7r/8/8/8/8/7R/7K b - - 99 105");
+    ASSERT_EQ(false, b.is_fifty_move_draw());
+    b.apply_ply(Ply("h8f8"));
+    ASSERT_EQ(true, b.is_fifty_move_draw());
 }
 
 TEST(BoardTest, legal_plies_integration) {
