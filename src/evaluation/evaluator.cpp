@@ -6,6 +6,7 @@ class Evaluator {
     public:
         static Policy evaluate(Board b) {
             if (b.is_fifty_move_draw()) { return Policy(0); }
+            if (b.is_insufficient_mating_material()) { return Policy(0); }
             if (b.is_threefold_repetition()) { return Policy(0); }
 
             // TODO: Replace with real implementation

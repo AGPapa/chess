@@ -13,6 +13,8 @@
 // ranks 1 and 8 on pawns track en-passant
 static const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
 static const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
+static const Bitboard light_squares_mask(0x55AA55AA55AA55AA);
+static const Bitboard dark_squares_mask(0xAA55AA55AA55AA55);
 
 class Board {
 
@@ -878,6 +880,27 @@ class Board {
 
         bool is_fifty_move_draw() const {
             return rule_fifty_ply_clock >= 100;
+        }
+
+        bool is_insufficient_mating_material() const {
+            if (!rooks.empty() || !pawns.empty()) {
+                return false;
+            }
+
+            // three pieces or less, no queens/rooks/pawns
+            if ((squarewise_or(w_pieces, b_pieces)).count() < 3) {
+                return true;
+            }
+
+            // multiple knights
+            if (!(knights.empty())) {
+                return false;
+            }
+
+            // both a light and dark square bishop
+            const bool light_bishop = !squarewise_and(bishops, light_squares_mask).empty();
+            const bool dark_bishop = !squarewise_and(bishops, dark_squares_mask).empty();
+            return !(light_bishop && dark_bishop);
         }
     
     private:

@@ -73,6 +73,21 @@ TEST(EvaluatorTest, evaluate_fifty_move_draw) {
   ASSERT_EQ(0, p.actions().size());
 }
 
+TEST(EvaluatorTest, is_insufficient_mating_material) {
+  Board b = Board("7k/8/8/8/8/8/8/6RK w - - 1 100");
+  Policy p = Evaluator::evaluate(b);
+
+  ASSERT_NE(0, p.value());
+  ASSERT_NE(0, p.actions().size());
+
+  b.apply_ply(Ply("g1g8"));
+  b.apply_ply(Ply("h8g8"));
+  p = Evaluator::evaluate(b);
+
+  ASSERT_EQ(0, p.value());
+  ASSERT_EQ(0, p.actions().size());
+}
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

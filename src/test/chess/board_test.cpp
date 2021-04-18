@@ -555,6 +555,53 @@ TEST(BoardTest, is_fifty_move_draw) {
     ASSERT_EQ(true, b.is_fifty_move_draw());
 }
 
+TEST(BoardTest, is_insufficient_mating_material) {
+    Board b = Board("7k/8/8/8/8/8/7r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/7R/8/8/8/8/8/7K b - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h8h7"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/7p/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/b6r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/1b5r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/b1b4r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/1b1b3r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/1b1B3r/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+
+    b = Board("7k/8/8/8/8/8/1b1B3p/7K w - - - 100");
+    ASSERT_EQ(false, b.is_insufficient_mating_material());
+    b.apply_ply(Ply("h1h2"));
+    ASSERT_EQ(true, b.is_insufficient_mating_material());
+}
+
 TEST(BoardTest, legal_plies_integration) {
     for (auto& p : std::__fs::filesystem::directory_iterator("../src/test/fixtures/games/")) {
         std::ifstream game (p.path());
