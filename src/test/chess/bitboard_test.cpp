@@ -91,6 +91,37 @@ TEST(BitboardTest, unset_square_Square) {
     ASSERT_EQ(0, b.get_square(s));
 }
 
+TEST(BitboardTest, mirror) {
+    Bitboard a;
+    a.set_square(0, 0);
+    a.set_square(1, 1);
+    a.set_square(2, 2);
+    a.set_square(3, 3);
+    a.set_square(4, 4);
+    a.set_square(5, 5);
+    a.set_square(6, 6);
+    a.set_square(7, 7);
+    Bitboard b = a.mirror();
+
+    ASSERT_EQ(false, b.get_square(0,0));
+    ASSERT_EQ(false, b.get_square(1,1));
+    ASSERT_EQ(false, b.get_square(2,2));
+    ASSERT_EQ(false, b.get_square(3,3));
+    ASSERT_EQ(false, b.get_square(4,4));
+    ASSERT_EQ(false, b.get_square(5,5));
+    ASSERT_EQ(false, b.get_square(6,6));
+    ASSERT_EQ(false, b.get_square(7,7));
+
+    ASSERT_EQ(true, b.get_square(7,0));
+    ASSERT_EQ(true, b.get_square(6,1));
+    ASSERT_EQ(true, b.get_square(5,2));
+    ASSERT_EQ(true, b.get_square(4,3));
+    ASSERT_EQ(true, b.get_square(3,4));
+    ASSERT_EQ(true, b.get_square(2,5));
+    ASSERT_EQ(true, b.get_square(1,6));
+    ASSERT_EQ(true, b.get_square(0,7));
+}
+
 TEST(BitboardTest, empty) {
     Bitboard a;
     ASSERT_EQ(true, a.empty());

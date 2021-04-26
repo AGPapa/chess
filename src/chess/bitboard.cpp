@@ -48,6 +48,14 @@ class Bitboard {
             return (board >> s.get_int_value()) & 1;
         }
 
+        Bitboard mirror() const {
+            std::uint64_t new_board;
+            new_board = (board & 0x00000000FFFFFFFF) << 32 | (board & 0xFFFFFFFF00000000) >> 32;
+            new_board = (new_board & 0x0000FFFF0000FFFF) << 16 | (new_board & 0xFFFF0000FFFF0000) >> 16;
+            new_board = (new_board & 0x00FF00FF00FF00FF) << 8 | (new_board & 0xFF00FF00FF00FF00) >> 8;
+            return Bitboard(new_board);
+        }
+
         bool empty() const {
             return board == 0;
         }
