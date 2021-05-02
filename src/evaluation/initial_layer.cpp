@@ -11,8 +11,7 @@ class InitialLayer : public Layer {
             _output = output;
         }
 
-        //TODO: make sure this doesn't leak memory
-        const void propagate(std::int16_t* output) {
+        const void propagate(Board b, std::int16_t* output) {
             for (int i = 0; i < _output_dimension; i++) {
                 output[i] = _output[i];
             }

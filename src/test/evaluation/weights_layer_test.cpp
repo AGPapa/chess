@@ -14,7 +14,7 @@ TEST(WeightsLayerTest, propagate) {
     WeightsLayer layer = WeightsLayer(&init, 2, weights, biases);
 
     std::int16_t output[layer.output_dimension()];
-    layer.propagate(output);
+    layer.propagate(Board::default_board(), output);
     ASSERT_EQ(5, output[0]);
     ASSERT_EQ(8, output[1]);
 }

@@ -14,10 +14,10 @@ class WeightsLayer : public Layer {
             _biases = biases;
         }
 
-        const void propagate(std::int16_t* output) {
+        const void propagate(Board b, std::int16_t* output) {
             int input_dimension = _previous_layer->output_dimension();
             std::int16_t input[input_dimension];
-            _previous_layer->propagate(input);
+            _previous_layer->propagate(b, input);
 
             for (int i = 0; i < _output_dimension; i++) {
                 std::int16_t sum = _biases[i];

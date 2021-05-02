@@ -10,7 +10,7 @@ TEST(ActivationLayerTest, propagate) {
     ActivationLayer activation = ActivationLayer(&init);
 
     std::int16_t output[activation.output_dimension()];
-    activation.propagate(output);
+    activation.propagate(Board::default_board(), output);
     ASSERT_EQ(0, output[0]);
     ASSERT_EQ(0, output[1]);
     ASSERT_EQ(1, output[2]);
