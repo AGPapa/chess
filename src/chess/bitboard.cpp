@@ -44,6 +44,10 @@ class Bitboard {
             return (board >> (row*8+col)) & 1;
         }
 
+        int get_square(int index) const {
+            return (board >> index) & 1;
+        }
+
         int get_square(const Square s) const {
             return (board >> s.get_int_value()) & 1;
         }

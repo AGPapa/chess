@@ -91,6 +91,15 @@ TEST(BitboardTest, unset_square_Square) {
     ASSERT_EQ(0, b.get_square(s));
 }
 
+TEST(BitboardTest, get_square) {
+    Bitboard b;
+    Square s = Square(2, 3);
+    b.set_square(s);
+    ASSERT_EQ(true, b.get_square(s));
+    ASSERT_EQ(true, b.get_square(2, 3));
+    ASSERT_EQ(true, b.get_square(19));
+}
+
 TEST(BitboardTest, mirror) {
     Bitboard a;
     a.set_square(0, 0);
