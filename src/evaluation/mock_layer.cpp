@@ -2,16 +2,16 @@
 
 #include "layer.cpp"
 
-class InitialLayer : public Layer {
+class MockLayer : public Layer {
 
     public:
 
-        InitialLayer(int output_dimension, std::int16_t* output) {
+        MockLayer(int output_dimension, std::int16_t* output) {
             _output_dimension = output_dimension;
             _output = output;
         }
 
-        const void propagate(Board b, std::int16_t* output) {
+        const void propagate(const Board b, std::int16_t* output) {
             for (int i = 0; i < _output_dimension; i++) {
                 output[i] = _output[i];
             }

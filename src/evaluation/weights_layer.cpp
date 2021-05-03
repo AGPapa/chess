@@ -14,7 +14,7 @@ class WeightsLayer : public Layer {
             _biases = biases;
         }
 
-        const void propagate(Board b, std::int16_t* output) {
+        const void propagate(const Board b, std::int16_t* output) {
             int input_dimension = _previous_layer->output_dimension();
             std::int16_t input[input_dimension];
             _previous_layer->propagate(b, input);

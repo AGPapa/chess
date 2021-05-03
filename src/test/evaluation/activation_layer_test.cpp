@@ -1,11 +1,11 @@
 #include "../../evaluation/activation_layer.cpp"
-#include "../../evaluation/initial_layer.cpp"
+#include "../../evaluation/mock_layer.cpp"
 
 #include <gtest/gtest.h>
 
 TEST(ActivationLayerTest, propagate) {
     std::int16_t input[4] = { -1, 0, 1, 2 };
-    InitialLayer init = InitialLayer(4, input);
+    MockLayer init = MockLayer(4, input);
 
     ActivationLayer activation = ActivationLayer(&init);
 
