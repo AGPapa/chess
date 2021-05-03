@@ -94,6 +94,34 @@ TEST(BoardTest, all_pieces) {
     ASSERT_EQ(Bitboard(0x0100008000000080), c.all_pieces());
 }
 
+TEST(BoardTest, white_bishops) {
+    Board b = Board("k7/8/8/8/8/8/8/KBQ5 w - - 0 100");
+    Bitboard bishops;
+    bishops.set_square(Square("b1"));
+    ASSERT_EQ(bishops, b.white_bishops());
+}
+
+TEST(BoardTest, black_bishops) {
+    Board b = Board("kbq5/8/8/8/8/8/8/K7 w - - 0 100");
+    Bitboard bishops;
+    bishops.set_square(Square("b8"));
+    ASSERT_EQ(bishops, b.black_bishops());
+}
+
+TEST(BoardTest, white_rooks) {
+    Board b = Board("k7/8/8/8/8/8/8/KRQ5 w - - 0 100");
+    Bitboard rooks;
+    rooks.set_square(Square("b1"));
+    ASSERT_EQ(rooks, b.white_rooks());
+}
+
+TEST(BoardTest, black_rooks) {
+    Board b = Board("krq5/8/8/8/8/8/8/K7 w - - 0 100");
+    Bitboard rooks;
+    rooks.set_square(Square("b8"));
+    ASSERT_EQ(rooks, b.black_rooks());
+}
+
 TEST(BoardTest, apply_ply) {
     Board a = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     a.apply_ply(Ply("e2e4"));

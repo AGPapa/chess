@@ -249,6 +249,14 @@ class Board {
             return BoardSignature(w_pieces, b_pieces, bishops, rooks, knights, w_king, b_king, castling);
         }
 
+        Square white_king() const {
+            return w_king;
+        }
+
+        Square black_king() const {
+            return b_king;
+        }
+
         Bitboard white_pawns() const {
             return squarewise_and(w_pieces, squarewise_and(pawns, pawn_mask));
         }
@@ -259,6 +267,30 @@ class Board {
 
         Bitboard all_pawns() const {
             return squarewise_and(pawns, pawn_mask);
+        }
+
+        Bitboard white_knights() const {
+            return squarewise_and(w_pieces, knights);
+        }
+
+        Bitboard black_knights() const {
+            return squarewise_and(b_pieces, knights);
+        }
+
+        Bitboard white_bishops() const {
+            return squarewise_and(rooks.squarewise_not(), squarewise_and(w_pieces, bishops));
+        }
+
+        Bitboard black_bishops() const {
+            return squarewise_and(rooks.squarewise_not(), squarewise_and(b_pieces, bishops));
+        }
+
+        Bitboard white_rooks() const {
+            return squarewise_and(bishops.squarewise_not(), squarewise_and(w_pieces, rooks));
+        }
+
+        Bitboard black_rooks() const {
+            return  squarewise_and(bishops.squarewise_not(), squarewise_and(b_pieces, rooks));
         }
 
         Bitboard white_queens() const {
@@ -294,6 +326,22 @@ class Board {
 
         Bitboard black_pieces() const {
             return b_pieces;
+        }
+
+        bool can_white_castle_kingside() const {
+            return castling.get_white_kingside();
+        }
+
+        bool can_white_castle_queenside() const {
+            return castling.get_white_queenside();
+        }
+
+        bool can_black_castle_kingside() const {
+            return castling.get_black_kingside();
+        }
+
+        bool can_black_castle_queenside() const {
+            return castling.get_black_queenside();
         }
 
         bool is_white_turn() const {
