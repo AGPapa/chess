@@ -28,6 +28,14 @@ TEST(SquareTest, constructor_string) {
     ASSERT_EQ(6, s.get_col());
 }
 
+TEST(SquareTest, mirror) {
+    Square s = Square("a1");
+    ASSERT_EQ("a8", s.mirror().to_string());
+
+    s = Square("f7");
+    ASSERT_EQ("f2", s.mirror().to_string());
+}
+
 TEST(SquareTest, to_string) {
     Square s = Square(0, 0);
     ASSERT_EQ("a1", s.to_string());

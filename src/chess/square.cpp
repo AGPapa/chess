@@ -28,6 +28,10 @@ class Square {
             return square;
         }
 
+        constexpr Square mirror() const {
+            return Square(((7 - (square / 8)) * 8) + (square % 8));
+        }
+
         constexpr bool operator==(const Square& other) const {
             return square == other.square;
         }
