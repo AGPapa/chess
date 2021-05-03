@@ -68,6 +68,10 @@ class Bitboard {
             return __builtin_popcountll(board);
         }
 
+        Bitboard squarewise_not() const {
+            return ~board;
+        }
+
         friend Bitboard squarewise_or(const Bitboard a, const Bitboard b) {
             return Bitboard(a.board | b.board);
         }

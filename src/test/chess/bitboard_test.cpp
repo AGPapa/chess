@@ -156,6 +156,12 @@ TEST(BitboardTest, count) {
     ASSERT_EQ(1, a.count());
 }
 
+TEST(BitboardTest, squarewise_not) {
+    Bitboard a = Bitboard(0x0123456789ABCDEF);
+
+    ASSERT_EQ(Bitboard(0xFEDCBA9876543210), a.squarewise_not());
+}
+
 TEST(BitboardTest, squarewise_or) {
     Bitboard a;
     a.set_square(6,4);
