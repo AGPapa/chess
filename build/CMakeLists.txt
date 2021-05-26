@@ -5,6 +5,12 @@ project(Chess)
 # Set C++11
 set (CMAKE_CXX_STANDARD 11)
 
+# Set vector
+if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
+  set(CMAKE_CXX_FLAGS "-DUSE_NEON")
+#  set(CMAKE_CXX_FLAGS "-mfpu=neon") # everything seems to work fine without this?
+endif()
+
 # Locate GTest
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
