@@ -29,8 +29,8 @@ class ActivationLayer : public Layer {
 	        short segments = input_dimension / transfer_size;
             i = segments * transfer_size;
             const int16x4_t Zero = {0};
-            for(short i = 0; i < segments; i++) {
-    	        short offset = i * transfer_size;
+            for(short x = 0; x < segments; x++) {
+    	        short offset = x * transfer_size;
        	        int16x4_t input_vector = vld1_s16(input + offset);      // Load vector elements to registers
                 int16x4_t output_vector = vmax_s16(input_vector, Zero); // Max vector elements with zero
                 vst1_s16(output, output_vector);                        // Store vector elements in memory

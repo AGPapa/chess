@@ -3,6 +3,10 @@
 
 #include "layer.cpp"
 
+#if defined(USE_NEON)
+#include <arm_neon.h>
+#endif
+
 class WeightsLayer : public Layer {
 
     public:
@@ -20,8 +24,25 @@ class WeightsLayer : public Layer {
             _previous_layer->propagate(b, input);
 
             for (int i = 0; i < _output_dimension; i++) {
+                int j = 0;
                 std::int16_t sum = _biases[i];
-                for (int j = 0; j < input_dimension; j++) {
+                #if defined(USE_NEON)
+                    const short transfer_size = 4;
+                    short segments = input_dimension / transfer_size;
+                    j = segments * transfer_size;
+
+                    int16x4_t sums = {0};
+                    for(short x = 0; x < segments; x++) {
+                        short offset = x * transfer_size;
+                        int16x4_t input_vector = vld1_s16(input + offset);      // Load vector elements to registers
+                        int16x4_t weights_vector = vld1_s16(_weights + i * input_dimension + offset);      // Load vector elements to registers   
+                   
+                        sums = vmla_s16(sums, input_vector, weights_vector); // sums + (input dot weights)
+                    }
+                    sum += sums[0] + sums[1] + sums[2] + sums[3];
+                #endif
+
+                for (; j < input_dimension; j++) {
                     sum += _weights[i * input_dimension + j] * input[j];
                 }
                 output[i] = sum;
