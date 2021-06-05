@@ -2,7 +2,8 @@
 
 #include "layer.cpp"
 
-class MockLayer : public Layer {
+template<typename OutputType>
+class MockLayer : public Layer<OutputType> {
 
     public:
 

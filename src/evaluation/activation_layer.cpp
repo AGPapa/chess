@@ -8,11 +8,11 @@
 #include <arm_neon.h>
 #endif
 
-class ActivationLayer : public Layer {
+class ActivationLayer : public Layer<std::int16_t> {
 
     public:
 
-        ActivationLayer(Layer* previous_layer) {
+        ActivationLayer(Layer<std::int16_t>* previous_layer) {
             _previous_layer = previous_layer;
         }
 

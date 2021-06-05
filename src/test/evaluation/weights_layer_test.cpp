@@ -9,7 +9,7 @@
 
 TEST(WeightsLayerTest, propagate) {
     std::int16_t input[5] = { -1, 0, 1, 2, 3 };
-    MockLayer init = MockLayer(5, input);
+    MockLayer<std::int16_t> init = MockLayer<std::int16_t>(5, input);
 
 
     std::int16_t weights[10] = { 0, 0, 0, 2, 0, 0, 0, 0, 3, 1 };

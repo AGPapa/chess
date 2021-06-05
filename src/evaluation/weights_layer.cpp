@@ -7,11 +7,11 @@
 #include <arm_neon.h>
 #endif
 
-class WeightsLayer : public Layer {
+class WeightsLayer : public Layer<std::int16_t>  {
 
     public:
 
-        WeightsLayer(Layer* previous_layer, int output_dimension, std::int16_t* weights, std::int16_t* biases) {
+        WeightsLayer(Layer<std::int16_t>* previous_layer, int output_dimension, std::int16_t* weights, std::int16_t* biases) {
             _previous_layer = previous_layer;
             _output_dimension = output_dimension;
             _weights = weights;

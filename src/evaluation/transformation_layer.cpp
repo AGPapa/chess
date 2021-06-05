@@ -9,7 +9,7 @@ static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
 static const int CASTLING = 4;
 static const int OUTPUT_DIMENSION = (SQUARES*PIECE_RELATIONS + CASTLING) * SIDES;
 
-class TransformationLayer : public Layer {
+class TransformationLayer : public Layer<std::int16_t> {
 
     public:
 
