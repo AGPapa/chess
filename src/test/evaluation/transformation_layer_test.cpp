@@ -6,7 +6,7 @@
 TEST(TransformationLayerTest, propagate) {
     TransformationLayer layer = TransformationLayer();
 
-    std::int16_t output[layer.output_dimension()] = {};
+    std::int8_t output[layer.output_dimension()] = {};
     layer.propagate(Board::default_board(), output);
     ASSERT_EQ(0, output[0]);
     ASSERT_EQ(0, output[PIECE_RELATIONS*4]);

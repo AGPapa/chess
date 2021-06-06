@@ -9,13 +9,13 @@ static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
 static const int CASTLING = 4;
 static const int OUTPUT_DIMENSION = (SQUARES*PIECE_RELATIONS + CASTLING) * SIDES;
 
-class TransformationLayer : public Layer<std::int16_t> {
+class TransformationLayer : public Layer<std::int8_t> {
 
     public:
 
         TransformationLayer() {}
 
-        const void propagate(const Board b, std::int16_t* output) {
+        const void propagate(const Board b, std::int8_t* output) {
             int friendly_king;
             int enemy_king;
             Bitboard friendly_pawns;

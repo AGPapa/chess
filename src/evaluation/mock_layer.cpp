@@ -7,12 +7,12 @@ class MockLayer : public Layer<OutputType> {
 
     public:
 
-        MockLayer(int output_dimension, std::int16_t* output) {
+        MockLayer(int output_dimension, OutputType* output) {
             _output_dimension = output_dimension;
             _output = output;
         }
 
-        const void propagate(const Board b, std::int16_t* output) {
+        const void propagate(const Board b, OutputType* output) {
             for (int i = 0; i < _output_dimension; i++) {
                 output[i] = _output[i];
             }
@@ -24,5 +24,5 @@ class MockLayer : public Layer<OutputType> {
 
     private:
         int _output_dimension;
-        std::int16_t* _output;
+        OutputType* _output;
 };

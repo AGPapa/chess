@@ -8,7 +8,7 @@
 #include <arm_neon.h>
 #endif
 
-class ActivationLayer : public Layer<std::int16_t> {
+class ActivationLayer : public Layer<std::int8_t> {
 
     public:
 
@@ -16,7 +16,7 @@ class ActivationLayer : public Layer<std::int16_t> {
             _previous_layer = previous_layer;
         }
 
-        const void propagate(const Board b, std::int16_t* output) {
+        const void propagate(const Board b, std::int8_t* output) {
             int input_dimension = _previous_layer->output_dimension();
 
             std::int16_t input[input_dimension];
@@ -25,20 +25,21 @@ class ActivationLayer : public Layer<std::int16_t> {
             int i = 0;
 
             #if defined(USE_NEON)
-            const short transfer_size = 4;
+            const short transfer_size = 8;
 	        short segments = input_dimension / transfer_size;
             i = segments * transfer_size;
-            const int16x4_t Zero = {0};
+            const int8x8_t Zero = {0};
             for(short x = 0; x < segments; x++) {
     	        short offset = x * transfer_size;
-       	        int16x4_t input_vector = vld1_s16(input + offset);      // Load vector elements to registers
-                int16x4_t output_vector = vmax_s16(input_vector, Zero); // Max vector elements with zero
-                vst1_s16(output, output_vector);                        // Store vector elements in memory
+                int16x8_t input_vector =  vld1q_s16(input + offset);      // Load vector elements to registers
+                int8x8_t shifted_vector = vshrn_n_s16(input_vector, 6); // Shifts vector bits right
+                int8x8_t output_vector = vmax_s8(shifted_vector, Zero); // Max vector elements with zero
+                vst1_s8(output, output_vector);                        // Store vector elements in memory
             }
             #endif
 
             for (; i < input_dimension; i++) {
-                  output[i] = (std::int16_t) std::max(0, std::min(32767, (int) input[i])); // TODO: investigate why stockfish shifts the bits
+                  output[i] = (std::int8_t) std::max(0, std::min(127, input[i] >> 6)); // TODO: investigate why stockfish shifts the bits
             }
         }
 
@@ -47,5 +48,5 @@ class ActivationLayer : public Layer<std::int16_t> {
         }
 
     private:
-        Layer* _previous_layer;
+        Layer<std::int16_t>* _previous_layer;
 };
