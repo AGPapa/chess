@@ -34,7 +34,7 @@ class WeightsLayer : public Layer<std::int16_t>  {
                     int16x8_t sums_vector = {0};
                     std::int16_t sums[transfer_size];
                     for(short x = 0; x < segments; x++) {
-                        short offset = x * transfer_size;åååå
+                        short offset = x * transfer_size;
                         int8x8_t input_vector = vld1_s8(input + offset); // load vector elements to registers
                         int8x8_t weights_vector = vld1_s8(_weights + i * input_dimension + offset); // load vector elements to registers
                    
