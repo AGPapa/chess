@@ -2,18 +2,27 @@
 
 #include "layer.cpp"
 
-static const int SQUARES = 64;
-static const int PIECES = 5;
-static const int SIDES = 2;
-static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
-static const int CASTLING = 4;
-static const int OUTPUT_DIMENSION = (SQUARES*PIECE_RELATIONS + CASTLING) * SIDES;
+#if defined(USE_NEON)
+#include <arm_neon.h>
+#endif
 
-class TransformationLayer : public Layer<std::int8_t> {
+class TransformationLayer : public Layer<std::int16_t> {
 
     public:
 
-        TransformationLayer() {}
+        static const int SQUARES = 64;
+        static const int PIECES = 5;
+        static const int SIDES = 2;
+        static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
+        static const int CASTLING = 4;
+        static const int INPUT_DIMENSION = (PIECE_RELATIONS + CASTLING);
+
+        TransformationLayer(int output_dimension, std::int8_t* weights, std::int8_t* biases, bool flipped) {
+            _output_dimension = output_dimension;
+            _weights = weights;
+            _biases = biases;
+            _flipped = flipped;
+        }
 
         const void propagate(const Board b, std::int8_t* output) {
             int friendly_king;
@@ -32,7 +41,7 @@ class TransformationLayer : public Layer<std::int8_t> {
             Bitboard enemy_queens;
             bool enemy_kingside_castle;
             bool enemy_queenside_castle;
-            if (b.is_white_turn()) {
+            if (b.is_white_turn() ^ _flipped) {
                 friendly_king = b.white_king().get_int_value();
                 friendly_pawns = b.white_pawns();
                 friendly_knights = b.white_knights();
@@ -70,53 +79,73 @@ class TransformationLayer : public Layer<std::int8_t> {
                 enemy_queenside_castle = b.can_white_castle_queenside();
             }
 
-            int friendly_king_offset = friendly_king * PIECE_RELATIONS;
-            int enemy_king_offset = enemy_king * PIECE_RELATIONS + (SQUARES * PIECE_RELATIONS + CASTLING);
+            int king_offset = friendly_king * PIECE_RELATIONS;
 
-            Bitboard all_pieces = b.all_pieces();
+            Bitboard all_pieces;
+            if (_flipped) {
+                all_pieces = b.all_pieces().mirror();
+            } else {
+                all_pieces = b.all_pieces();
+            }
+
+            std::int8_t input[INPUT_DIMENSION] = {0};
 
             for (int i = 0; i < SQUARES; i++) {
                 //TODO: figure out where opponent king goes
                 if (all_pieces.get_square(i)) {
-                    output[friendly_king_offset + i] = friendly_pawns.get_square(Square(i));
-                    output[friendly_king_offset + SQUARES*1 + i] = friendly_knights.get_square(i);
-                    output[friendly_king_offset + SQUARES*2 + i] = friendly_bishops.get_square(i);
-                    output[friendly_king_offset + SQUARES*3 + i] = friendly_rooks.get_square(i);
-                    output[friendly_king_offset + SQUARES*4 + i] = friendly_queens.get_square(i);
-                    output[friendly_king_offset + SQUARES*5 + i] = enemy_pawns.get_square(i);
-                    output[friendly_king_offset + SQUARES*6 + i] = enemy_knights.get_square(i);
-                    output[friendly_king_offset + SQUARES*7 + i] = enemy_bishops.get_square(i);
-                    output[friendly_king_offset + SQUARES*8 + i] = enemy_rooks.get_square(i);
-                    output[friendly_king_offset + SQUARES*9 + i] = enemy_queens.get_square(i);
-                }
-                if (all_pieces.mirror().get_square(i)) {
-                    output[enemy_king_offset + i] = enemy_pawns.get_square(i);
-                    output[enemy_king_offset + SQUARES*1 + i] = enemy_knights.get_square(i);
-                    output[enemy_king_offset + SQUARES*2 + i] = enemy_bishops.get_square(i);
-                    output[enemy_king_offset + SQUARES*3 + i] = enemy_rooks.get_square(i);
-                    output[enemy_king_offset + SQUARES*4 + i] = enemy_queens.get_square(i);
-                    output[enemy_king_offset + SQUARES*5 + i] = friendly_pawns.get_square(i);
-                    output[enemy_king_offset + SQUARES*6 + i] = friendly_knights.get_square(i);
-                    output[enemy_king_offset + SQUARES*7 + i] = friendly_bishops.get_square(i);
-                    output[enemy_king_offset + SQUARES*8 + i] = friendly_rooks.get_square(i);
-                    output[enemy_king_offset + SQUARES*9 + i] = friendly_queens.get_square(i);
+                    input[i] = friendly_pawns.get_square(i);
+                    input[SQUARES*1 + i] = friendly_knights.get_square(i);
+                    input[SQUARES*2 + i] = friendly_bishops.get_square(i);
+                    input[SQUARES*3 + i] = friendly_rooks.get_square(i);
+                    input[SQUARES*4 + i] = friendly_queens.get_square(i);
+                    input[SQUARES*5 + i] = enemy_pawns.get_square(i);
+                    input[SQUARES*6 + i] = enemy_knights.get_square(i);
+                    input[SQUARES*7 + i] = enemy_bishops.get_square(i);
+                    input[SQUARES*8 + i] = enemy_rooks.get_square(i);
+                    input[SQUARES*9 + i] = enemy_queens.get_square(i);
                 }
             }
-            output[40960] = friendly_kingside_castle;
-            output[40961] = friendly_queenside_castle;
-            output[40962] = enemy_kingside_castle;
-            output[40963] = enemy_queenside_castle;
+            input[PIECE_RELATIONS] = friendly_kingside_castle;
+            input[PIECE_RELATIONS + 1] = friendly_queenside_castle;
+            input[PIECE_RELATIONS + 2] = enemy_kingside_castle;
+            input[PIECE_RELATIONS + 3] = enemy_queenside_castle;
 
-            output[81924] = enemy_kingside_castle;
-            output[81925] = enemy_queenside_castle;
-            output[81926] = friendly_kingside_castle;
-            output[81927] = friendly_queenside_castle;
+            // applies weights
+            for (int i = 0; i < _output_dimension; i++) {
+                int j = 0;
+                std::int16_t sum = _biases[i];
+                #if defined(USE_NEON)
+                    const short transfer_size = 8;
+                    short segments = INPUT_DIMENSION / transfer_size;
+                    j = segments * transfer_size;
+
+                    int16x8_t sums_vector = {0};
+                    std::int16_t sums[transfer_size];
+                    for(short x = 0; x < segments; x++) {
+                        short offset = x * transfer_size + king_offset;
+                        int8x8_t input_vector = vld1_s8(input + offset); // load vector elements to registers
+                        int8x8_t weights_vector = vld1_s8(_weights + king_offset + i * INPUT_DIMENSION + offset); // load vector elements to registers
+                   
+                        sums_vector = vmlal_s8(sums_vector, input_vector, weights_vector); // sums + (input dot weights)
+                    }
+                    vst1q_s16(sums, sums_vector); // store vector elements in memory
+                    sum += sums[0] + sums[1] + sums[2] + sums[3] + sums[4] + sums[5] + sums[6] + sums[7];
+                #endif
+
+                for (; j < INPUT_DIMENSION; j++) {
+                    sum += _weights[i * INPUT_DIMENSION + j] * input[j];
+                }
+                output[i] = sum;
+            }
         }
 
-        constexpr int output_dimension() const {
-            return OUTPUT_DIMENSION;
+        const int output_dimension() const {
+            return _output_dimension;
         }
 
     private:
-        std::int16_t* _output;
+        int _output_dimension;
+        std::int8_t* _weights;
+        std::int8_t* _biases;
+        bool _flipped;
 };
