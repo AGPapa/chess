@@ -493,19 +493,19 @@ class Board {
             w_turn = !w_turn;
         }
 
-        bool is_white_king_in_check() {
+        bool is_white_king_in_check() const {
             return square_under_attack(w_king, !w_turn);
         }
 
-        bool is_black_king_in_check() {
+        bool is_black_king_in_check() const {
             return square_under_attack(b_king, !w_turn);
         }
 
-        bool square_under_attack(Square s) {
+        bool square_under_attack(Square s) const {
             return square_under_attack(s, w_turn);
         }
 
-        bool square_under_attack(Square s, bool white_turn) {
+        bool square_under_attack(Square s, bool white_turn) const {
             int r = s.get_row();
             int c = s.get_col();
 
@@ -637,7 +637,7 @@ class Board {
             return false;
         }
 
-        std::vector<Ply> generate_potential_plies() {
+        std::vector<Ply> generate_potential_plies() const {
             std::vector<Ply> ply_list;
             ply_list.reserve(50);
             
@@ -1001,7 +1001,7 @@ class Board {
             }
         }
 
-        void add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) {
+        void add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) const {
             Board b = copy_without_history();
             b.apply_ply_without_history(ply);
             Square king = w_turn ? b.w_king : b.b_king;
@@ -1011,7 +1011,7 @@ class Board {
         }
 
         // TODO: potential speed improvement since we don't need add_ply_if_king_not_in_check for every one
-        void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) {
+        void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) const {
             if (to.get_row() == 7 || to.get_row() == 0) {
                 add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Queen));
                 add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Knight));
