@@ -12,12 +12,12 @@ class ConcatenationLayer : public Layer<OutputType> {
             _second_layer = second_layer;
         }
 
-        const void propagate(const Board b, OutputType* output) {
+        void propagate(const Board b, OutputType* output) const {
             _first_layer->propagate(b, output);
             _second_layer->propagate(b, output + _first_layer->output_dimension());
         }
 
-        const int output_dimension() {
+        const int output_dimension() const {
             return _first_layer->output_dimension() + _second_layer->output_dimension();
         }
 

@@ -24,7 +24,7 @@ class TransformationLayer : public Layer<std::int16_t> {
             _flipped = flipped;
         }
 
-        const void propagate(const Board b, std::int8_t* output) {
+        void propagate(const Board b, std::int8_t* output) const {
             int friendly_king;
             int enemy_king;
             Bitboard friendly_pawns;
