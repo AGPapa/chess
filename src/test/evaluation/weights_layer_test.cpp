@@ -9,10 +9,10 @@
 
 TEST(WeightsLayerTest, propagate) {
     std::int8_t input[9] = { -1, 0, 1, 2, 3, 0, 0, 0, 0 };
-    MockLayer<std::int8_t> init = MockLayer<std::int8_t>(5, input);
+    MockLayer<std::int8_t> init = MockLayer<std::int8_t>(9, input);
 
 
-    std::int8_t weights[18] = { 0, 0, 0, 2, 0, 0, 0, 0, 3, 1, 0, 0, 0, 0 };
+    std::int8_t weights[18] = { 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0 };
     std::int8_t biases[2] = { 1, 2 };
 
     WeightsLayer layer = WeightsLayer(&init, 2, weights, biases);
