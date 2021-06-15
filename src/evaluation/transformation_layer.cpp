@@ -17,7 +17,7 @@ class TransformationLayer : public Layer<std::int16_t> {
         static const int CASTLING = 4;
         static const int INPUT_DIMENSION = (PIECE_RELATIONS + CASTLING);
 
-        TransformationLayer(int output_dimension, std::int8_t* weights, std::int8_t* biases, bool flipped) {
+        TransformationLayer(const int output_dimension, const std::int8_t* weights, const std::int8_t* biases, const bool flipped) {
             _output_dimension = output_dimension;
             _weights = weights;
             _biases = biases;
@@ -145,7 +145,7 @@ class TransformationLayer : public Layer<std::int16_t> {
 
     private:
         int _output_dimension;
-        std::int8_t* _weights;
-        std::int8_t* _biases;
+        const std::int8_t* _weights;
+        const std::int8_t* _biases;
         bool _flipped;
 };

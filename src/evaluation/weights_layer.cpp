@@ -11,7 +11,7 @@ class WeightsLayer : public Layer<std::int16_t>  {
 
     public:
 
-        WeightsLayer(Layer<std::int8_t>* previous_layer, int output_dimension, std::int8_t* weights, std::int8_t* biases) {
+        WeightsLayer(const Layer<std::int8_t>* previous_layer, const int output_dimension, const std::int8_t* weights, const std::int8_t* biases) {
             _previous_layer = previous_layer;
             _output_dimension = output_dimension;
             _weights = weights;
@@ -56,8 +56,8 @@ class WeightsLayer : public Layer<std::int16_t>  {
         }
 
     private:
-        Layer<std::int8_t>* _previous_layer;
+        const Layer<std::int8_t>* _previous_layer;
         int _output_dimension;
-        std::int8_t* _weights;
-        std::int8_t* _biases;
+        const std::int8_t* _weights;
+        const std::int8_t* _biases;
 };

@@ -11,7 +11,7 @@
 class OutputLayer : public Layer<std::int16_t>  {
 
     public:
-        OutputLayer(Layer<std::int8_t>* previous_layer, std::int8_t* weights, std::int8_t* biases) {
+        OutputLayer(const Layer<std::int8_t>* previous_layer, const std::int8_t* weights, const std::int8_t* biases) {
             _previous_layer = previous_layer;
             _weights = weights;
             _biases = biases;
@@ -66,7 +66,7 @@ class OutputLayer : public Layer<std::int16_t>  {
         }
 
     private:
-        Layer<std::int8_t>* _previous_layer;
-        std::int8_t* _weights;
-        std::int8_t* _biases;
+        const Layer<std::int8_t>* _previous_layer;
+        const std::int8_t* _weights;
+        const std::int8_t* _biases;
 };
