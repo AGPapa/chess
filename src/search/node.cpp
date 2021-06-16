@@ -25,4 +25,6 @@ class Node : public std::enable_shared_from_this<Node>{
         virtual float score(int parent_visits) { return -100.0; };
 
         virtual int visits() { return 0; };
+
+        virtual ~Node() { _sibling.reset(); };
 };

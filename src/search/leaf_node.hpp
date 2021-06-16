@@ -16,4 +16,5 @@ class LeafNode : public Node {
 
         float score(int parent_visits) { return exploration_factor * _prior * sqrt(parent_visits); }
 
+        ~LeafNode() { _sibling.reset(); };
 };

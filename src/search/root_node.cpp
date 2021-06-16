@@ -18,4 +18,7 @@ class RootNode : public ExpandedNode {
             _board = Board(board);
             _board.apply_ply(node_to_convert->_ply);
         };
+
+        ~RootNode() { _sibling.reset(); _child.reset(); };
+
 };

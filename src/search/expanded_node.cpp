@@ -28,4 +28,5 @@ class ExpandedNode : public Node {
 
         int visits() { return _visits; };
 
+        virtual ~ExpandedNode() { _sibling.reset(); _child.reset(); };
 };
