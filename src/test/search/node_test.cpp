@@ -13,19 +13,14 @@ TEST(NodeTest, new_node_constructor) {
 TEST(NodeTest, convert_node_constructor) {
     Board b = Board::default_board();
     std::unique_ptr<RootNode> root = std::unique_ptr<RootNode>(new RootNode(b));
-    std::vector<ExpandedNode*> lineage = std::vector<ExpandedNode*>();
-    lineage.push_back(root.get());
 
     std::unique_ptr<Node>* owner = &(root->_child);
     ASSERT_EQ(root->_child->is_leaf(), true);
     ASSERT_EQ(root->_visits, 1);
-    float initial_score = root->_score;
 
     float leaf_prior = root->_child->_prior;
 
-    ((LeafNode *) (root->_child.get()))->convert_to_expanded_node(b, owner, lineage);
-    ASSERT_EQ(root->_visits, 2);
-    ASSERT_EQ(root->_score, initial_score - ((ExpandedNode *) (root->_child.get()))->_score);
+    ((LeafNode *) (root->_child.get()))->convert_to_expanded_node(b, owner);
     ASSERT_EQ(root->_child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root->_child.get()))->_visits, 1);
     ASSERT_EQ(root->_child->_prior, leaf_prior);

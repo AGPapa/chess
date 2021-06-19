@@ -50,14 +50,14 @@ TEST(SearcherTest, checkmate_in_one) {
     std::unique_ptr<Searcher> s = std::unique_ptr<Searcher>(new Searcher(a, &out));;
 
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
     s->stop_searching();
     Ply p = s->find_best_ply();
     ASSERT_EQ(p, Ply("c2c8"));
 
     s->apply_ply(Ply("c2c3"));
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("f7f1"));
@@ -65,7 +65,7 @@ TEST(SearcherTest, checkmate_in_one) {
     Board b = Board("k7/1br5/8/8/7n/8/5PPP/7K w - - 0 100");
     s = std::unique_ptr<Searcher>(new Searcher(b, &out));
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("h2h3"));
@@ -73,7 +73,7 @@ TEST(SearcherTest, checkmate_in_one) {
     Board c = Board("7k/5ppp/8/7N/8/8/1BR5/K7 b - - 0 100");
     s = std::unique_ptr<Searcher>(new Searcher(c, &out));
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("h7h6"));
@@ -81,7 +81,7 @@ TEST(SearcherTest, checkmate_in_one) {
     Board d = Board("K7/3q4/2k5/8/8/8/8/8 b - - 0 100");
     s = std::unique_ptr<Searcher>(new Searcher(d, &out));
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(5));
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("d7b7"));
@@ -94,7 +94,7 @@ TEST(SearcherTest, checkmate_in_two) {
     std::unique_ptr<Searcher> s = std::unique_ptr<Searcher>(new Searcher(a, &out));;
 
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(750));
+    std::this_thread::sleep_for (std::chrono::milliseconds(1000));
     s->stop_searching();
     Ply p = s->find_best_ply();
     ASSERT_EQ(p, Ply("c2a4"));
@@ -112,7 +112,7 @@ TEST(SearcherTest, checkmate_in_two) {
     s = std::unique_ptr<Searcher>(new Searcher(b, &out));;
 
     s->start_searching();
-    std::this_thread::sleep_for (std::chrono::milliseconds(750));
+    std::this_thread::sleep_for (std::chrono::milliseconds(1000));
     s->stop_searching();
     p = s->find_best_ply();
     ASSERT_EQ(p, Ply("c2a4"));
