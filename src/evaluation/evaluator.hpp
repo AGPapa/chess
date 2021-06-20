@@ -4,7 +4,7 @@
 class Evaluator {
 
     public:
-        static Policy evaluate(Board b);
+        static std::unique_ptr<Policy> evaluate(Board b);
 
         static NeuralNet net;
 };

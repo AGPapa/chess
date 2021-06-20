@@ -46,7 +46,7 @@ class NeuralNet {
             }
         };
 
-        Policy evaluate (const Board b, std::vector<Ply> ply_list) const {
+        std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) const {
             TransformationLayer friendly_t_layer(16, _friendly_transform_weights, _friendly_transform_biases, false); // dense 15
             TransformationLayer enemy_t_layer(16, _enemy_transform_weights, _enemy_transform_biases, true); // dense 15
             ConcatenationLayer<std::int16_t> concat_layer = ConcatenationLayer<std::int16_t>(&friendly_t_layer, &enemy_t_layer);
@@ -60,9 +60,9 @@ class NeuralNet {
            std::int16_t output[1859] = { 0 };
            output_layer.propagate(b, ply_list, output);
 
-           Policy pol = Policy(output[0] / 32767.0);
+           std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
            for (Ply p : ply_list) {
-               pol.add_action(p, output[policy_map.at(p)] / 32767.0);
+               pol->add_action(p, output[policy_map.at(p)] / 32767.0);
            }
            return pol;
         }
