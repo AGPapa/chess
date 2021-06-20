@@ -7,8 +7,7 @@ template<typename Item>
 class MPSCQueue {
     // Multi-producer single-consumer
     public:
-        MPSCQueue(std::condition_variable *c) {
-            consumer_variable = c;
+        MPSCQueue() {
             queue = RingbufferQueue<Item, 1024>();
         }
 
@@ -22,7 +21,6 @@ class MPSCQueue {
                 i = queue.enqueue(std::move(i));
             }
             _mutex.unlock();
-            consumer_variable->notify_one();
         }
 
         std::unique_ptr<Item> dequeue() {
@@ -42,6 +40,5 @@ class MPSCQueue {
      private:
         std::mutex _mutex;
         RingbufferQueue<Item, 1024> queue;
-        std::condition_variable *consumer_variable;
         std::condition_variable _full_variable;
 };
