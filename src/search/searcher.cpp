@@ -167,6 +167,7 @@ class Searcher {
                 }
                 if (!_backprop_queue->empty()) { throw std::runtime_error("Backprop queue is not empty"); }
                 _state = SearcherState::Stopped;
+                _output_info();
                 _output_bestmove();
             }
             _state_mutex.unlock();
@@ -176,6 +177,12 @@ class Searcher {
             std::ostream& output = *_output;
             Ply best_ply = find_best_ply();
             output << "bestmove " << best_ply.to_string() << std::endl;
+        }
+
+        void _output_info() {
+            std::ostream& output = *_output;
+            int nodes = _root->visits();
+            output << "info nodes " << nodes << std::endl;
         }
 
         void _backpropagate() {

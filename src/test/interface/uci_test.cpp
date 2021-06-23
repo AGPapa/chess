@@ -6,8 +6,10 @@ bool is_bestmove_valid(Board b, std::string output) {
     std::istringstream stream = std::istringstream(output);
     std::string token = "";
     stream >> token;
-    if (token != "bestmove") {
-        return false;
+    while (token != "bestmove") {
+        if (token == "") { return false; }
+        token = "";
+        stream >> token;
     }
     stream >> token;
     Ply ply_to_check = Ply(token);
