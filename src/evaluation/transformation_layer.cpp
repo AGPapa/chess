@@ -11,7 +11,7 @@ class TransformationLayer : public Layer<std::int16_t> {
     public:
 
         static const int SQUARES = 64;
-        static const int PIECES = 5;
+        static const int PIECES = 6;
         static const int SIDES = 2;
         static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
         static const int CASTLING = 4;
@@ -105,6 +105,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                     input[SQUARES*9 + i] = enemy_queens.get_square(i);
                 }
             }
+            input[SQUARES*10 + enemy_king] = 1;
             input[PIECE_RELATIONS] = friendly_kingside_castle;
             input[PIECE_RELATIONS + 1] = friendly_queenside_castle;
             input[PIECE_RELATIONS + 2] = enemy_kingside_castle;

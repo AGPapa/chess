@@ -7,17 +7,18 @@ TEST(TransformationLayerTest, propagate) {
     std::int8_t weights[TransformationLayer::INPUT_DIMENSION * TransformationLayer::SQUARES * 2] = {0};
     weights[64*1+1] = 1;
     weights[64*6+57] = 10;
+    weights[64*10+56] = 20;
     std::int8_t biases[2] = { 1, 2 };
     TransformationLayer layer = TransformationLayer(2, weights, biases, false);
     TransformationLayer flipped_layer = TransformationLayer(2, weights, biases, true);
 
     std::int8_t output[layer.output_dimension()];
     layer.propagate(Board("k7/8/8/8/8/8/8/KN6 w - - 0 100"), output);
-    ASSERT_EQ(2, output[0]);
+    ASSERT_EQ(22, output[0]);
     ASSERT_EQ(2, output[1]);
 
     flipped_layer.propagate(Board("k7/8/8/8/8/8/8/KN6 w - - 0 100"), output);
-    ASSERT_EQ(11, output[0]);
+    ASSERT_EQ(31, output[0]);
     ASSERT_EQ(2, output[1]);
 }
 
