@@ -79,7 +79,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                 enemy_queenside_castle = b.can_white_castle_queenside();
             }
 
-            int king_offset = friendly_king * PIECE_RELATIONS;
+            int king_offset = friendly_king * INPUT_DIMENSION;
 
             Bitboard all_pieces;
             if (_flipped) {
@@ -123,7 +123,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                     int16x8_t sums_vector = {0};
                     std::int16_t sums[transfer_size];
                     for(short x = 0; x < segments; x++) {
-                        short offset = x * transfer_size + king_offset;
+                        short offset = x * transfer_size;
                         int8x8_t input_vector = vld1_s8(input + offset); // load vector elements to registers
                         int8x8_t weights_vector = vld1_s8(_weights + king_offset + i * INPUT_DIMENSION + offset); // load vector elements to registers
                    
@@ -134,7 +134,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                 #endif
 
                 for (; j < INPUT_DIMENSION; j++) {
-                    sum += _weights[i * INPUT_DIMENSION + j] * input[j];
+                    sum += _weights[i * INPUT_DIMENSION + j + king_offset] * input[j];
                 }
                 output[i] = sum;
             }
