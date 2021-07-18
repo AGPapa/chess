@@ -11,7 +11,7 @@ TEST(TransformationLayerTest, propagate) {
     TransformationLayer layer = TransformationLayer(2, weights, biases, false);
     TransformationLayer flipped_layer = TransformationLayer(2, weights, biases, true);
 
-    std::int8_t output[layer.output_dimension()];
+    std::int16_t output[layer.output_dimension()];
     layer.propagate(Board("2k5/8/8/8/8/8/8/1NK5 w - - 0 100"), output);
     ASSERT_EQ(22, output[0]);
     ASSERT_EQ(2, output[1]);
