@@ -11,8 +11,8 @@ TEST(OutputLayerTest, propagate) {
     std::int8_t input[9] = { -1, 0, 1, 2, 3, 0, 0, 0, 0 };
     MockLayer<std::int8_t> init = MockLayer<std::int8_t>(9, input);
 
-    std::int8_t weights[9*1859] = {0};
-    std::int8_t biases[1859] = {0};
+    std::int8_t weights[9*1969] = {0};
+    std::int8_t biases[1969] = {0};
 
     std::vector<Ply> ply_list = { Ply("a1a2") };
 

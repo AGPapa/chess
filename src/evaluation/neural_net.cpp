@@ -38,10 +38,10 @@ class NeuralNet {
             for (int i = 0; i < 32; i++) {
                 _full_layer_2_biases[i] = rand() % 64 - 32;
             }
-            for (int i = 0; i < 32*1859; i++) {
+            for (int i = 0; i < 32*1969; i++) {
                 _output_layer_weights[i] = rand() % 256 - 128;
             }
-            for (int i = 0; i < 1859; i++) {
+            for (int i = 0; i < 1969; i++) {
                 _output_layer_biases[i] = rand() % 64 - 32;
             }
         };
@@ -57,7 +57,7 @@ class NeuralNet {
             ActivationLayer activation_layer_3 = ActivationLayer(&dense_layer_3);
             OutputLayer output_layer = OutputLayer(&activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
 
-           std::int16_t output[1859] = { 0 };
+           std::int16_t output[1969] = { 0 };
            output_layer.propagate(b, ply_list, output);
 
            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
@@ -76,8 +76,8 @@ class NeuralNet {
         std::int8_t _full_layer_1_biases[32];
         std::int8_t _full_layer_2_weights[32*32];
         std::int8_t _full_layer_2_biases[32];
-        std::int8_t _output_layer_weights[32*1859];
-        std::int8_t _output_layer_biases[1859];
+        std::int8_t _output_layer_weights[32*1969];
+        std::int8_t _output_layer_biases[1969];
 
 
           
@@ -94,6 +94,7 @@ class NeuralNet {
            // policy head (32->1858) ("policy_head")
 
            // policy head (32->1859) ("combined_head"?)
+           // why do I have 1969?
         
            /*
             Input: 2 x 40,965

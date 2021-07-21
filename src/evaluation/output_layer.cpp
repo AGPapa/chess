@@ -11,13 +11,13 @@
 class OutputLayer : public Layer<std::int16_t>  {
 
     public:
-        OutputLayer(const Layer<std::int8_t>* previous_layer, const std::int8_t* weights, const std::int8_t* biases) {
+        OutputLayer(Layer<std::int8_t>* previous_layer, const std::int8_t* weights, const std::int8_t* biases) {
             _previous_layer = previous_layer;
             _weights = weights;
             _biases = biases;
         }
 
-        const void propagate(const Board b, const std::vector<Ply> ply_list, std::int16_t* output) const {
+        void propagate(const Board b, const std::vector<Ply> ply_list, std::int16_t* output) const {
             int input_dimension = _previous_layer->output_dimension();
             std::int8_t input[input_dimension];
             _previous_layer->propagate(b, input);
@@ -25,6 +25,10 @@ class OutputLayer : public Layer<std::int16_t>  {
             std::vector<int> output_nodes;
             output_nodes.push_back(0); // value head
             for (Ply p : ply_list) {
+                if (policy_map.find(p) == policy_map.end()) {
+                   std::cout << "output layer" << std::endl;
+                   std::cout << p.to_string() << std::endl;
+                }
                 output_nodes.push_back(policy_map.at(p)); // policy head
             }
 
@@ -56,17 +60,17 @@ class OutputLayer : public Layer<std::int16_t>  {
             }
         }
 
-        void propagate(const Board b, std::int16_t* output) const {
+        void propagate(const Board b, std::int16_t* output) {
             std::vector<Ply> ply_list = b.generate_potential_plies();
             propagate(b, ply_list, output);
         }
 
         const int output_dimension() const {
-            return 1859;
+            return 1969;
         }
 
     private:
-        const Layer<std::int8_t>* _previous_layer;
+        Layer<std::int8_t>* _previous_layer;
         const std::int8_t* _weights;
         const std::int8_t* _biases;
 };
