@@ -12,7 +12,7 @@ class MockLayer : public Layer<OutputType> {
             _output = output;
         }
 
-        void propagate(const Board b, OutputType* output) const {
+        void propagate(const Board b, OutputType* output) {
             for (int i = 0; i < _output_dimension; i++) {
                 output[i] = _output[i];
             }

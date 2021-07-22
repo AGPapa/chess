@@ -12,20 +12,11 @@ class NeuralNet {
 
     public:
         NeuralNet() {
+            _friendly_cache = std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>>(new Cache<int, TransformationLayer<256>::Weights>(10));
+            _enemy_cache = std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>>(new Cache<int, TransformationLayer<256>::Weights>(10));
+
             srand(2018);
 
-            for (int i = 0; i < TransformationLayer::INPUT_DIMENSION * TransformationLayer::SQUARES * 16; i++) { //only 16 instead of 256
-                _friendly_transform_weights[i] = rand() % 256 - 128;
-            }
-            for (int i = 0; i < 16; i++) { //only 16 instead of 256
-                _friendly_transform_biases[i] = rand() % 64 - 32;
-            }
-            for (int i = 0; i < TransformationLayer::INPUT_DIMENSION * TransformationLayer::SQUARES * 16; i++) { //only 16 instead of 256
-                _enemy_transform_weights[i] = rand() % 256 - 128;
-            }
-            for (int i = 0; i < 16; i++) { //only 16 instead of 256
-                _enemy_transform_biases[i] = rand() % 64 - 32;
-            }
             for (int i = 0; i < 512*32; i++) {
                 _full_layer_1_weights[i] = rand() % 256 - 128;
             }
@@ -46,9 +37,9 @@ class NeuralNet {
             }
         };
 
-        std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) const {
-            TransformationLayer friendly_t_layer(16, _friendly_transform_weights, _friendly_transform_biases, false); // dense 15
-            TransformationLayer enemy_t_layer(16, _enemy_transform_weights, _enemy_transform_biases, true); // dense 15
+        std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) {
+            TransformationLayer<256> friendly_t_layer(_friendly_cache.get(), _load_weights, false); // dense 15
+            TransformationLayer<256> enemy_t_layer(_enemy_cache.get(), _load_weights, true); // dense 15
             ConcatenationLayer<std::int16_t> concat_layer = ConcatenationLayer<std::int16_t>(&friendly_t_layer, &enemy_t_layer);
             ActivationLayer activation_layer_1 = ActivationLayer(&concat_layer);
             WeightsLayer dense_layer_2 = WeightsLayer(&activation_layer_1, 0, _full_layer_1_weights, _full_layer_1_biases); // dense 16
@@ -62,16 +53,19 @@ class NeuralNet {
 
            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
            for (Ply p : ply_list) {
+               if (policy_map.find(p) == policy_map.end()) {
+                   std::cout << "neural net" << std::endl;
+                   std::cout << p.to_string() << std::endl;
+               }
                pol->add_action(p, output[policy_map.at(p)] / 32767.0);
            }
            return pol;
         }
 
     private:
-        std::int8_t _friendly_transform_weights[TransformationLayer::INPUT_DIMENSION * TransformationLayer::SQUARES * 16];
-        std::int8_t _friendly_transform_biases[16];
-        std::int8_t _enemy_transform_weights[TransformationLayer::INPUT_DIMENSION * TransformationLayer::SQUARES * 16];
-        std::int8_t _enemy_transform_biases[16];
+        std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>> _friendly_cache;
+        std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>> _enemy_cache;
+
         std::int8_t _full_layer_1_weights[512*32];
         std::int8_t _full_layer_1_biases[32];
         std::int8_t _full_layer_2_weights[32*32];
@@ -80,7 +74,19 @@ class NeuralNet {
         std::int8_t _output_layer_biases[1969];
 
 
-          
+        static std::unique_ptr<TransformationLayer<256>::Weights> _load_weights (int king) {
+            std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
+
+            srand(king);
+
+            for (int i = 0; i < TransformationLayer<256>::INPUT_DIMENSION * 256; i++) {
+                weight_ptr->weights[i] = rand() % 256 - 128;
+            }
+            for (int i = 0; i < 256; i++) { //only 16 instead of 256
+                weight_ptr->biases[i] = rand() % 64 - 32;
+            }
+            return std::move(weight_ptr);
+        }
 
 
            // transformation layer
@@ -105,4 +111,7 @@ class NeuralNet {
 
            // 10,486,784 <-"should be"
            // 5,804,251  <-is
+
+
+           //with king 45651
 };

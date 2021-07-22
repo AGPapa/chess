@@ -16,7 +16,7 @@ class ActivationLayer : public Layer<std::int8_t> {
             _previous_layer = previous_layer;
         }
 
-        void propagate(const Board b, std::int8_t* output) const {
+        void propagate(const Board b, std::int8_t* output) {
             int input_dimension = _previous_layer->output_dimension();
 
             std::int16_t input[input_dimension];

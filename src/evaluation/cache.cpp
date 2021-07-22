@@ -42,7 +42,6 @@ class Cache {
             return _list.front().second.get();
         }
 
-
      private:
         int _max_size;
         std::list<std::pair<Key, std::unique_ptr<Value>>> _list;

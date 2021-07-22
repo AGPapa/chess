@@ -1,15 +1,16 @@
 #include <cstdint>
 
 #include "layer.cpp"
+#include "cache.cpp"
 
 #if defined(USE_NEON)
 #include <arm_neon.h>
 #endif
 
+template<int OutputDimension>
 class TransformationLayer : public Layer<std::int16_t> {
 
     public:
-
         static const int SQUARES = 64;
         static const int PIECES = 6;
         static const int SIDES = 2;
@@ -17,14 +18,18 @@ class TransformationLayer : public Layer<std::int16_t> {
         static const int CASTLING = 4;
         static const int INPUT_DIMENSION = (PIECE_RELATIONS + CASTLING);
 
-        TransformationLayer(const int output_dimension, const std::int8_t* weights, const std::int8_t* biases, const bool flipped) {
-            _output_dimension = output_dimension;
-            _weights = weights;
-            _biases = biases;
+        struct Weights {
+            std::int8_t weights[INPUT_DIMENSION * OutputDimension];
+            std::int8_t biases[OutputDimension];
+        };
+
+        TransformationLayer(Cache<int, Weights>* cache, std::unique_ptr<Weights>(*load_weights)(int), const bool flipped) {
             _flipped = flipped;
+            _cache = cache;
+            _load_weights = load_weights;
         }
 
-        void propagate(const Board b, std::int16_t* output) const {
+        void propagate(const Board b, std::int16_t* output) {
             int friendly_king;
             int enemy_king;
             Bitboard friendly_pawns;
@@ -79,7 +84,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                 enemy_queenside_castle = b.can_white_castle_queenside();
             }
 
-            int king_offset = friendly_king * INPUT_DIMENSION;
+            int king_offset = friendly_king * PIECE_RELATIONS;
 
             Bitboard all_pieces;
             if (_flipped) {
@@ -91,7 +96,6 @@ class TransformationLayer : public Layer<std::int16_t> {
             std::int8_t input[INPUT_DIMENSION] = {0};
 
             for (int i = 0; i < SQUARES; i++) {
-                //TODO: figure out where opponent king goes
                 if (all_pieces.get_square(i)) {
                     input[i] = friendly_pawns.get_square(i);
                     input[SQUARES*1 + i] = friendly_knights.get_square(i);
@@ -111,10 +115,23 @@ class TransformationLayer : public Layer<std::int16_t> {
             input[PIECE_RELATIONS + 2] = enemy_kingside_castle;
             input[PIECE_RELATIONS + 3] = enemy_queenside_castle;
 
+            Weights *weights_ptr = _cache->get(friendly_king);
+            std::int8_t *weights;
+            std::int8_t *biases;
+            if (weights_ptr != nullptr) {
+                biases = weights_ptr->biases;
+                weights = weights_ptr->weights;
+            } else {
+                _cache->add(friendly_king, std::move(_load_weights(friendly_king)));
+                weights_ptr = _cache->get(friendly_king);
+                biases = weights_ptr->biases;
+                weights = weights_ptr->weights;
+            }
+
             // applies weights
-            for (int i = 0; i < _output_dimension; i++) {
+            for (int i = 0; i < OutputDimension; i++) {
                 int j = 0;
-                std::int16_t sum = _biases[i];
+                std::int16_t sum = biases[i];
                 #if defined(USE_NEON)
                     const short transfer_size = 8;
                     short segments = INPUT_DIMENSION / transfer_size;
@@ -125,7 +142,7 @@ class TransformationLayer : public Layer<std::int16_t> {
                     for(short x = 0; x < segments; x++) {
                         short offset = x * transfer_size;
                         int8x8_t input_vector = vld1_s8(input + offset); // load vector elements to registers
-                        int8x8_t weights_vector = vld1_s8(_weights + king_offset + i * INPUT_DIMENSION + offset); // load vector elements to registers
+                        int8x8_t weights_vector = vld1_s8(weights + i * INPUT_DIMENSION + offset); // load vector elements to registers
                    
                         sums_vector = vmlal_s8(sums_vector, input_vector, weights_vector); // sums + (input dot weights)
                     }
@@ -134,19 +151,18 @@ class TransformationLayer : public Layer<std::int16_t> {
                 #endif
 
                 for (; j < INPUT_DIMENSION; j++) {
-                    sum += _weights[i * INPUT_DIMENSION + j + king_offset] * input[j];
+                    sum += weights[i * INPUT_DIMENSION + j] * input[j];
                 }
                 output[i] = sum;
             }
         }
 
         const int output_dimension() const {
-            return _output_dimension;
+            return OutputDimension;
         }
 
     private:
-        int _output_dimension;
-        const std::int8_t* _weights;
-        const std::int8_t* _biases;
+        Cache<int, Weights>* _cache;
         bool _flipped;
+        std::unique_ptr<Weights>(*_load_weights)(int);
 };

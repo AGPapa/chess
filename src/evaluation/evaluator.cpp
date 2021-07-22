@@ -1,6 +1,6 @@
 #include "evaluator.hpp"
 
-std::unique_ptr<Policy> Evaluator::evaluate(Board b) {
+std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
     std::unique_ptr<Policy> draw_policy = std::unique_ptr<Policy>(new Policy(0));
     if (b.is_fifty_move_draw()) { return draw_policy; }
     if (b.is_insufficient_mating_material()) { return draw_policy; }
