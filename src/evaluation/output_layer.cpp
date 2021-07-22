@@ -25,10 +25,6 @@ class OutputLayer : public Layer<std::int16_t>  {
             std::vector<int> output_nodes;
             output_nodes.push_back(0); // value head
             for (Ply p : ply_list) {
-                if (policy_map.find(p) == policy_map.end()) {
-                   std::cout << "output layer" << std::endl;
-                   std::cout << p.to_string() << std::endl;
-                }
                 output_nodes.push_back(policy_map.at(p)); // policy head
             }
 

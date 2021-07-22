@@ -53,10 +53,6 @@ class NeuralNet {
 
            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
            for (Ply p : ply_list) {
-               if (policy_map.find(p) == policy_map.end()) {
-                   std::cout << "neural net" << std::endl;
-                   std::cout << p.to_string() << std::endl;
-               }
                pol->add_action(p, output[policy_map.at(p)] / 32767.0);
            }
            return pol;
