@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "expanded_node.cpp"
 #include "../chess/board.cpp"
 

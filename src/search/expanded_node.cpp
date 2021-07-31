@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "node.cpp"
 #include "node_iterator.cpp"
 #include "search_constants.hpp"
