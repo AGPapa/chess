@@ -1,6 +1,7 @@
 #include "expanded_node.cpp"
+#include "job.cpp"
 
-class BackpropJob {
+class BackpropJob : public Job {
 
     public:
         BackpropJob(float s, std::unique_ptr<std::vector<ExpandedNode*>> l, bool w_turn) {
@@ -9,7 +10,7 @@ class BackpropJob {
             _is_white_turn = w_turn;
         }
 
-        void run() {
+        std::unique_ptr<Job> run() {
             bool white_to_play = _is_white_turn;
             for (std::vector<ExpandedNode*>::reverse_iterator node = _lineage->rbegin(); node != _lineage->rend(); ++node ) {
                 (*node)->_visits += 1;
@@ -20,6 +21,11 @@ class BackpropJob {
                 }
                 white_to_play = !white_to_play;
             }
+            return nullptr;
+        }
+
+        QueueType type() {
+            return Job::backprop;
         }
 
     private:
