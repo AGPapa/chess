@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <list>
 
 #include "layer.cpp"
 #include "cache.cpp"
@@ -93,27 +94,27 @@ class TransformationLayer : public Layer<std::int16_t> {
                 all_pieces = b.all_pieces();
             }
 
-            std::int8_t input[INPUT_DIMENSION] = {0};
+            std::list<int> inputs;
 
             for (int i = 0; i < SQUARES; i++) {
                 if (all_pieces.get_square(i)) {
-                    input[i] = friendly_pawns.get_square(i);
-                    input[SQUARES*1 + i] = friendly_knights.get_square(i);
-                    input[SQUARES*2 + i] = friendly_bishops.get_square(i);
-                    input[SQUARES*3 + i] = friendly_rooks.get_square(i);
-                    input[SQUARES*4 + i] = friendly_queens.get_square(i);
-                    input[SQUARES*5 + i] = enemy_pawns.get_square(i);
-                    input[SQUARES*6 + i] = enemy_knights.get_square(i);
-                    input[SQUARES*7 + i] = enemy_bishops.get_square(i);
-                    input[SQUARES*8 + i] = enemy_rooks.get_square(i);
-                    input[SQUARES*9 + i] = enemy_queens.get_square(i);
+                    if (friendly_pawns.get_square(i)) { inputs.push_back(i); };
+                    if (friendly_knights.get_square(i)) { inputs.push_back(SQUARES*1 + i); };
+                    if (friendly_bishops.get_square(i)) { inputs.push_back(SQUARES*2 + i); };
+                    if (friendly_rooks.get_square(i)) { inputs.push_back(SQUARES*3 + i); };
+                    if (friendly_queens.get_square(i)) { inputs.push_back(SQUARES*4 + i); };
+                    if (enemy_pawns.get_square(i)) { inputs.push_back(SQUARES*5 + i); };
+                    if (enemy_knights.get_square(i)) { inputs.push_back(SQUARES*6 + i); };
+                    if (enemy_bishops.get_square(i)) { inputs.push_back(SQUARES*7 + i); };
+                    if (enemy_rooks.get_square(i)) { inputs.push_back(SQUARES*8 + i); };
+                    if (enemy_queens.get_square(i)) { inputs.push_back(SQUARES*9 + i); };
                 }
             }
-            input[SQUARES*10 + enemy_king] = 1;
-            input[PIECE_RELATIONS] = friendly_kingside_castle;
-            input[PIECE_RELATIONS + 1] = friendly_queenside_castle;
-            input[PIECE_RELATIONS + 2] = enemy_kingside_castle;
-            input[PIECE_RELATIONS + 3] = enemy_queenside_castle;
+            inputs.push_back(SQUARES*10 + enemy_king);
+            if (friendly_kingside_castle) { inputs.push_back(PIECE_RELATIONS + 0); };
+            if (friendly_queenside_castle) { inputs.push_back(PIECE_RELATIONS + 1); };
+            if (enemy_kingside_castle) { inputs.push_back(PIECE_RELATIONS + 2); };
+            if (enemy_queenside_castle) { inputs.push_back(PIECE_RELATIONS + 3); };
 
             Weights *weights_ptr = _cache->get(friendly_king);
             std::int8_t *weights;
@@ -128,32 +129,40 @@ class TransformationLayer : public Layer<std::int16_t> {
                 weights = weights_ptr->weights;
             }
 
-            // applies weights
-            for (int i = 0; i < OutputDimension; i++) {
-                int j = 0;
-                std::int16_t sum = biases[i];
-                #if defined(USE_NEON)
-                    const short transfer_size = 8;
-                    short segments = INPUT_DIMENSION / transfer_size;
-                    j = segments * transfer_size;
+            /*
+                weights are saved in different order than in other layers
+                input 0 - [output 0, output 1, output 2]
+                input 1 - [output 0, output 1, output 2]
+            */
+
+            int i = 0;
+
+            #if defined(USE_NEON)
+                const short transfer_size = 8;
+                short segments = OutputDimension / transfer_size;
+                i = segments * transfer_size;
+                for (int x = 0; x < segments; x++) {
+                    std::int16_t sums[transfer_size];
+                    short offset = x * transfer_size;
 
                     int16x8_t sums_vector = {0};
-                    std::int16_t sums[transfer_size];
-                    for(short x = 0; x < segments; x++) {
-                        short offset = x * transfer_size;
-                        int8x8_t input_vector = vld1_s8(input + offset); // load vector elements to registers
-                        int8x8_t weights_vector = vld1_s8(weights + i * INPUT_DIMENSION + offset); // load vector elements to registers
-                   
-                        sums_vector = vmlal_s8(sums_vector, input_vector, weights_vector); // sums + (input dot weights)
+                    for (int j : inputs) {
+                        int8x8_t weights_vector = vld1_s8(weights + j * OutputDimension + offset); // load vector elements to registers
+                        sums_vector = vaddw_s8(sums_vector, weights_vector); // sums += weights (don't need weights dot inputs because input is 1)
                     }
                     vst1q_s16(sums, sums_vector); // store vector elements in memory
-                    sum += sums[0] + sums[1] + sums[2] + sums[3] + sums[4] + sums[5] + sums[6] + sums[7];
-                #endif
 
-                for (; j < INPUT_DIMENSION; j++) {
-                    sum += weights[i * INPUT_DIMENSION + j] * input[j];
+                    for (int y = 0; y < transfer_size; y++) {
+                        output[x * transfer_size + y] = sums[y] + biases[x * transfer_size + y];
+                    }
                 }
-                output[i] = sum;
+            #endif
+
+            for (; i < OutputDimension; i++) {
+                output[i] = biases[i];
+                for (int j : inputs) {
+                   output[i] += weights[j * OutputDimension + i];
+                }
             }
         }
 
