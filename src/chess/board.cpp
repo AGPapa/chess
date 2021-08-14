@@ -16,6 +16,22 @@ static const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
 static const Bitboard light_squares_mask(0x55AA55AA55AA55AA);
 static const Bitboard dark_squares_mask(0xAA55AA55AA55AA55);
 
+static const Square a1 = Square("a1");
+static const Square c1 = Square("c1");
+static const Square d1 = Square("d1");
+static const Square e1 = Square("e1");
+static const Square f1 = Square("f1");
+static const Square g1 = Square("g1");
+static const Square h1 = Square("h1");
+
+static const Square a8 = Square("a8");
+static const Square c8 = Square("c8");
+static const Square d8 = Square("d8");
+static const Square e8 = Square("e8");
+static const Square f8 = Square("f8");
+static const Square g8 = Square("g8");
+static const Square h8 = Square("h8");
+
 class Board {
 
     public:
@@ -370,50 +386,50 @@ class Board {
                 w_pieces.set_square(to);
                 w_king = to;
                 castling.unset_white();
-                if (to == Square("g1") && from == Square("e1")) {
-                    rooks.unset_square(Square("h1"));
-                    w_pieces.unset_square(Square("h1"));
-                    rooks.set_square(Square("f1"));
-                    w_pieces.set_square(Square("f1"));
-                } else if (to == Square("c1") && from == Square("e1")) {
-                    rooks.unset_square(Square("a1"));
-                    w_pieces.unset_square(Square("a1"));
-                    rooks.set_square(Square("d1"));
-                    w_pieces.set_square(Square("d1"));
+                if (to == g1 && from == e1) {
+                    rooks.unset_square(h1);
+                    w_pieces.unset_square(h1);
+                    rooks.set_square(f1);
+                    w_pieces.set_square(f1);
+                } else if (to == c1 && from == e1) {
+                    rooks.unset_square(a1);
+                    w_pieces.unset_square(a1);
+                    rooks.set_square(d1);
+                    w_pieces.set_square(d1);
                 }
             } else if (from == b_king) {
                 b_king = to;
                 castling.unset_black();
-                if (to == Square("g8") && from == Square("e8")) {
-                    rooks.unset_square(Square("h8"));
-                    b_pieces.unset_square(Square("h8"));
-                    rooks.set_square(Square("f8"));
-                    b_pieces.set_square(Square("f8"));
-                } else if (to == Square("c8") && from == Square("e8")) {
-                    rooks.unset_square(Square("a8"));
-                    b_pieces.unset_square(Square("a8"));
-                    rooks.set_square(Square("d8"));
-                    b_pieces.set_square(Square("d8"));
+                if (to == g8 && from == e8) {
+                    rooks.unset_square(h8);
+                    b_pieces.unset_square(h8);
+                    rooks.set_square(f8);
+                    b_pieces.set_square(f8);
+                } else if (to == c8 && from == e8) {
+                    rooks.unset_square(a8);
+                    b_pieces.unset_square(a8);
+                    rooks.set_square(d8);
+                    b_pieces.set_square(d8);
                 }
             }
 
             // clear castling rights
-            if (from == Square("a1")) {
+            if (from == a1) {
                 castling.unset_white_queenside();
-            } else if (from == Square("h1")) {
+            } else if (from == h1) {
                 castling.unset_white_kingside();
-            } else if (from == Square("a8")) {
+            } else if (from == a8) {
                 castling.unset_black_queenside();
-            } else if (from == Square("h8")) {
+            } else if (from == h8) {
                 castling.unset_black_kingside();
             }
-            if (to == Square("a1")) {
+            if (to == a1) {
                 castling.unset_white_queenside();
-            } else if (to == Square("h1")) {
+            } else if (to == h1) {
                 castling.unset_white_kingside();
-            } else if (to == Square("a8")) {
+            } else if (to == a8) {
                 castling.unset_black_queenside();
-            } else if (to == Square("h8")) {
+            } else if (to == h8) {
                 castling.unset_black_kingside();
             }
 
