@@ -9,6 +9,7 @@ class Policy {
         Policy(float value) {
             _value = value;
             _action_list = std::vector<Action>();
+            _action_list.reserve(30);
         }
 
         void add_action(Ply p, float probability) {

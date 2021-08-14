@@ -1,5 +1,5 @@
 #include <cstdint>
-#include <list>
+#include <vector>
 
 #include "layer.cpp"
 #include "cache.cpp"
@@ -94,7 +94,8 @@ class TransformationLayer : public Layer<std::int16_t> {
                 all_pieces = b.all_pieces();
             }
 
-            std::list<int> inputs;
+            std::vector<int> inputs;
+            inputs.reserve(33);
 
             for (int i = 0; i < SQUARES; i++) {
                 if (all_pieces.get_square(i)) {

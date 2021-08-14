@@ -101,6 +101,7 @@ class Searcher {
         void _search() {
             while (_state == SearcherState::Searching) {
                 std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
+                lineage->reserve(20);
                 ExpandedNode* node = _root.get();
                 lineage->push_back(node);
                 Board temp_board = Board(_root->_board);
