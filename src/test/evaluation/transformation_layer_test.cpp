@@ -13,13 +13,16 @@ std::unique_ptr<TransformationLayer<9>::Weights> load_weights (int king) {
     weight_ptr->weights[i] = 0;
   }
   // sets biases
-  weight_ptr->biases[0] = 1;
   weight_ptr->biases[1] = 2;
+  weight_ptr->biases[8] = 1;
   // sets weights
   if (king == 2) {
-    weight_ptr->weights[(64*1+1)*9] = 1;    //b1 friendly knight
-    weight_ptr->weights[(64*6+57)*9] = 10;  //b8 enemy knight
-    weight_ptr->weights[(64*10+58)*9] = 20; //c8 enemy king
+    weight_ptr->weights[(64*1+1)*9+1] = 1;    //b1 friendly knight
+    weight_ptr->weights[(64*6+57)*9+1] = 10;  //b8 enemy knight
+
+    weight_ptr->weights[(64*1+1)*9+8] = 1;    //b1 friendly knight
+    weight_ptr->weights[(64*6+57)*9+8] = 10;  //b8 enemy knight
+    weight_ptr->weights[(64*10+58)*9+8] = 20; //c8 enemy king
   }
   return std::move(weight_ptr);
 }
@@ -32,12 +35,12 @@ TEST(TransformationLayerTest, propagate) {
 
     std::int16_t output[layer.output_dimension()];
     layer.propagate(Board("2k5/8/8/8/8/8/8/1NK5 w - - 0 100"), output);
-    ASSERT_EQ(22, output[0]);
-    ASSERT_EQ(2, output[1]);
+    ASSERT_EQ(22, output[8]);
+    ASSERT_EQ(3, output[1]);
 
     flipped_layer.propagate(Board("2k5/8/8/8/8/8/8/1NK5 w - - 0 100"), output);
-    ASSERT_EQ(31, output[0]);
-    ASSERT_EQ(2, output[1]);
+    ASSERT_EQ(31, output[8]);
+    ASSERT_EQ(12, output[1]);
 }
 
 int main(int argc, char** argv) {
