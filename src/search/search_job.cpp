@@ -1,6 +1,5 @@
 #include "root_node.cpp"
-#include "backprop_job.cpp"
-#include "mpsc_queue.cpp"
+#include "expand_job.cpp"
 
 class SearchJob {
 
@@ -41,9 +40,7 @@ class SearchJob {
                     return;
                 } else if (best_child->is_leaf()) { //TODO : what to do if currently evaluating?
                     temp_board.apply_ply(best_child->_ply);
-                    float result = ((LeafNode*) best_child)->convert_to_expanded_node(temp_board, best_child_owner);
-                    backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
-                    backprop_variable->notify_one();
+                    ExpandJob(temp_board, std::move(Evaluator::evaluate(temp_board)), (LeafNode *) best_child, best_child_owner, std::move(lineage)).run(backprop_queue, backprop_variable);
                     return;
                 } else {
                     temp_board.apply_ply(best_child->_ply);
