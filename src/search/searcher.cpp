@@ -1,7 +1,6 @@
 #include <thread>
 #include <sstream>
 
-#include "leaf_node.cpp"
 #include "search_job.cpp"
 
 class Searcher {

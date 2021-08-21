@@ -1,5 +1,6 @@
 #include "backprop_job.cpp"
 #include "mpsc_queue.cpp"
+#include "leaf_node.cpp"
 
 class ExpandJob {
 

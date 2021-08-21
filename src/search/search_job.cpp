@@ -1,5 +1,5 @@
 #include "root_node.cpp"
-#include "expand_job.cpp"
+#include "evaluate_job.cpp"
 
 class SearchJob {
 
@@ -40,7 +40,7 @@ class SearchJob {
                     return;
                 } else if (best_child->is_leaf()) { //TODO : what to do if currently evaluating?
                     temp_board.apply_ply(best_child->_ply);
-                    ExpandJob(temp_board, std::move(Evaluator::evaluate(temp_board)), (LeafNode *) best_child, best_child_owner, std::move(lineage)).run(backprop_queue, backprop_variable);
+                    EvaluateJob(temp_board, (LeafNode *) best_child, best_child_owner, std::move(lineage)).run(backprop_queue, backprop_variable);
                     return;
                 } else {
                     temp_board.apply_ply(best_child->_ply);
