@@ -1,10 +1,8 @@
 #include <thread>
 #include <sstream>
 
-#include "root_node.cpp"
 #include "leaf_node.cpp"
-#include "mpsc_queue.cpp"
-#include "backprop_job.cpp"
+#include "search_job.cpp"
 
 class Searcher {
 
@@ -100,48 +98,7 @@ class Searcher {
 
         void _search() {
             while (_state == SearcherState::Searching) {
-                std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
-                lineage->reserve(20);
-                ExpandedNode* node = _root.get();
-                lineage->push_back(node);
-                Board temp_board = Board(_root->_board);
-                bool keep_going = true;
-                while(keep_going) {
-                    std::unique_ptr<Node>* best_child_owner = nullptr;
-                    Node* best_child = nullptr;
-                    float best_score = -100.0; //max negative float
-                    std::unique_ptr<Node>* previous_owner = &(node->_child);
-                    for (Node* child : node->children()) {
-                        float score = child->score(node->_visits);
-                        if (score > best_score) {
-                            best_score = score;
-                            best_child = child;
-                            best_child_owner = previous_owner;
-                        }
-                        previous_owner = &(child->_sibling);
-                    }
-                    if (best_child == nullptr) {
-                        float result = 0;
-                        if (temp_board.is_white_turn()) {
-                            result = (node->_score < 0) - (node->_score > 0);
-                        } else {
-                            result = (node->_score > 0) - (node->_score < 0);
-                        }
-                        _backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
-                        _backprop_variable.notify_one();
-                        keep_going = false;
-                    } else if (best_child->is_leaf()) {
-                        temp_board.apply_ply(best_child->_ply);
-                        float result = ((LeafNode*) best_child)->convert_to_expanded_node(temp_board, best_child_owner);
-                        _backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
-                        _backprop_variable.notify_one();
-                        keep_going = false;
-                    } else {
-                        temp_board.apply_ply(best_child->_ply);
-                        node = (ExpandedNode*) best_child;
-                        lineage->push_back(node);
-                    }
-                }
+                SearchJob(_root.get()).run(_backprop_queue.get(), &_backprop_variable);
             }
         }
 
