@@ -1,6 +1,7 @@
 #include "../../search/root_node.cpp"
 #include "../../search/backprop_job.cpp"
 #include "../../search/leaf_node.cpp"
+#include "../../search/expander.cpp"
 
 #include <gtest/gtest.h>
 
@@ -11,7 +12,7 @@ TEST(BackpropJobTest, run) {
     lineage->push_back(root.get());
 
     b.apply_ply(root->_child->_ply);
-    ((LeafNode*) root->_child.get())->convert_to_expanded_node(b, &(root->_child));
+    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), &(root->_child));
     ExpandedNode* expanded_child = (ExpandedNode*) root->_child.get();
     lineage->push_back(expanded_child);
     
@@ -29,7 +30,7 @@ TEST(BackpropJobTest, run) {
     lineage->push_back(expanded_child);
 
     b.apply_ply(expanded_child->_child->_ply);
-    ((LeafNode*) expanded_child->_child.get())->convert_to_expanded_node(b, &(expanded_child->_child));
+    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) expanded_child->_child.get(), &(expanded_child->_child));
     ExpandedNode* expanded_grandchild = (ExpandedNode*) expanded_child->_child.get();
     lineage->push_back(expanded_grandchild);
 

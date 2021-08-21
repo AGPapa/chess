@@ -1,5 +1,6 @@
 #include "../../search/root_node.cpp"
 #include "../../search/leaf_node.cpp"
+#include "../../search/expander.cpp"
 
 #include <gtest/gtest.h>
 
@@ -20,7 +21,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     float leaf_prior = root->_child->_prior;
 
-    ((LeafNode *) (root->_child.get()))->convert_to_expanded_node(b, owner);
+    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), &(root->_child));
     ASSERT_EQ(root->_child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root->_child.get()))->_visits, 1);
     ASSERT_EQ(root->_child->_prior, leaf_prior);
