@@ -12,7 +12,7 @@ class SearchJob {
             std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
             ExpandedNode* node = _root;
             lineage->push_back(node);
-            lineage->reserve(20);
+            lineage->reserve(50);
             Board temp_board = Board(_root->_board);
             while(true) {
                 std::unique_ptr<Node>* best_child_owner = nullptr;
@@ -35,11 +35,13 @@ class SearchJob {
                     } else {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
+                    lineage->shrink_to_fit();
                     backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
                     backprop_variable->notify_one();
                     return;
                 } else if (best_child->is_leaf()) { //TODO : what to do if currently evaluating?
                     temp_board.apply_ply(best_child->_ply);
+                    lineage->shrink_to_fit();
                     EvaluateJob(temp_board, (LeafNode *) best_child, best_child_owner, std::move(lineage)).run(backprop_queue, backprop_variable);
                     return;
                 } else {
