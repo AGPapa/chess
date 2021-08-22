@@ -10,8 +10,8 @@ class EvaluateJob {
             _lineage = std::move(lineage);
         }
 
-        void run(MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
-           ExpandJob(_board, std::move(Evaluator::evaluate(_board)), _leaf, _owner, std::move(_lineage)).run(backprop_queue, backprop_variable);
+        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+           ExpandJob(_board, std::move(Evaluator::evaluate(_board)), _leaf, _owner, std::move(_lineage)).run(active_nodes, backprop_queue, backprop_variable);
         }
 
 

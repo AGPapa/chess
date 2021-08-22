@@ -89,6 +89,7 @@ class Searcher {
         std::condition_variable _backprop_variable;
         std::ostream *_output;
         std::unique_ptr<MPSCQueue<BackpropJob>> _backprop_queue;
+        std::set<LeafNode*> _active_nodes;
         int _w_time;
         int _b_time;
         int _moves_to_next_time_control;
@@ -97,7 +98,7 @@ class Searcher {
 
         void _search() {
             while (_state == SearcherState::Searching) {
-                SearchJob(_root.get()).run(_backprop_queue.get(), &_backprop_variable);
+                SearchJob(_root.get()).run(&_active_nodes, _backprop_queue.get(), &_backprop_variable);
             }
         }
 
