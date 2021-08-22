@@ -31,6 +31,7 @@ TEST(NodeTest, convert_node_constructor) {
     std::unique_ptr<RootNode> new_root = std::unique_ptr<RootNode>(new RootNode(b, (ExpandedNode *) root->_child.get()));
     ASSERT_EQ(new_root->_sibling.get(), nullptr);
     ASSERT_EQ(new_root->_child.get(), grandchild);
+    ASSERT_EQ(new_root->_visits, 1);
 }
 
 int main(int argc, char** argv) {
