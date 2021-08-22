@@ -12,6 +12,7 @@ class Searcher {
             _state = SearcherState::Stopped;
             _output = output;
             _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
+            _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
         }
 
         Searcher(Board starting_board, std::ostream *output) {
@@ -19,6 +20,7 @@ class Searcher {
             _state = SearcherState::Stopped;
             _output = output;
             _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
+            _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
         }
 
         Ply find_best_ply() {
@@ -89,6 +91,7 @@ class Searcher {
         std::condition_variable _backprop_variable;
         std::ostream *_output;
         std::unique_ptr<MPSCQueue<BackpropJob>> _backprop_queue;
+        std::unique_ptr<MPSCQueue<ExpandJob>> _expand_queue;
         std::set<LeafNode*> _active_nodes;
         int _w_time;
         int _b_time;
@@ -97,8 +100,14 @@ class Searcher {
         int _b_inc;
 
         void _search() {
-            while (_state == SearcherState::Searching) {
-                SearchJob(_root.get()).run(&_active_nodes, _backprop_queue.get(), &_backprop_variable);
+            while (_state == SearcherState::Searching || !_expand_queue->empty()) {
+                if (_state == SearcherState::Searching) {
+                    SearchJob(_root.get()).run(&_active_nodes, _expand_queue.get(), _backprop_queue.get(), &_backprop_variable);
+                }
+                while (!_expand_queue->empty()) {
+                    std::unique_ptr<ExpandJob> job = std::move(_expand_queue->dequeue());
+                    job->run(&_active_nodes, _backprop_queue.get(), &_backprop_variable);
+                }
             }
         }
 
@@ -123,6 +132,7 @@ class Searcher {
                  if (_backpropagating_thread != nullptr && _backpropagating_thread->joinable()) {
                    _backpropagating_thread->join();
                 }
+                if (!_expand_queue->empty()) { throw std::runtime_error("Expand queue is not empty"); }
                 if (!_backprop_queue->empty()) { throw std::runtime_error("Backprop queue is not empty"); }
                 _state = SearcherState::Stopped;
                 _output_info();

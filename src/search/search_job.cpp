@@ -10,7 +10,7 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<ExpandJob>* expand_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
             std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
             ExpandedNode* node = _root;
             lineage->push_back(node);
@@ -47,7 +47,7 @@ class SearchJob {
                     LeafNode* best_leaf = (LeafNode *) best_child;
                     if (active_nodes->count(best_leaf) == 0) { //only evaluate if we're not currently evaluating
                         active_nodes->insert(best_leaf);
-                        EvaluateJob(temp_board, best_leaf, best_child_owner, std::move(lineage)).run(active_nodes, backprop_queue, backprop_variable);
+                        EvaluateJob(temp_board, best_leaf, best_child_owner, std::move(lineage)).run(active_nodes, expand_queue);
                     }
                     return;
                 } else {
