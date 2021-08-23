@@ -61,6 +61,7 @@ class SearchJob {
         RootNode* _root;
 
         // aka "virtual loss"
+        // TODO: this is more of a "virtual draw" - will that be a problem?
         void _increment_visits(std::vector<ExpandedNode*> *lineage) {
             for (ExpandedNode* n : *lineage) {
                 n->_visits += 1;
