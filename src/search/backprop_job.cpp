@@ -12,7 +12,6 @@ class BackpropJob {
         void run() {
             bool white_to_play = _is_white_turn;
             for (std::vector<ExpandedNode*>::reverse_iterator node = _lineage->rbegin(); node != _lineage->rend(); ++node ) {
-                (*node)->_visits += 1;
                 if (white_to_play) { // potential improvement: skip this part for draws
                     (*node)->_score -= _score;
                 } else {

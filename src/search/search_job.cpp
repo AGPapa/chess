@@ -35,6 +35,7 @@ class SearchJob {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
                     lineage->shrink_to_fit();
+                    _increment_visits(lineage.get());
                     backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
                     backprop_variable->notify_one();
                     return;
@@ -44,6 +45,7 @@ class SearchJob {
                         temp_board.apply_ply(best_child->_ply);
                         lineage->shrink_to_fit();
                         active_nodes->insert(best_leaf);
+                        _increment_visits(lineage.get());
                         evaluate_queue->enqueue(std::unique_ptr<EvaluateJob>(new EvaluateJob(temp_board, best_leaf, node, std::move(lineage))));
                     }
                     return;
@@ -57,6 +59,13 @@ class SearchJob {
 
     private:
         RootNode* _root;
+
+        // aka "virtual loss"
+        void _increment_visits(std::vector<ExpandedNode*> *lineage) {
+            for (ExpandedNode* n : *lineage) {
+                n->_visits += 1;
+            }
+        }
 };
 
 
