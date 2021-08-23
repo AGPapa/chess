@@ -39,10 +39,10 @@ class SearchJob {
                     backprop_variable->notify_one();
                     return;
                 } else if (best_child->is_leaf()) {
-                    temp_board.apply_ply(best_child->_ply);
-                    lineage->shrink_to_fit();
                     LeafNode* best_leaf = (LeafNode *) best_child;
                     if (active_nodes->count(best_leaf) == 0) { //only evaluate if we're not currently evaluating
+                        temp_board.apply_ply(best_child->_ply);
+                        lineage->shrink_to_fit();
                         active_nodes->insert(best_leaf);
                         evaluate_queue->enqueue(std::unique_ptr<EvaluateJob>(new EvaluateJob(temp_board, best_leaf, node, std::move(lineage))));
                     }
