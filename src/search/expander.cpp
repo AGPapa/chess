@@ -9,10 +9,21 @@ class Expander {
             return _expand(b, Evaluator::evaluate(b).get(), node);
         }
 
-        static float expand(Board b, Policy* policy, LeafNode *leaf, std::unique_ptr<Node> *owner) {
+        static float expand(Board b, Policy* policy, LeafNode *leaf, ExpandedNode *parent) {
             std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new ExpandedNode(std::move(leaf->_sibling), nullptr, leaf->_ply, 0.0, leaf->_prior));
             float value = Expander::_expand(b, policy, (ExpandedNode*) new_node.get());
-            (*owner) = std::move(new_node);
+            if (parent->_child.get() == leaf) {
+                parent->_child = std::move(new_node);
+            } else {
+                Node* previous_node = nullptr;
+                for (Node* child : parent->children()) {
+                    if (child == leaf) {
+                        previous_node->_sibling = std::move(new_node);
+                        break;
+                    }
+                    previous_node = child;
+                }
+            }
             return value;
         }
 

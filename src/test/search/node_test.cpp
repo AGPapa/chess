@@ -21,7 +21,7 @@ TEST(NodeTest, convert_node_constructor) {
 
     float leaf_prior = root->_child->_prior;
 
-    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), &(root->_child));
+    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), root.get());
     ASSERT_EQ(root->_child->is_leaf(), false);
     ASSERT_EQ(((ExpandedNode *) (root->_child.get()))->_visits, 1);
     ASSERT_EQ(root->_child->_prior, leaf_prior);

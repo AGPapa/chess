@@ -10,7 +10,7 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<ExpandJob>* expand_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<EvaluateJob>* evaluate_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
             std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
             ExpandedNode* node = _root;
             lineage->push_back(node);
@@ -20,15 +20,12 @@ class SearchJob {
                 std::unique_ptr<Node>* best_child_owner = nullptr;
                 Node* best_child = nullptr;
                 float best_score = -100.0; //max negative float
-                std::unique_ptr<Node>* previous_owner = &(node->_child);
                 for (Node* child : node->children()) {
                     float score = child->score(node->_visits);
                     if (score > best_score) {
                         best_score = score;
                         best_child = child;
-                        best_child_owner = previous_owner;
                     }
-                    previous_owner = &(child->_sibling);
                 }
                 if (best_child == nullptr) {
                     float result = 0;
@@ -47,7 +44,7 @@ class SearchJob {
                     LeafNode* best_leaf = (LeafNode *) best_child;
                     if (active_nodes->count(best_leaf) == 0) { //only evaluate if we're not currently evaluating
                         active_nodes->insert(best_leaf);
-                        EvaluateJob(temp_board, best_leaf, best_child_owner, std::move(lineage)).run(active_nodes, expand_queue);
+                        evaluate_queue->enqueue(std::unique_ptr<EvaluateJob>(new EvaluateJob(temp_board, best_leaf, node, std::move(lineage))));
                     }
                     return;
                 } else {
