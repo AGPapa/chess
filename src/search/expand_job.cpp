@@ -1,6 +1,7 @@
 #include "backprop_job.cpp"
-#include "mpsc_queue.cpp"
 #include "leaf_node.cpp"
+
+#include "../utility/mpsc_queue.cpp"
 
 #include <set>
 

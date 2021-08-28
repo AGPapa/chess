@@ -1,4 +1,4 @@
-#include "../../search/ringbuffer_queue.cpp"
+#include "../../utility/ringbuffer_queue.cpp"
 #include <thread>
 
 #include <gtest/gtest.h>

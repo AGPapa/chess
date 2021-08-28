@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "layer.cpp"
-#include "cache.cpp"
+#include "../utility/cache.cpp"
 
 #if defined(USE_NEON)
 #include <arm_neon.h>
