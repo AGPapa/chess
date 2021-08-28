@@ -26,7 +26,7 @@ class ExpandedNode : public Node {
             return NodeIterator(&first_child);
         }
 
-        float score(int parent_visits) { return _score/_visits + exploration_factor * _prior * sqrt(parent_visits)/_visits; }
+        float score(int parent_visits) { return _score/_visits + EXPLORATION_FACTOR * _prior * sqrt(parent_visits)/_visits; }
 
         int visits() { return _visits; };
 

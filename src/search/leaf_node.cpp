@@ -14,7 +14,7 @@ class LeafNode : public Node {
 
         bool is_leaf() { return true; };
 
-        float score(int parent_visits) { return exploration_factor * _prior * sqrt(parent_visits); }
+        float score(int parent_visits) { return EXPLORATION_FACTOR * _prior * sqrt(parent_visits); }
 
         ~LeafNode() { _sibling.reset(); };
 };

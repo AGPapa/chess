@@ -64,7 +64,9 @@ class Searcher {
             }
             _state = SearcherState::Searching;
             _searching_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_search, this));
-            _evaluating_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_evaluate, this));
+            for (int i = 0; i < NUM_EVALUATION_THREADS; i++) {
+                _evaluating_threads[i] = std::unique_ptr<std::thread>(new std::thread(&Searcher::_evaluate, this));
+            }
             _backpropagating_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_backpropagate, this));
             _time_managing_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_manage_time, this));
             _state_mutex.unlock();
@@ -88,9 +90,9 @@ class Searcher {
         SearcherState _state;
         std::mutex _state_mutex;
         std::unique_ptr<std::thread> _searching_thread;
-        std::unique_ptr<std::thread> _evaluating_thread;
         std::unique_ptr<std::thread> _backpropagating_thread;
         std::unique_ptr<std::thread> _time_managing_thread;
+        std::unique_ptr<std::thread> _evaluating_threads[NUM_EVALUATION_THREADS];
         std::condition_variable _time_managing_variable;
         std::condition_variable _search_variable;
         std::condition_variable _backprop_variable;
@@ -122,8 +124,10 @@ class Searcher {
                 _state = SearcherState::StoppingSearch;
                 _searching_thread->join();
                 _state = SearcherState::StoppingEvaluation;
-                 if (_evaluating_thread != nullptr && _evaluating_thread->joinable()) {
-                   _evaluating_thread->join();
+                for (int i = 0; i < NUM_EVALUATION_THREADS; i++) {
+                    if (_evaluating_threads[i] != nullptr && _evaluating_threads[i]->joinable()) {
+                        _evaluating_threads[i]->join();
+                    }
                 }
                 _expand();
                 _state = SearcherState::StoppingBackprop;
