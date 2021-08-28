@@ -28,10 +28,10 @@ std::unique_ptr<TransformationLayer<9>::Weights> load_weights (int king) {
 }
 
 TEST(TransformationLayerTest, propagate) {
-    Cache<int, TransformationLayer<9>::Weights> cache = Cache<int, TransformationLayer<9>::Weights>(5);
+    std::unique_ptr<Cache<int, TransformationLayer<9>::Weights>> cache =  std::unique_ptr<Cache<int, TransformationLayer<9>::Weights>>(new Cache<int, TransformationLayer<9>::Weights>(5));
 
-    TransformationLayer<9> layer = TransformationLayer<9>(&cache, load_weights, false);
-    TransformationLayer<9> flipped_layer = TransformationLayer<9>(&cache, load_weights, true);
+    TransformationLayer<9> layer = TransformationLayer<9>(cache.get(), load_weights, false);
+    TransformationLayer<9> flipped_layer = TransformationLayer<9>(cache.get(), load_weights, true);
 
     std::int16_t output[layer.output_dimension()];
     layer.propagate(Board("2k5/8/8/8/8/8/8/1NK5 w - - 0 100"), output);
