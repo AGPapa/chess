@@ -10,7 +10,7 @@ class EvaluateJob {
             _lineage = std::move(lineage);
         }
 
-        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<ExpandJob>* expand_queue) {
+        void run(MPSCQueue<ExpandJob>* expand_queue) {
            expand_queue->enqueue(std::unique_ptr<ExpandJob>(new ExpandJob(_board, std::move(Evaluator::evaluate(_board)), _leaf, _parent, std::move(_lineage))));
         }
 

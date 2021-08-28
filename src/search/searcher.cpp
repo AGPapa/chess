@@ -175,7 +175,9 @@ class Searcher {
             while (_state == SearcherState::Searching || _state == SearcherState::StoppingSearch || !_evaluate_queue->empty()) {
                 while (!_evaluate_queue->empty()) {
                     std::unique_ptr<EvaluateJob> job = std::move(_evaluate_queue->dequeue());
-                    job->run(&_active_nodes, _expand_queue.get());
+                    if (job != nullptr) {
+                        job->run(_expand_queue.get());
+                    }
                 }
                 _search_variable.notify_one();
             }
