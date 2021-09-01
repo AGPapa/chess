@@ -138,6 +138,7 @@ class Searcher {
                 if (!_evaluate_queue->empty()) { throw std::runtime_error("Evaluate queue is not empty"); }
                 if (!_expand_queue->empty()) { throw std::runtime_error("Expand queue is not empty"); }
                 if (!_backprop_queue->empty()) { throw std::runtime_error("Backprop queue is not empty"); }
+                if (!_active_nodes.empty()) { throw std::runtime_error("Active nodes set is not empty"); }
                 _state = SearcherState::Stopped;
                 _output_info();
                 _output_bestmove();
@@ -175,8 +176,10 @@ class Searcher {
             while (_state == SearcherState::Searching || _state == SearcherState::StoppingSearch || !_evaluate_queue->empty()) {
                 while (!_evaluate_queue->empty()) {
                     std::unique_ptr<EvaluateJob> job = std::move(_evaluate_queue->dequeue());
-                    if (job != nullptr) { // TODO: Find out why we need this - getting null jobs somehow??
+                    if (job != nullptr) {
                         job->run(_expand_queue.get());
+                    } else {
+                        throw std::runtime_error("Dequeued nullptr evaluate job");
                     }
                 }
                 _search_variable.notify_one();
@@ -186,8 +189,10 @@ class Searcher {
         void _expand() {
             while (!_expand_queue->empty()) {
                 std::unique_ptr<ExpandJob> job = std::move(_expand_queue->dequeue());
-                if (job != nullptr) { // TODO: Find out why we need this - getting null jobs somehow??
+                if (job != nullptr) {
                     job->run(&_active_nodes, _backprop_queue.get(), &_backprop_variable);
+                } else {
+                    throw std::runtime_error("Dequeued nullptr expand job");
                 }
             }
         }
@@ -199,8 +204,10 @@ class Searcher {
                 _backprop_variable.wait_for(lock, std::chrono::milliseconds(50));  //timeout here in case we miss the closing backprop_variable.notify() in _stop_searching
                 while (!_backprop_queue->empty()) {
                     std::unique_ptr<BackpropJob> job = std::move(_backprop_queue->dequeue());
-                    if (job != nullptr) { // TODO: Find out why we need this - getting null jobs somehow??
+                    if (job != nullptr) {
                         job->run();
+                    } else {
+                        throw std::runtime_error("Dequeued nullptr backrpop job");
                     }
                 }
             }

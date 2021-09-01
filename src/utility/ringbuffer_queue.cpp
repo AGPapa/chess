@@ -17,7 +17,7 @@ class RingbufferQueue {
                return std::move(i);
             }
             _ringbuffer[_write_index] = std::move(i);
-            atomic_signal_fence(std::memory_order_relaxed); //without this the multithreading sometimes messes up
+            atomic_signal_fence(std::memory_order_acq_rel); //without this the multithreading sometimes messes up
             _write_index = _next(_write_index);
             return nullptr;
         }
