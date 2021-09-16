@@ -1,6 +1,8 @@
 #include "root_node.cpp"
 #include "evaluate_job.cpp"
 
+#include "../utility/spmc_queue.cpp"
+
 #include <set>
 
 class SearchJob {
@@ -10,7 +12,7 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<EvaluateJob>* evaluate_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+        void run(std::set<LeafNode*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
             std::unique_ptr<std::vector<ExpandedNode*>> lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
             ExpandedNode* node = _root;
             lineage->push_back(node);

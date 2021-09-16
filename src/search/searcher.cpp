@@ -13,7 +13,7 @@ class Searcher {
             _output = output;
             _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
-            _evaluate_queue = std::unique_ptr<MPSCQueue<EvaluateJob>>(new MPSCQueue<EvaluateJob>());
+            _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
         }
 
         Searcher(Board starting_board, std::ostream *output) {
@@ -22,7 +22,7 @@ class Searcher {
             _output = output;
             _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
-            _evaluate_queue = std::unique_ptr<MPSCQueue<EvaluateJob>>(new MPSCQueue<EvaluateJob>());
+            _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
         }
 
         Ply find_best_ply() {
@@ -99,7 +99,7 @@ class Searcher {
         std::ostream *_output;
         std::unique_ptr<MPSCQueue<BackpropJob>> _backprop_queue;
         std::unique_ptr<MPSCQueue<ExpandJob>> _expand_queue;
-        std::unique_ptr<MPSCQueue<EvaluateJob>> _evaluate_queue;
+        std::unique_ptr<SPMCQueue<EvaluateJob>> _evaluate_queue;
         std::set<LeafNode*> _active_nodes;
         int _w_time;
         int _b_time;
@@ -178,8 +178,6 @@ class Searcher {
                     std::unique_ptr<EvaluateJob> job = std::move(_evaluate_queue->dequeue());
                     if (job != nullptr) {
                         job->run(_expand_queue.get());
-                    } else {
-                        throw std::runtime_error("Dequeued nullptr evaluate job");
                     }
                 }
                 _search_variable.notify_one();
