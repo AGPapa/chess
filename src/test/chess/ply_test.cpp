@@ -50,6 +50,23 @@ TEST(SquareTest, promotion) {
     ASSERT_EQ(Ply::Promotion::Rook, p.promotion());
 }
 
+TEST(PlyTest, mirror) {
+    Ply a = Ply("e2e4");
+    Ply b = Ply("e7e5");
+    ASSERT_EQ(a.mirror(), b);
+    ASSERT_EQ(a, b.mirror());
+
+    a = Ply("a2e6");
+    b = Ply("a7e3");
+    ASSERT_EQ(a.mirror(), b);
+    ASSERT_EQ(a, b.mirror());
+
+    a = Ply("a7b8r");
+    b = Ply("a2b1r");
+    ASSERT_EQ(a.mirror(), b);
+    ASSERT_EQ(a, b.mirror());
+}
+
 TEST(PlyTest, operator_equals) {
     Ply a = Ply("e2e4");
     Ply b = Ply(Square("e2"), Square("e4"));

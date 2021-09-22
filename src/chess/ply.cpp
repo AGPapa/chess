@@ -56,6 +56,10 @@ class Ply {
             return Promotion((ply & promotion_mask) >> 12);
         }
 
+        Ply mirror() const {
+            return Ply(from_square().mirror(), to_square().mirror(), promotion());
+        }
+
         bool operator==(const Ply& other) const {
             return ply == other.ply;
         }
