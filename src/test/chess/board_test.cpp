@@ -44,6 +44,17 @@ TEST(BoardTest, from_fen) {
     ASSERT_EQ("4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 10 100", c.to_fen());
 }
 
+TEST(BoardTest, mirror) {
+    Board a = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    ASSERT_EQ(a.mirror().to_fen(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+
+    a = Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+    ASSERT_EQ(a.mirror().to_fen(), "rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+    a = Board("r3k2r/8/8/8/8/8/7R/R3K3 w Qkq - 20 100");
+    ASSERT_EQ(a.mirror().to_fen(), "r3k3/7r/8/8/8/8/8/R3K2R b KQq - 20 100");
+}
+
 TEST(BoardTest, is_white_turn) {
     Board a = Board::default_board();
     ASSERT_EQ(true, a.is_white_turn());

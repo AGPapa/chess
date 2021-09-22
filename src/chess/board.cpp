@@ -364,6 +364,11 @@ class Board {
             return w_turn;
         }
 
+        Board mirror() {
+            return Board(b_pieces.mirror(), w_pieces.mirror(), pawns.mirror(), bishops.mirror(), rooks.mirror(), knights.mirror(),
+                            b_king.mirror(), w_king.mirror(), !w_turn, castling.mirror(), rule_fifty_ply_clock, move_count);
+        }
+
         void apply_ply(Ply ply) {
             board_history.push_front(signature());
             apply_ply_without_history(ply);
