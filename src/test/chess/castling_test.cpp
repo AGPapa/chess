@@ -190,6 +190,23 @@ TEST(SquareTest, unset_black) {
     ASSERT_EQ(false, c.get_black_queenside());
 }
 
+TEST(CastlingTest, mirror) {
+    Castling a = Castling(true, true, false, false);
+    Castling b = Castling(false, false, true, true);
+    ASSERT_EQ(true, a.mirror() == b);
+    ASSERT_EQ(true, a == b.mirror());
+
+    a = Castling(true, true, true, false);
+    b = Castling(true, false, true, true);
+    ASSERT_EQ(true, a.mirror() == b);
+    ASSERT_EQ(true, a == b.mirror());
+
+    a = Castling(false, true, true, false);
+    b = Castling(true, false, false, true);
+    ASSERT_EQ(true, a.mirror() == b);
+    ASSERT_EQ(true, a == b.mirror());
+}
+
 TEST(CastlingTest, operator_equals) {
     Castling a = Castling(true, false, false, false);
     Castling b = Castling(true, true, false, false);
