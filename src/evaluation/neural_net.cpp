@@ -29,10 +29,10 @@ class NeuralNet {
             for (int i = 0; i < 32; i++) {
                 _full_layer_2_biases[i] = rand() % 64 - 32;
             }
-            for (int i = 0; i < 32*1969; i++) {
+            for (int i = 0; i < 32*1858; i++) {
                 _output_layer_weights[i] = rand() % 256 - 128;
             }
-            for (int i = 0; i < 1969; i++) {
+            for (int i = 0; i < 1858; i++) {
                 _output_layer_biases[i] = rand() % 64 - 32;
             }
         };
@@ -48,12 +48,28 @@ class NeuralNet {
             ActivationLayer activation_layer_3 = ActivationLayer(&dense_layer_3);
             OutputLayer output_layer = OutputLayer(&activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
 
-           std::int16_t output[1969] = { 0 };
-           output_layer.propagate(b, ply_list, output);
+            std::int16_t output[1858] = { 0 };
+            if (b.is_white_turn()) {
+                output_layer.propagate(b, ply_list, output);
+            } else {
+                std::vector<Ply> mirror_ply_list;
+                mirror_ply_list.reserve(ply_list.size());
+                for (Ply p : ply_list) {
+                    mirror_ply_list.push_back(p.mirror());
+                }
+                output_layer.propagate(b.mirror(), mirror_ply_list, output);
+            }
 
            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
-           for (Ply p : ply_list) {
-               pol->add_action(p, output[policy_map.at(p)] / 32767.0);
+
+           if (b.is_white_turn()) {
+                for (Ply p : ply_list) {
+                    pol->add_action(p, output[policy_map.at(p)] / 32767.0);
+                }
+           } else {
+                for (Ply p : ply_list) {
+                    pol->add_action(p, output[policy_map.at(p.mirror())] / 32767.0);
+                }
            }
            return pol;
         }
@@ -66,8 +82,8 @@ class NeuralNet {
         std::int8_t _full_layer_1_biases[32];
         std::int8_t _full_layer_2_weights[32*32];
         std::int8_t _full_layer_2_biases[32];
-        std::int8_t _output_layer_weights[32*1969];
-        std::int8_t _output_layer_biases[1969];
+        std::int8_t _output_layer_weights[32*1858];
+        std::int8_t _output_layer_biases[1858];
 
 
         static std::unique_ptr<TransformationLayer<256>::Weights> _load_weights (int king) {
@@ -96,18 +112,4 @@ class NeuralNet {
            // policy head (32->1858) ("policy_head")
 
            // policy head (32->1859) ("combined_head"?)
-           // why do I have 1969?
-        
-           /*
-            Input: 2 x 40,965
-            layer1: 2 x 256
-            layer2: 32
-            layer3: 32
-            */
-
-           // 10,486,784 <-"should be"
-           // 5,804,251  <-is
-
-
-           //with king 45651
 };

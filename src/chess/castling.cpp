@@ -33,7 +33,7 @@ class Castling {
         void unset_white() { _castling &= ~std::uint64_t(3); }
         void unset_black() { _castling &= ~std::uint64_t(12); }
 
-        Castling mirror() { return Castling((_castling >> 2) + ((_castling & 0b00000011) << 2)); }
+        Castling mirror() const { return Castling((_castling >> 2) + ((_castling & 0b00000011) << 2)); }
 
         bool operator==(const Castling& other) const { return _castling == other._castling; }
         bool operator!=(const Castling& other) const { return _castling != other._castling; }

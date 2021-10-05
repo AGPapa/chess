@@ -364,7 +364,7 @@ class Board {
             return w_turn;
         }
 
-        Board mirror() {
+        Board mirror() const {
             return Board(b_pieces.mirror(), w_pieces.mirror(), pawns.mirror(), bishops.mirror(), rooks.mirror(), knights.mirror(),
                             b_king.mirror(), w_king.mirror(), !w_turn, castling.mirror(), rule_fifty_ply_clock, move_count);
         }

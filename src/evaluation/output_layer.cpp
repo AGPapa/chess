@@ -62,7 +62,7 @@ class OutputLayer : public Layer<std::int16_t>  {
         }
 
         const int output_dimension() const {
-            return 1969;
+            return 1858;
         }
 
     private:
