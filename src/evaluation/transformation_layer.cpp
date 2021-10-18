@@ -1,8 +1,8 @@
 #include <cstdint>
 #include <vector>
+#include <map>
 
 #include "layer.cpp"
-#include "../utility/cache.cpp"
 
 #if defined(USE_NEON)
 #include <arm_neon.h>
@@ -24,10 +24,9 @@ class TransformationLayer : public Layer<std::int16_t> {
             std::int8_t biases[OutputDimension];
         };
 
-        TransformationLayer(Cache<int, Weights>* cache, std::unique_ptr<Weights>(*load_weights)(int), const bool flipped) {
+        TransformationLayer(std::map<int, std::unique_ptr<Weights>>* weights, const bool flipped) {
             _flipped = flipped;
-            _cache = cache;
-            _load_weights = load_weights;
+            _weights = weights;
         }
 
         void propagate(const Board b, std::int16_t* output) {
@@ -117,18 +116,9 @@ class TransformationLayer : public Layer<std::int16_t> {
             if (enemy_kingside_castle) { inputs.push_back(PIECE_RELATIONS + 2); };
             if (enemy_queenside_castle) { inputs.push_back(PIECE_RELATIONS + 3); };
 
-            Weights *weights_ptr = _cache->get(friendly_king);
-            std::int8_t *weights;
-            std::int8_t *biases;
-            if (weights_ptr != nullptr) {
-                biases = weights_ptr->biases;
-                weights = weights_ptr->weights;
-            } else {
-                _cache->add(friendly_king, std::move(_load_weights(friendly_king)));
-                weights_ptr = _cache->get(friendly_king);
-                biases = weights_ptr->biases;
-                weights = weights_ptr->weights;
-            }
+            Weights *weights_ptr = _weights->at(friendly_king).get();
+            std::int8_t *weights = weights_ptr->weights;
+            std::int8_t *biases  = weights_ptr->biases;
 
             /*
                 weights are saved in different order than in other layers
@@ -172,7 +162,6 @@ class TransformationLayer : public Layer<std::int16_t> {
         }
 
     private:
-        Cache<int, Weights>* _cache;
         bool _flipped;
-        std::unique_ptr<Weights>(*_load_weights)(int);
+        std::map<int, std::unique_ptr<Weights>>* _weights;
 };

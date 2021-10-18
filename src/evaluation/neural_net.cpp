@@ -12,9 +12,6 @@ class NeuralNet {
 
     public:
         NeuralNet() {
-            _friendly_cache = std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>>(new Cache<int, TransformationLayer<256>::Weights>(10));
-            _enemy_cache = std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>>(new Cache<int, TransformationLayer<256>::Weights>(10));
-
             srand(2018);
 
             for (int i = 0; i < 512*32; i++) {
@@ -35,11 +32,31 @@ class NeuralNet {
             for (int i = 0; i < 1858; i++) {
                 _output_layer_biases[i] = rand() % 64 - 32;
             }
+            for (int i = 0; i < 64; i++) {
+                std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
+                for (int j = 0; j < TransformationLayer<256>::INPUT_DIMENSION * 256; j++) {
+                    weight_ptr->weights[j] = rand() % 256 - 128;
+                }
+                for (int j = 0; j < 256; j++) {
+                    weight_ptr->biases[j] = rand() % 64 - 32;
+                }
+                _friendly_t_layer_weights[i] = std::move(weight_ptr);
+            }
+            for (int i = 0; i < 64; i++) {
+                std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
+                for (int j = 0; j < TransformationLayer<256>::INPUT_DIMENSION * 256; j++) {
+                    weight_ptr->weights[j] = rand() % 256 - 128;
+                }
+                for (int j = 0; j < 256; j++) {
+                    weight_ptr->biases[j] = rand() % 64 - 32;
+                }
+                _enemy_t_layer_weights[i] = std::move(weight_ptr);
+            }
         };
 
         std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) {
-            TransformationLayer<256> friendly_t_layer(_friendly_cache.get(), _load_weights, false); // dense 15
-            TransformationLayer<256> enemy_t_layer(_enemy_cache.get(), _load_weights, true); // dense 15
+            TransformationLayer<256> friendly_t_layer(&_friendly_t_layer_weights, false); // dense 15
+            TransformationLayer<256> enemy_t_layer(&_enemy_t_layer_weights, true); // dense 15
             ConcatenationLayer<std::int16_t> concat_layer = ConcatenationLayer<std::int16_t>(&friendly_t_layer, &enemy_t_layer);
             ActivationLayer activation_layer_1 = ActivationLayer(&concat_layer);
             WeightsLayer dense_layer_2 = WeightsLayer(&activation_layer_1, 0, _full_layer_1_weights, _full_layer_1_biases); // dense 16
@@ -75,15 +92,15 @@ class NeuralNet {
         }
 
     private:
-        std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>> _friendly_cache;
-        std::unique_ptr<Cache<int, TransformationLayer<256>::Weights>> _enemy_cache;
-
         std::int8_t _full_layer_1_weights[512*32];
         std::int8_t _full_layer_1_biases[32];
         std::int8_t _full_layer_2_weights[32*32];
         std::int8_t _full_layer_2_biases[32];
         std::int8_t _output_layer_weights[32*1858];
         std::int8_t _output_layer_biases[1858];
+
+        std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _friendly_t_layer_weights;
+        std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _enemy_t_layer_weights;
 
 
         static std::unique_ptr<TransformationLayer<256>::Weights> _load_weights (int king) {
