@@ -166,7 +166,7 @@ class Searcher {
                     SearchJob(_root.get()).run(&_active_nodes, _evaluate_queue.get(), _backprop_queue.get(), &_backprop_variable);
                 }
                 _expand();
-                if (_evaluate_queue->size() > 50) { //TODO: investigate why we're not hitting this
+                if (_evaluate_queue->size() > (10 * NUM_EVALUATION_THREADS)) {
                     _search_variable.wait(lock);
                 }
             }
