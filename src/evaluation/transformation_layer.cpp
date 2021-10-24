@@ -15,7 +15,7 @@ class TransformationLayer : public Layer<std::int16_t> {
         static const int SQUARES = 64;
         static const int PIECES = 6;
         static const int SIDES = 2;
-        static const int PIECE_RELATIONS = SQUARES*PIECES*SIDES;
+        static const int PIECE_RELATIONS = SQUARES*(PIECES*SIDES-1);
         static const int CASTLING = 4;
         static const int INPUT_DIMENSION = (PIECE_RELATIONS + CASTLING);
 
