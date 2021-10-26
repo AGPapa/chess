@@ -126,6 +126,22 @@ TEST(SearcherTest, checkmate_in_two) {
     ASSERT_EQ(p, Ply("a4d4"));
 }
 
+/*
+Not currently good enough to find this - perhaps needs NN
+TEST(SearcherTest, stalemate) {
+    std::ostringstream out = std::ostringstream();
+
+    Board a = Board("2k5/4R3/1p4p1/p5Q1/qn3P2/1n6/1P6/1K6 w - - 0 100");
+    std::unique_ptr<Searcher> s = std::unique_ptr<Searcher>(new Searcher(a, &out));
+
+    s->start_searching();
+    std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    s->stop_searching();
+    Ply p = s->find_best_ply();
+    ASSERT_EQ(p, Ply("g5f5"));
+}
+*/
+
 TEST(SearcherTest, stopping_twice) {
     std::ostringstream out = std::ostringstream();
     std::unique_ptr<Searcher> s = std::unique_ptr<Searcher>(new Searcher(&out));
