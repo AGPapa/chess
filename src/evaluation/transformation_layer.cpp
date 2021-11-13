@@ -24,6 +24,8 @@ class TransformationLayer : public Layer<std::int16_t> {
             std::int8_t biases[OutputDimension];
         };
 
+        TransformationLayer() {}
+
         TransformationLayer(std::map<int, std::unique_ptr<Weights>>* weights, const bool flipped) {
             _flipped = flipped;
             _weights = weights;

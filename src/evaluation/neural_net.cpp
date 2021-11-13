@@ -29,29 +29,29 @@ class NeuralNet {
             for (int i = 0; i < 1858; i++) {
                 _output_layer_biases[i] = 0;
             }
+
+            _friendly_t_layer = TransformationLayer<256>(&_friendly_t_layer_weights, false); // dense 15
+            _enemy_t_layer= TransformationLayer<256>(&_enemy_t_layer_weights, true); // dense 15
+            _concat_layer = ConcatenationLayer<std::int16_t>(&_friendly_t_layer, &_enemy_t_layer);
+            _activation_layer_1 = ActivationLayer(&_concat_layer);
+            _dense_layer_2 = WeightsLayer(&_activation_layer_1, 0, _full_layer_1_weights, _full_layer_1_biases); // dense 16
+            _activation_layer_2 = ActivationLayer(&_dense_layer_2);
+            _dense_layer_3 = WeightsLayer(&_activation_layer_2, 0, _full_layer_2_weights, _full_layer_2_biases); // dense 17
+            _activation_layer_3 = ActivationLayer(&_dense_layer_3);
+            _output_layer = OutputLayer(&_activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
         };
 
         std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) {
-            TransformationLayer<256> friendly_t_layer(&_friendly_t_layer_weights, false); // dense 15
-            TransformationLayer<256> enemy_t_layer(&_enemy_t_layer_weights, true); // dense 15
-            ConcatenationLayer<std::int16_t> concat_layer = ConcatenationLayer<std::int16_t>(&friendly_t_layer, &enemy_t_layer);
-            ActivationLayer activation_layer_1 = ActivationLayer(&concat_layer);
-            WeightsLayer dense_layer_2 = WeightsLayer(&activation_layer_1, 0, _full_layer_1_weights, _full_layer_1_biases); // dense 16
-            ActivationLayer activation_layer_2 = ActivationLayer(&dense_layer_2);
-            WeightsLayer dense_layer_3 = WeightsLayer(&activation_layer_2, 0, _full_layer_2_weights, _full_layer_2_biases); // dense 17
-            ActivationLayer activation_layer_3 = ActivationLayer(&dense_layer_3);
-            OutputLayer output_layer = OutputLayer(&activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
-
             std::int16_t output[1858] = { 0 };
             if (b.is_white_turn()) {
-                output_layer.propagate(b, ply_list, output);
+                _output_layer.propagate(b, ply_list, output);
             } else {
                 std::vector<Ply> mirror_ply_list;
                 mirror_ply_list.reserve(ply_list.size());
                 for (Ply p : ply_list) {
                     mirror_ply_list.push_back(p.mirror());
                 }
-                output_layer.propagate(b.mirror(), mirror_ply_list, output);
+                _output_layer.propagate(b.mirror(), mirror_ply_list, output);
             }
 
            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
@@ -78,6 +78,16 @@ class NeuralNet {
 
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _friendly_t_layer_weights;
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _enemy_t_layer_weights;
+
+        TransformationLayer<256> _friendly_t_layer;
+        TransformationLayer<256> _enemy_t_layer;
+        ConcatenationLayer<std::int16_t> _concat_layer;
+        ActivationLayer _activation_layer_1;
+        WeightsLayer _dense_layer_2;
+        ActivationLayer _activation_layer_2;
+        WeightsLayer _dense_layer_3;
+        ActivationLayer _activation_layer_3;
+        OutputLayer _output_layer;
 
         void load_weights(std::int8_t weights[], int size, std::string filename) {
             std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);

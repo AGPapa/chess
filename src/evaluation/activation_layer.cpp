@@ -12,6 +12,8 @@ class ActivationLayer : public Layer<std::int8_t> {
 
     public:
 
+        ActivationLayer() {}
+
         ActivationLayer(Layer<std::int16_t>* previous_layer) {
             _previous_layer = previous_layer;
         }

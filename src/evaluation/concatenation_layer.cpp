@@ -7,6 +7,8 @@ class ConcatenationLayer : public Layer<OutputType> {
 
     public:
 
+        ConcatenationLayer() {}
+
         ConcatenationLayer(Layer<OutputType>* first_layer, Layer<OutputType>* second_layer) {
             _first_layer = first_layer;
             _second_layer = second_layer;
