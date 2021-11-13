@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <fstream>
 
 #include "policy.cpp"
 #include "transformation_layer.cpp"
@@ -14,23 +15,17 @@ class NeuralNet {
         NeuralNet() {
             srand(2018);
 
-            for (int i = 0; i < 512*32; i++) {
-                _full_layer_1_weights[i] = rand() % 256 - 128;
+            load_weights(_full_layer_1_weights, sizeof(_full_layer_1_weights)/sizeof(_full_layer_1_weights[0]), "filename_quant_dense_2.bin");
+            load_weights(_full_layer_2_weights, sizeof(_full_layer_2_weights)/sizeof(_full_layer_2_weights[0]), "filename_quant_dense_3.bin");
+            load_weights(_output_layer_weights, sizeof(_output_layer_weights)/sizeof(_output_layer_weights[0]), "filename_quant_dense_4.bin");
+            for (int i = 0; i < 128; i++) {
+                _full_layer_1_biases[i] = 0;
             }
-            for (int i = 0; i < 32; i++) {
-                _full_layer_1_biases[i] = rand() % 64 - 32;
-            }
-            for (int i = 0; i < 32*32; i++) {
-                _full_layer_2_weights[i] = rand() % 256 - 128;
-            }
-            for (int i = 0; i < 32; i++) {
-                _full_layer_2_biases[i] = rand() % 64 - 32;
-            }
-            for (int i = 0; i < 32*1858; i++) {
-                _output_layer_weights[i] = rand() % 256 - 128;
+            for (int i = 0; i < 512; i++) {
+                _full_layer_2_biases[i] = 0;
             }
             for (int i = 0; i < 1858; i++) {
-                _output_layer_biases[i] = rand() % 64 - 32;
+                _output_layer_biases[i] = 0;
             }
             for (int i = 0; i < 64; i++) {
                 std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
@@ -92,41 +87,35 @@ class NeuralNet {
         }
 
     private:
-        std::int8_t _full_layer_1_weights[512*32];
-        std::int8_t _full_layer_1_biases[32];
-        std::int8_t _full_layer_2_weights[32*32];
-        std::int8_t _full_layer_2_biases[32];
-        std::int8_t _output_layer_weights[32*1858];
+        std::int8_t _full_layer_1_weights[512*128];
+        std::int8_t _full_layer_1_biases[128];
+        std::int8_t _full_layer_2_weights[128*512];
+        std::int8_t _full_layer_2_biases[512];
+        std::int8_t _output_layer_weights[512*1858];
         std::int8_t _output_layer_biases[1858];
 
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _friendly_t_layer_weights;
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _enemy_t_layer_weights;
 
-
-        static std::unique_ptr<TransformationLayer<256>::Weights> _load_weights (int king) {
-            std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
-
-            srand(king);
-
-            for (int i = 0; i < TransformationLayer<256>::INPUT_DIMENSION * 256; i++) {
-                weight_ptr->weights[i] = rand() % 256 - 128;
+        void load_weights(std::int8_t weights[], int size, std::string filename) {
+            std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);
+            if (bin_file.good()) {
+                bin_file.get((char *) weights, size);
+                bin_file.close();
+            } else {
+                throw std::runtime_error("Failed to open weights file filename_quant_dense_2.bin");
             }
-            for (int i = 0; i < 256; i++) { //only 16 instead of 256
-                weight_ptr->biases[i] = rand() % 64 - 32;
-            }
-            return std::move(weight_ptr);
         }
-
 
            // transformation layer
            // dense layer ~80k -> 512 ("dense 15") (two ~40K->256)
            // relu
-           // dense layer 512 -> 32  ("dense 16")
+           // dense layer 512 -> 128  ("dense 16")
            // relu
-           // dense layer 32->32  ("dense 17")
+           // dense layer 128->512  ("dense 17")
            // relu
-           // dense layer (32->1) ("value_head")
-           // policy head (32->1858) ("policy_head")
+           // dense layer (512->3) ("value_head")
+           // policy head (512->1858) ("policy_head")
 
-           // policy head (32->1859) ("combined_head"?)
+           // policy head (512->1861) ("combined_head"?)
 };
