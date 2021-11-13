@@ -15,6 +15,8 @@ class NeuralNet {
         NeuralNet() {
             srand(2018);
 
+            load_transform_weights(&_friendly_t_layer_weights, (int) sizeof(_friendly_t_layer_weights.at(0)->weights)/sizeof(_friendly_t_layer_weights.at(0)->weights[0]), "filename_quant_dense.bin");
+            load_transform_weights(&_enemy_t_layer_weights, (int) sizeof(_enemy_t_layer_weights.at(0)->weights)/sizeof(_enemy_t_layer_weights.at(0)->weights[0]), "filename_quant_dense_1.bin");
             load_weights(_full_layer_1_weights, sizeof(_full_layer_1_weights)/sizeof(_full_layer_1_weights[0]), "filename_quant_dense_2.bin");
             load_weights(_full_layer_2_weights, sizeof(_full_layer_2_weights)/sizeof(_full_layer_2_weights[0]), "filename_quant_dense_3.bin");
             load_weights(_output_layer_weights, sizeof(_output_layer_weights)/sizeof(_output_layer_weights[0]), "filename_quant_dense_4.bin");
@@ -26,26 +28,6 @@ class NeuralNet {
             }
             for (int i = 0; i < 1858; i++) {
                 _output_layer_biases[i] = 0;
-            }
-            for (int i = 0; i < 64; i++) {
-                std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
-                for (int j = 0; j < TransformationLayer<256>::INPUT_DIMENSION * 256; j++) {
-                    weight_ptr->weights[j] = rand() % 256 - 128;
-                }
-                for (int j = 0; j < 256; j++) {
-                    weight_ptr->biases[j] = rand() % 64 - 32;
-                }
-                _friendly_t_layer_weights[i] = std::move(weight_ptr);
-            }
-            for (int i = 0; i < 64; i++) {
-                std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
-                for (int j = 0; j < TransformationLayer<256>::INPUT_DIMENSION * 256; j++) {
-                    weight_ptr->weights[j] = rand() % 256 - 128;
-                }
-                for (int j = 0; j < 256; j++) {
-                    weight_ptr->biases[j] = rand() % 64 - 32;
-                }
-                _enemy_t_layer_weights[i] = std::move(weight_ptr);
             }
         };
 
@@ -103,7 +85,24 @@ class NeuralNet {
                 bin_file.get((char *) weights, size);
                 bin_file.close();
             } else {
-                throw std::runtime_error("Failed to open weights file filename_quant_dense_2.bin");
+                throw std::runtime_error("Failed to open weights file " + filename);
+            }
+        }
+
+        void load_transform_weights(std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> *weights, int size, std::string filename) {
+            std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);
+            if (bin_file.good()) {
+                for (int i = 0; i < 64; i++) {
+                    std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
+                    bin_file.get((char *) weight_ptr->weights, size);
+                    for (int j = 0; j < 256; j++) {
+                        weight_ptr->biases[j] = 0;
+                    }
+                    (*weights)[i] = std::move(weight_ptr);
+                }
+                bin_file.close();
+            } else {
+                throw std::runtime_error("Failed to open weights file " + filename);
             }
         }
 
