@@ -188,11 +188,12 @@ class Searcher {
             while (!_expand_queue->empty()) {
                 std::unique_ptr<ExpandJob> job = std::move(_expand_queue->dequeue());
                 if (job != nullptr) {
-                    job->run(&_active_nodes, _backprop_queue.get(), &_backprop_variable);
+                    job->run(&_active_nodes, _backprop_queue.get());
                 } else {
                     throw std::runtime_error("Dequeued nullptr expand job");
                 }
             }
+            _backprop_variable.notify_one();
         }
 
         void _backpropagate() {

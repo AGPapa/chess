@@ -16,11 +16,10 @@ class ExpandJob {
             _lineage = std::move(lineage);
         }
 
-        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+        void run(std::set<LeafNode*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue) {
             float value = Expander::expand(_b, _policy.get(), _leaf, _parent);
             active_nodes->erase(_leaf);
             backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(value, std::move(_lineage), _b.is_white_turn())));
-            backprop_variable->notify_one();
         }
 
     private:
