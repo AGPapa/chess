@@ -34,9 +34,9 @@ class NeuralNet {
             _enemy_t_layer= TransformationLayer<256>(&_enemy_t_layer_weights, true); // dense 15
             _concat_layer = ConcatenationLayer<std::int16_t>(&_friendly_t_layer, &_enemy_t_layer);
             _activation_layer_1 = ActivationLayer(&_concat_layer);
-            _dense_layer_2 = WeightsLayer(&_activation_layer_1, 0, _full_layer_1_weights, _full_layer_1_biases); // dense 16
+            _dense_layer_2 = WeightsLayer(&_activation_layer_1, 128, _full_layer_1_weights, _full_layer_1_biases); // dense 16
             _activation_layer_2 = ActivationLayer(&_dense_layer_2);
-            _dense_layer_3 = WeightsLayer(&_activation_layer_2, 0, _full_layer_2_weights, _full_layer_2_biases); // dense 17
+            _dense_layer_3 = WeightsLayer(&_activation_layer_2, 512, _full_layer_2_weights, _full_layer_2_biases); // dense 17
             _activation_layer_3 = ActivationLayer(&_dense_layer_3);
             _output_layer = OutputLayer(&_activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
         };
@@ -92,7 +92,7 @@ class NeuralNet {
         void load_weights(std::int8_t weights[], int size, std::string filename) {
             std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);
             if (bin_file.good()) {
-                bin_file.get((char *) weights, size);
+                bin_file.read((char *) weights, size);
                 bin_file.close();
             } else {
                 throw std::runtime_error("Failed to open weights file " + filename);
@@ -104,7 +104,7 @@ class NeuralNet {
             if (bin_file.good()) {
                 for (int i = 0; i < 64; i++) {
                     std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
-                    bin_file.get((char *) weight_ptr->weights, size);
+                    bin_file.read((char *) weight_ptr->weights, size);
                     for (int j = 0; j < 256; j++) {
                         weight_ptr->biases[j] = 0;
                     }
