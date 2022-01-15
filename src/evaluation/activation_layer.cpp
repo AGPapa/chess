@@ -36,7 +36,7 @@ class ActivationLayer : public Layer<std::int8_t> {
                 int16x8_t input_vector =  vld1q_s16(input + offset);      // Load vector elements to registers
                 int8x8_t shifted_vector = vshrn_n_s16(input_vector, 6); // Shifts vector bits right
                 int8x8_t output_vector = vmax_s8(shifted_vector, Zero); // Max vector elements with zero
-                vst1_s8(output, output_vector);                        // Store vector elements in memory
+                vst1_s8(output + offset, output_vector);                // Store vector elements in memory
             }
             #endif
 
