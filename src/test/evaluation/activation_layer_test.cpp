@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 TEST(ActivationLayerTest, propagate) {
-    std::int16_t input[17] = { -64, 0, 64, 128, 192, 0, 64, 128, 192, 256, 320, 384, 448, 512, 576, 640 };
+    std::int16_t input[17] = { -64, 0, 64, 128, 192, 0, 64, 128, 192, 256, 320, 384, 448, 512, 576, -26713, -26713 };
     MockLayer<std::int16_t> init = MockLayer<std::int16_t>(17, input);
 
     ActivationLayer activation = ActivationLayer(&init);
@@ -26,7 +26,8 @@ TEST(ActivationLayerTest, propagate) {
     ASSERT_EQ(7, output[12]);
     ASSERT_EQ(8, output[13]);
     ASSERT_EQ(9, output[14]);
-    ASSERT_EQ(10, output[15]);
+    ASSERT_EQ(0, output[15]);
+    ASSERT_EQ(0, output[16]);
 }
 
 int main(int argc, char** argv) {

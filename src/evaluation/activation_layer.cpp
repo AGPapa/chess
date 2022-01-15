@@ -30,13 +30,13 @@ class ActivationLayer : public Layer<std::int8_t> {
             const short transfer_size = 8;
 	        short segments = input_dimension / transfer_size;
             i = segments * transfer_size;
-            const int8x8_t Zero = {0};
+            const int16x8_t Zero = {0};
             for(short x = 0; x < segments; x++) {
     	        short offset = x * transfer_size;
                 int16x8_t input_vector =  vld1q_s16(input + offset);      // Load vector elements to registers
-                int8x8_t shifted_vector = vshrn_n_s16(input_vector, 6); // Shifts vector bits right
-                int8x8_t output_vector = vmax_s8(shifted_vector, Zero); // Max vector elements with zero
-                vst1_s8(output + offset, output_vector);                // Store vector elements in memory
+                int16x8_t positive_vector = vmaxq_s16(input_vector, Zero); // Max vector elements with zero
+                int8x8_t output_vector = vshrn_n_s16(positive_vector, 6); // Shifts vector bits right
+                vst1_s8(output + offset, output_vector);                  // Store vector elements in memory
             }
             #endif
 
