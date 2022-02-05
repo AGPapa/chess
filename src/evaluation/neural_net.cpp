@@ -104,7 +104,13 @@ class NeuralNet {
             if (bin_file.good()) {
                 for (int i = 0; i < 64; i++) {
                     std::unique_ptr<TransformationLayer<256>::Weights> weight_ptr(new TransformationLayer<256>::Weights());
-                    bin_file.read((char *) weight_ptr->weights, size);
+                    std::int8_t temp_weights[size];
+                    bin_file.read((char *) temp_weights, size);
+                    for (int x = 0; x < 256; x++) {
+                        for (int y = 0; y < TransformationLayer<256>::INPUT_DIMENSION; y++) {
+                            weight_ptr->weights[x + 256*y] = temp_weights[TransformationLayer<256>::INPUT_DIMENSION*x + y];
+                        }
+                    }
                     for (int j = 0; j < 256; j++) {
                         weight_ptr->biases[j] = 0;
                     }
