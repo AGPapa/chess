@@ -26,7 +26,7 @@ class NeuralNet {
             for (int i = 0; i < 512; i++) {
                 _full_layer_2_biases[i] = 0;
             }
-            for (int i = 0; i < 1858; i++) {
+            for (int i = 0; i < 1859; i++) {
                 _output_layer_biases[i] = 0;
             }
 
@@ -42,7 +42,7 @@ class NeuralNet {
         };
 
         std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) {
-            std::int16_t output[1858] = { 0 };
+            std::int16_t output[1859] = { 0 };
             if (b.is_white_turn()) {
                 _output_layer.propagate(b, ply_list, output);
             } else {
@@ -73,8 +73,8 @@ class NeuralNet {
         std::int8_t _full_layer_1_biases[128];
         std::int8_t _full_layer_2_weights[128*512];
         std::int8_t _full_layer_2_biases[512];
-        std::int8_t _output_layer_weights[512*1858];
-        std::int8_t _output_layer_biases[1858];
+        std::int8_t _output_layer_weights[512*1859];
+        std::int8_t _output_layer_biases[1859];
 
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _friendly_t_layer_weights;
         std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> _enemy_t_layer_weights;
