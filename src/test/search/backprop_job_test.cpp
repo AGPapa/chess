@@ -16,13 +16,11 @@ TEST(BackpropJobTest, run) {
     ExpandedNode* expanded_child = (ExpandedNode*) root->_child.get();
     lineage->push_back(expanded_child);
     
-    int prior_visits = root->_visits;
     float prior_score = root->_score;
     float score_increment = 0.2;
 
     BackpropJob(score_increment, std::move(lineage), b.is_white_turn()).run();
 
-    ASSERT_EQ(root->_visits, prior_visits + 1);
     ASSERT_EQ(root->_score, prior_score - score_increment);
 
     lineage = std::unique_ptr<std::vector<ExpandedNode*>>(new std::vector<ExpandedNode*>());
@@ -34,15 +32,11 @@ TEST(BackpropJobTest, run) {
     ExpandedNode* expanded_grandchild = (ExpandedNode*) expanded_child->_child.get();
     lineage->push_back(expanded_grandchild);
 
-    prior_visits = root->_visits;
     prior_score = root->_score;
-    int prior_child_visits = expanded_child->_visits;
     float prior_child_score = expanded_child->_score;
     BackpropJob(score_increment, std::move(lineage), b.is_white_turn()).run();
 
-    ASSERT_EQ(root->_visits, prior_visits + 1);
     ASSERT_EQ(root->_score, prior_score - score_increment);
-    ASSERT_EQ(expanded_child->_visits, prior_child_visits + 1);
     ASSERT_EQ(expanded_child->_score, prior_child_score + score_increment);
 }
 
