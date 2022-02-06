@@ -11,7 +11,7 @@ class EvaluateJob {
         }
 
         void run(MPSCQueue<ExpandJob>* expand_queue) {
-           expand_queue->enqueue(std::unique_ptr<ExpandJob>(new ExpandJob(_board, std::move(Evaluator::evaluate(_board)), _leaf, _parent, std::move(_lineage))));
+           expand_queue->enqueue(std::unique_ptr<ExpandJob>(new ExpandJob(_board.is_white_turn(), std::move(Evaluator::evaluate(_board)), _leaf, _parent, std::move(_lineage))));
         }
 
 

@@ -12,7 +12,7 @@ TEST(BackpropJobTest, run) {
     lineage->push_back(root.get());
 
     b.apply_ply(root->_child->_ply);
-    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), root.get());
+    Expander::expand(b.is_white_turn(), Evaluator::evaluate(b).get(), (LeafNode*) root->_child.get(), root.get());
     ExpandedNode* expanded_child = (ExpandedNode*) root->_child.get();
     lineage->push_back(expanded_child);
     
@@ -28,7 +28,7 @@ TEST(BackpropJobTest, run) {
     lineage->push_back(expanded_child);
 
     b.apply_ply(expanded_child->_child->_ply);
-    Expander::expand(b, Evaluator::evaluate(b).get(), (LeafNode*) expanded_child->_child.get(), expanded_child);
+    Expander::expand(b.is_white_turn(), Evaluator::evaluate(b).get(), (LeafNode*) expanded_child->_child.get(), expanded_child);
     ExpandedNode* expanded_grandchild = (ExpandedNode*) expanded_child->_child.get();
     lineage->push_back(expanded_grandchild);
 

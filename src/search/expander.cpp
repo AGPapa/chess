@@ -6,12 +6,12 @@
 class Expander {
     public:
         static float evaluate_and_expand(Board b, ExpandedNode *node) {
-            return _expand(b, Evaluator::evaluate(b).get(), node);
+            return _expand(b.is_white_turn(), Evaluator::evaluate(b).get(), node);
         }
 
-        static float expand(Board b, Policy* policy, LeafNode *leaf, ExpandedNode *parent) {
+        static float expand(bool is_white_turn, Policy* policy, LeafNode *leaf, ExpandedNode *parent) {
             std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new ExpandedNode(std::move(leaf->_sibling), nullptr, leaf->_ply, 0.0, leaf->_prior));
-            float value = Expander::_expand(b, policy, (ExpandedNode*) new_node.get());
+            float value = Expander::_expand(is_white_turn, policy, (ExpandedNode*) new_node.get());
             if (parent->_child.get() == leaf) {
                 parent->_child = std::move(new_node);
             } else {
@@ -28,7 +28,7 @@ class Expander {
         }
 
     private:
-        static float _expand(Board b, Policy* policy, ExpandedNode *node) {
+        static float _expand(bool is_white_turn, Policy* policy, ExpandedNode *node) {
             std::unique_ptr<Node> previous_leaf = nullptr;
             for (Action a : policy->actions()) {
                 std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(std::move(previous_leaf), a.ply(), a.probability()));
@@ -37,7 +37,7 @@ class Expander {
             node->_child = std::move(previous_leaf);
 
             node->_visits += 1;
-            if (b.is_white_turn()) {
+            if (is_white_turn) {
                 node->_score -= policy->value();
             } else {
                 node->_score += policy->value();
