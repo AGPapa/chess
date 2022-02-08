@@ -20,11 +20,33 @@ class WeightsLayer : public Layer<std::int16_t>  {
             _biases = biases;
         }
 
+        void propagate(const Board b, const Board prev_board, const Ply p, std::int16_t* output) {
+            int input_dimension = _previous_layer->output_dimension();
+            std::int8_t input[input_dimension];
+            _previous_layer->propagate(b, prev_board, p, input);
+
+            _apply_weights(input, output, input_dimension);
+        }
+
         void propagate(const Board b, std::int16_t* output) {
             int input_dimension = _previous_layer->output_dimension();
             std::int8_t input[input_dimension];
             _previous_layer->propagate(b, input);
 
+            _apply_weights(input, output, input_dimension);
+        }
+
+        const int output_dimension() const {
+            return _output_dimension;
+        }
+
+    private:
+        Layer<std::int8_t>* _previous_layer;
+        int _output_dimension;
+        const std::int8_t* _weights;
+        const std::int8_t* _biases;
+
+        void _apply_weights(std::int8_t* input, std::int16_t* output, int input_dimension) {
             for (int i = 0; i < _output_dimension; i++) {
                 int j = 0;
                 std::int16_t sum = _biases[i];
@@ -52,14 +74,4 @@ class WeightsLayer : public Layer<std::int16_t>  {
                 output[i] = sum;
             }
         }
-
-        const int output_dimension() const {
-            return _output_dimension;
-        }
-
-    private:
-        Layer<std::int8_t>* _previous_layer;
-        int _output_dimension;
-        const std::int8_t* _weights;
-        const std::int8_t* _biases;
 };

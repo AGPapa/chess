@@ -19,11 +19,42 @@ class OutputLayer : public Layer<std::int16_t>  {
             _biases = biases;
         }
 
+        void propagate(const Board b, const Board prev_board, const Ply p, const std::vector<Ply> ply_list, std::int16_t* output) {
+            int input_dimension = _previous_layer->output_dimension();
+            std::int8_t input[input_dimension];
+            _previous_layer->propagate(b, prev_board, p, input);
+
+            _apply_output(input, output, input_dimension, ply_list);
+        }
+
         void propagate(const Board b, const std::vector<Ply> ply_list, std::int16_t* output) const {
             int input_dimension = _previous_layer->output_dimension();
             std::int8_t input[input_dimension];
             _previous_layer->propagate(b, input);
 
+            _apply_output(input, output, input_dimension, ply_list);
+        }
+
+        void propagate(const Board b, const Board prev_board, const Ply p, std::int16_t* output) {
+            std::vector<Ply> ply_list = b.generate_potential_plies();
+            propagate(b, prev_board, p, ply_list, output);
+        }
+
+        void propagate(const Board b, std::int16_t* output) {
+            std::vector<Ply> ply_list = b.generate_potential_plies();
+            propagate(b, ply_list, output);
+        }
+
+        const int output_dimension() const {
+            return 1858;
+        }
+
+    private:
+        Layer<std::int8_t>* _previous_layer;
+        const std::int8_t* _weights;
+        const std::int8_t* _biases;
+
+        void _apply_output(std::int8_t* input, std::int16_t* output, int input_dimension, const std::vector<Ply> ply_list) const {
             std::vector<int> output_nodes;
             output_nodes.push_back(0); // value head
             for (Ply p : ply_list) {
@@ -57,18 +88,4 @@ class OutputLayer : public Layer<std::int16_t>  {
                 output[i] = sum;
             }
         }
-
-        void propagate(const Board b, std::int16_t* output) {
-            std::vector<Ply> ply_list = b.generate_potential_plies();
-            propagate(b, ply_list, output);
-        }
-
-        const int output_dimension() const {
-            return 1858;
-        }
-
-    private:
-        Layer<std::int8_t>* _previous_layer;
-        const std::int8_t* _weights;
-        const std::int8_t* _biases;
 };

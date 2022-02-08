@@ -31,6 +31,10 @@ class TransformationLayer : public Layer<std::int16_t> {
             _weights = weights;
         }
 
+        void propagate(const Board b, const Board prev_board, const Ply p, std::int16_t* output) {
+            propagate(b, output);
+        }
+
         void propagate(const Board b, std::int16_t* output) {
             int friendly_king;
             int enemy_king;

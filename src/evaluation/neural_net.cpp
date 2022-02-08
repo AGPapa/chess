@@ -15,11 +15,11 @@ class NeuralNet {
         NeuralNet() {
             srand(2018);
 
-            load_transform_weights(&_friendly_t_layer_weights, (int) sizeof(_friendly_t_layer_weights.at(0)->weights)/sizeof(_friendly_t_layer_weights.at(0)->weights[0]), "filename_quant_dense.bin");
-            load_transform_weights(&_enemy_t_layer_weights, (int) sizeof(_enemy_t_layer_weights.at(0)->weights)/sizeof(_enemy_t_layer_weights.at(0)->weights[0]), "filename_quant_dense_1.bin");
-            load_weights(_full_layer_1_weights, sizeof(_full_layer_1_weights)/sizeof(_full_layer_1_weights[0]), "filename_quant_dense_2.bin");
-            load_weights(_full_layer_2_weights, sizeof(_full_layer_2_weights)/sizeof(_full_layer_2_weights[0]), "filename_quant_dense_3.bin");
-            load_weights(_output_layer_weights, sizeof(_output_layer_weights)/sizeof(_output_layer_weights[0]), "filename_quant_dense_4.bin");
+            _load_transform_weights(&_friendly_t_layer_weights, (int) sizeof(_friendly_t_layer_weights.at(0)->weights)/sizeof(_friendly_t_layer_weights.at(0)->weights[0]), "filename_quant_dense.bin");
+            _load_transform_weights(&_enemy_t_layer_weights, (int) sizeof(_enemy_t_layer_weights.at(0)->weights)/sizeof(_enemy_t_layer_weights.at(0)->weights[0]), "filename_quant_dense_1.bin");
+            _load_weights(_full_layer_1_weights, sizeof(_full_layer_1_weights)/sizeof(_full_layer_1_weights[0]), "filename_quant_dense_2.bin");
+            _load_weights(_full_layer_2_weights, sizeof(_full_layer_2_weights)/sizeof(_full_layer_2_weights[0]), "filename_quant_dense_3.bin");
+            _load_weights(_output_layer_weights, sizeof(_output_layer_weights)/sizeof(_output_layer_weights[0]), "filename_quant_dense_4.bin");
             for (int i = 0; i < 128; i++) {
                 _full_layer_1_biases[i] = 0;
             }
@@ -41,6 +41,22 @@ class NeuralNet {
             _output_layer = OutputLayer(&_activation_layer_3, _output_layer_weights, _output_layer_biases); // combined head
         };
 
+        std::unique_ptr<Policy> evaluate (const Board b, const Board prev_board, const Ply ply, std::vector<Ply> ply_list) {
+            std::int16_t output[1859] = { 0 };
+            if (b.is_white_turn()) {
+                _output_layer.propagate(b, prev_board, ply, ply_list, output);
+            } else {
+                std::vector<Ply> mirror_ply_list;
+                mirror_ply_list.reserve(ply_list.size());
+                for (Ply p : ply_list) {
+                    mirror_ply_list.push_back(p.mirror());
+                }
+                _output_layer.propagate(b.mirror(), prev_board.mirror(), ply.mirror(), mirror_ply_list, output);
+            }
+
+            return _convert_to_policy(b.is_white_turn(), output, ply_list);
+        }
+
         std::unique_ptr<Policy> evaluate (const Board b, std::vector<Ply> ply_list) {
             std::int16_t output[1859] = { 0 };
             if (b.is_white_turn()) {
@@ -54,18 +70,7 @@ class NeuralNet {
                 _output_layer.propagate(b.mirror(), mirror_ply_list, output);
             }
 
-           std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
-
-           if (b.is_white_turn()) {
-                for (Ply p : ply_list) {
-                    pol->add_action(p, output[policy_map.at(p)] / 32767.0);
-                }
-           } else {
-                for (Ply p : ply_list) {
-                    pol->add_action(p, output[policy_map.at(p.mirror())] / 32767.0);
-                }
-           }
-           return pol;
+            return _convert_to_policy(b.is_white_turn(), output, ply_list);
         }
 
     private:
@@ -89,7 +94,7 @@ class NeuralNet {
         ActivationLayer _activation_layer_3;
         OutputLayer _output_layer;
 
-        void load_weights(std::int8_t weights[], int size, std::string filename) {
+        void _load_weights(std::int8_t weights[], int size, std::string filename) {
             std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);
             if (bin_file.good()) {
                 bin_file.read((char *) weights, size);
@@ -99,7 +104,7 @@ class NeuralNet {
             }
         }
 
-        void load_transform_weights(std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> *weights, int size, std::string filename) {
+        void _load_transform_weights(std::map<int, std::unique_ptr<TransformationLayer<256>::Weights>> *weights, int size, std::string filename) {
             std::ifstream bin_file("../src/evaluation/weights/" + filename, std::ios::binary);
             if (bin_file.good()) {
                 for (int i = 0; i < 64; i++) {
@@ -120,6 +125,21 @@ class NeuralNet {
             } else {
                 throw std::runtime_error("Failed to open weights file " + filename);
             }
+        }
+
+        std::unique_ptr<Policy> _convert_to_policy(bool is_white_turn, std::int16_t* output, std::vector<Ply> ply_list) {
+            std::unique_ptr<Policy> pol = std::unique_ptr<Policy>(new Policy(output[0] / 32767.0));
+
+           if (is_white_turn) {
+                for (Ply p : ply_list) {
+                    pol->add_action(p, output[policy_map.at(p)] / 32767.0);
+                }
+           } else {
+                for (Ply p : ply_list) {
+                    pol->add_action(p, output[policy_map.at(p.mirror())] / 32767.0);
+                }
+           }
+           return pol;
         }
 
            // transformation layer

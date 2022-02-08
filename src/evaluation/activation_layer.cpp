@@ -18,12 +18,30 @@ class ActivationLayer : public Layer<std::int8_t> {
             _previous_layer = previous_layer;
         }
 
+        void propagate(const Board b, const Board prev_board, const Ply p, std::int8_t* output) {
+            int input_dimension = _previous_layer->output_dimension();
+            std::int16_t input[input_dimension];
+            _previous_layer->propagate(b, prev_board, p, input);
+
+            _apply_activation(input, output, input_dimension);
+        }
+
         void propagate(const Board b, std::int8_t* output) {
             int input_dimension = _previous_layer->output_dimension();
-
             std::int16_t input[input_dimension];
             _previous_layer->propagate(b, input);
 
+            _apply_activation(input, output, input_dimension);
+        }
+
+        const int output_dimension() const {
+            return _previous_layer->output_dimension();
+        }
+
+    private:
+        Layer<std::int16_t>* _previous_layer;
+
+        void _apply_activation(std::int16_t* input, std::int8_t* output, int input_dimension) {
             int i = 0;
 
             #if defined(USE_NEON)
@@ -46,11 +64,4 @@ class ActivationLayer : public Layer<std::int8_t> {
                   output[i] = (std::int8_t) std::max(0, std::min(127, input[i] >> 6)); // TODO: investigate why stockfish shifts the bits
             }
         }
-
-        const int output_dimension() const {
-            return _previous_layer->output_dimension();
-        }
-
-    private:
-        Layer<std::int16_t>* _previous_layer;
 };
