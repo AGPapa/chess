@@ -13,7 +13,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p)
     if (policy != nullptr) return policy;
 
     // TODO: Replace with real implementation
-    // return net.evaluate(b, prev_board, p, ply_list);
+    // return net.evaluate(b.copy_without_history(), prev_board.copy_without_history(), p, ply_list);
     policy = std::unique_ptr<Policy>(new Policy(0.01));
 
     for (Ply p : ply_list) {
@@ -33,7 +33,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
     if (policy != nullptr) return policy;
 
     // TODO: Replace with real implementation
-    // return net.evaluate(b, ply_list);
+    // return net.evaluate(b.copy_without_history(), ply_list);
     policy = std::unique_ptr<Policy>(new Policy(0.01));
 
     for (Ply p : ply_list) {
