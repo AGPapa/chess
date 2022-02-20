@@ -331,8 +331,6 @@ class Board {
 
         Bitboard all_pieces() const {
             Bitboard b = squarewise_or(w_pieces, b_pieces);
-            b.set_square(w_king);
-            b.set_square(b_king);
             return b;
         }
 
@@ -378,14 +376,20 @@ class Board {
             Square from = ply.from_square();
             Square to = ply.to_square();
 
-            bool reset_50;
-            if (w_turn) {
-                reset_50 = white_pawns().get_square(from);
-            } else {
-                reset_50 = black_pawns().get_square(from);
+            bool reset_50 = false;
+
+            // clear capture
+            if (all_pieces().get_square(to)) {
+                reset_50 = true;
+                pawns.unset_square(to);
+                rooks.unset_square(to);
+                knights.unset_square(to);
+                bishops.unset_square(to);
+                b_pieces.unset_square(to);
+                w_pieces.unset_square(to);
             }
 
-            // move king
+            // king move
             if (from == w_king) {
                 w_pieces.unset_square(from);
                 w_pieces.set_square(to);
@@ -403,6 +407,8 @@ class Board {
                     w_pieces.set_square(d1);
                 }
             } else if (from == b_king) {
+                b_pieces.unset_square(from);
+                b_pieces.set_square(to);
                 b_king = to;
                 castling.unset_black();
                 if (to == g8 && from == e8) {
@@ -416,94 +422,95 @@ class Board {
                     rooks.set_square(d8);
                     b_pieces.set_square(d8);
                 }
-            }
 
-            // clear castling rights
-            if (from == a1) {
-                castling.unset_white_queenside();
-            } else if (from == h1) {
-                castling.unset_white_kingside();
-            } else if (from == a8) {
-                castling.unset_black_queenside();
-            } else if (from == h8) {
-                castling.unset_black_kingside();
-            }
-            if (to == a1) {
-                castling.unset_white_queenside();
-            } else if (to == h1) {
-                castling.unset_white_kingside();
-            } else if (to == a8) {
-                castling.unset_black_queenside();
-            } else if (to == h8) {
-                castling.unset_black_kingside();
-            }
-
-            // clear en-passant captures
-            if (w_turn && pawns.get_square(from) && (to.get_col() != from.get_col()) && pawns.get_square(7, to.get_col())) {
-                pawns.unset_square(Square(4, to.get_col()));
-                b_pieces.unset_square(Square(4, to.get_col()));
-            } else if (!w_turn && pawns.get_square(from) && (to.get_col() != from.get_col()) && pawns.get_square(0, to.get_col())) {
-                pawns.unset_square(Square(3, to.get_col()));
-                w_pieces.unset_square(Square(3, to.get_col()));
-            }
-
-            //clears en-passant flags
-            pawns = squarewise_and(pawns, pawn_mask);
-
-            // set en-passant flags
-            if (w_turn) {
-                pawns.set_square_if(Square(0, to.get_col()), pawns.get_square(from) && (to.get_row() - from.get_row()) == 2);
-            } else {
-                pawns.set_square_if(Square(7, to.get_col()), pawns.get_square(from) && (from.get_row() - to.get_row()) == 2);
-            }
-
-            // clear capture
-            if (w_turn && black_pieces().get_square(to)) {
+                //clears en-passant flags
+                pawns = squarewise_and(pawns, pawn_mask);
+            // pawn move
+            } else if (pawns.get_square(from)) {
+                // resets 50 move counter
                 reset_50 = true;
-                pawns.unset_square(to);
-                rooks.unset_square(to);
-                knights.unset_square(to);
-                bishops.unset_square(to);
-                b_pieces.unset_square(to);
-            } else if (!w_turn && white_pieces().get_square(to)) {
-                reset_50 = true;
-                pawns.unset_square(to);
-                rooks.unset_square(to);
-                knights.unset_square(to);
-                bishops.unset_square(to);
-                w_pieces.unset_square(to);
-            }
 
-            // add to square
-            pawns.set_square_if(to, pawns.get_square(from));
-            rooks.set_square_if(to, rooks.get_square(from));
-            knights.set_square_if(to, knights.get_square(from));
-            bishops.set_square_if(to, bishops.get_square(from));
-            w_pieces.set_square_if(to, w_turn);
-            b_pieces.set_square_if(to, !w_turn);
-
-            // clear from square
-            pawns.unset_square(from);
-            rooks.unset_square(from);
-            knights.unset_square(from);
-            bishops.unset_square(from);
-            w_pieces.unset_square(from);
-            b_pieces.unset_square(from);
-
-            // promote pawns
-            Ply::Promotion promotion = ply.promotion();
-            if (promotion != Ply::Promotion::None) {
-                pawns.unset_square(to);
-                if (promotion == Ply::Promotion::Queen) {
-                    bishops.set_square(to);
-                    rooks.set_square(to);
-                } else if (promotion == Ply::Promotion::Knight) {
-                    knights.set_square(to);
-                } else if (promotion == Ply::Promotion::Rook) {
-                    rooks.set_square(to);
-                } else if (promotion == Ply::Promotion::Bishop) {
-                    bishops.set_square(to);
+                // clear en-passant captures
+                if (w_turn && (to.get_col() != from.get_col()) && pawns.get_square(7, to.get_col())) {
+                    pawns.unset_square(Square(4, to.get_col()));
+                    b_pieces.unset_square(Square(4, to.get_col()));
+                } else if (!w_turn && (to.get_col() != from.get_col()) && pawns.get_square(0, to.get_col())) {
+                    pawns.unset_square(Square(3, to.get_col()));
+                    w_pieces.unset_square(Square(3, to.get_col()));
                 }
+
+                //clears en-passant flags
+                pawns = squarewise_and(pawns, pawn_mask);
+
+                // set en-passant flags
+                if (w_turn) {
+                    pawns.set_square_if(Square(0, to.get_col()), (to.get_row() - from.get_row()) == 2);
+                } else {
+                    pawns.set_square_if(Square(7, to.get_col()), (from.get_row() - to.get_row()) == 2);
+                }
+
+                // add to square
+                pawns.set_square(to);
+                w_pieces.set_square_if(to, w_turn);
+                b_pieces.set_square_if(to, !w_turn);
+
+                // promote pawns
+                Ply::Promotion promotion = ply.promotion();
+                if (promotion != Ply::Promotion::None) {
+                    pawns.unset_square(to);
+                    if (promotion == Ply::Promotion::Queen) {
+                        bishops.set_square(to);
+                        rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Knight) {
+                        knights.set_square(to);
+                    } else if (promotion == Ply::Promotion::Rook) {
+                        rooks.set_square(to);
+                    } else if (promotion == Ply::Promotion::Bishop) {
+                        bishops.set_square(to);
+                    }
+                }
+
+                // clear from square
+                pawns.unset_square(from);
+                w_pieces.unset_square(from);
+                b_pieces.unset_square(from);
+            } else {
+                // clear castling rights
+                if (from == a1) {
+                    castling.unset_white_queenside();
+                } else if (from == h1) {
+                    castling.unset_white_kingside();
+                } else if (from == a8) {
+                    castling.unset_black_queenside();
+                } else if (from == h8) {
+                    castling.unset_black_kingside();
+                }
+                if (to == a1) {
+                    castling.unset_white_queenside();
+                } else if (to == h1) {
+                    castling.unset_white_kingside();
+                } else if (to == a8) {
+                    castling.unset_black_queenside();
+                } else if (to == h8) {
+                    castling.unset_black_kingside();
+                }
+
+                //clears en-passant flags
+                pawns = squarewise_and(pawns, pawn_mask);
+
+                // add to square
+                rooks.set_square_if(to, rooks.get_square(from));
+                knights.set_square_if(to, knights.get_square(from));
+                bishops.set_square_if(to, bishops.get_square(from));
+                w_pieces.set_square_if(to, w_turn);
+                b_pieces.set_square_if(to, !w_turn);
+
+                // clear from square
+                rooks.unset_square(from);
+                knights.unset_square(from);
+                bishops.unset_square(from);
+                w_pieces.unset_square(from);
+                b_pieces.unset_square(from);
             }
 
             // reset rule 50

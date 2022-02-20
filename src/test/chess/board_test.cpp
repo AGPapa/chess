@@ -147,6 +147,10 @@ TEST(BoardTest, apply_ply) {
     ASSERT_EQ("rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPPKPPP/RNBQ1BNR b kq - 1 3", a.to_fen());
     a.apply_ply(Ply("e8d8"));
     ASSERT_EQ("rnbk1bnr/ppp1pppp/8/3q4/8/8/PPPPKPPP/RNBQ1BNR w - - 2 4", a.to_fen());
+    a.apply_ply(Ply("a2a4"));
+    ASSERT_EQ("rnbk1bnr/ppp1pppp/8/3q4/P7/8/1PPPKPPP/RNBQ1BNR b - a3 0 4", a.to_fen());
+    a.apply_ply(Ply("d8e8"));
+    ASSERT_EQ("rnb1kbnr/ppp1pppp/8/3q4/P7/8/1PPPKPPP/RNBQ1BNR w - - 1 5", a.to_fen());
 
 
     Board b = Board("8/k3PPPP/8/8/8/8/K3pppp/8 w - - 0 100");
