@@ -37,6 +37,20 @@ class Searcher {
             return best_child->_ply;
         }
 
+        void node_census(ExpandedNode* root, int* leaves, int* expanded, int* terminal) {
+            bool has_children = false;
+            for (Node* child : root->children()) {
+                has_children = true;
+                if (child->is_leaf()){
+                    (*leaves)++;
+                } else {
+                    (*expanded)++;
+                    node_census((ExpandedNode*) child, leaves, expanded, terminal);
+                }
+            }
+            if(!has_children) { (*terminal)++; }
+        }
+
         void apply_ply(Ply p) {
             for (Node* child : _root->children()) {
                 if (child->_ply == p) {
@@ -156,6 +170,16 @@ class Searcher {
             std::ostream& output = *_output;
             int nodes = _root->visits();
             output << "info nodes " << nodes << std::endl;
+
+            int leaves = 0;
+            int expanded = 0;
+            int terminal = 0;
+
+            node_census(_root.get(), &leaves, &expanded, &terminal);
+
+            output << "info leaves " << leaves << std::endl;
+            output << "info expanded " << expanded << std::endl;
+            output << "info terminal " << terminal << std::endl;
         }
 
         void _search() {
