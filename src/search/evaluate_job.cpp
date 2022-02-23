@@ -12,7 +12,7 @@ class EvaluateJob {
         }
 
         void run(MPSCQueue<ExpandJob>* expand_queue) {
-           expand_queue->enqueue(std::unique_ptr<ExpandJob>(new ExpandJob(!_prev_board.is_white_turn(), std::move(Evaluator::evaluate(_prev_board, _ply)), _leaf, _parent, std::move(_lineage))));
+           expand_queue->enqueue(std::unique_ptr<ExpandJob>(new ExpandJob(_prev_board.is_white_turn(), std::move(Evaluator::evaluate(_prev_board, _ply)), _leaf, _parent, std::move(_lineage))));
         }
 
 

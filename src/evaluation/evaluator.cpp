@@ -1,4 +1,6 @@
 #include "evaluator.hpp"
+#include "neural_net.cpp"
+#include "mock_neural_net.cpp"
 
 std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p) {
     Board b = prev_board;
@@ -12,15 +14,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p)
     policy = _checkmate_or_stalemate(b, ply_list);
     if (policy != nullptr) return policy;
 
-    // TODO: Replace with real implementation
-    // return net.evaluate(b.copy_without_history(), prev_board.copy_without_history(), p, ply_list);
-    policy = std::unique_ptr<Policy>(new Policy(0.01));
-
-    for (Ply p : ply_list) {
-        policy->add_action(p, 0.1);
-    }
-
-    return policy;
+    return net->evaluate(b.copy_without_history(), prev_board.copy_without_history(), p, ply_list);
 }
 
 std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
@@ -32,15 +26,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
     policy = _checkmate_or_stalemate(b, ply_list);
     if (policy != nullptr) return policy;
 
-    // TODO: Replace with real implementation
-    // return net.evaluate(b.copy_without_history(), ply_list);
-    policy = std::unique_ptr<Policy>(new Policy(0.01));
-
-    for (Ply p : ply_list) {
-        policy->add_action(p, 0.1);
-    }
-
-    return policy;
+    return net->evaluate(b.copy_without_history(), ply_list);
 }
 
 std::unique_ptr<Policy> Evaluator::_draw(const Board b) {
@@ -65,4 +51,5 @@ std::unique_ptr<Policy> Evaluator::_checkmate_or_stalemate(const Board b, const 
     return nullptr;
 }
 
-NeuralNet Evaluator::net = NeuralNet();
+std::unique_ptr<SmartEvaluator> Evaluator::net = std::unique_ptr<SmartEvaluator>(new MockNeuralNet());
+//std::unique_ptr<SmartEvaluator> Evaluator::net = std::unique_ptr<SmartEvaluator>(new NeuralNet());

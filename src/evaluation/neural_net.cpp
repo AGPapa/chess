@@ -1,15 +1,14 @@
 #include <stdlib.h>
 #include <fstream>
 
-#include "policy.cpp"
+#include "smart_evaluator.cpp"
 #include "transformation_layer.cpp"
 #include "concatenation_layer.cpp"
 #include "weights_layer.cpp"
 #include "activation_layer.cpp"
 #include "output_layer.cpp"
-#include "../chess/board.cpp"
 
-class NeuralNet {
+class NeuralNet : public SmartEvaluator {
 
     public:
         NeuralNet() {

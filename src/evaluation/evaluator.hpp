@@ -1,4 +1,4 @@
-#include "neural_net.cpp"
+#include "smart_evaluator.cpp"
 #include "../chess/board.cpp"
 
 class Evaluator {
@@ -8,7 +8,7 @@ class Evaluator {
 
         static std::unique_ptr<Policy> evaluate(Board b);
 
-        static NeuralNet net;
+        static std::unique_ptr<SmartEvaluator> net;
 
     private:
         static std::unique_ptr<Policy> _draw(const Board b);

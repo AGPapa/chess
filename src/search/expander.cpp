@@ -38,9 +38,9 @@ class Expander {
 
             node->_visits += 1;
             if (is_white_turn) {
-                node->_score -= policy->value();
-            } else {
                 node->_score += policy->value();
+            } else {
+                node->_score -= policy->value();
             }
             return policy->value();
         }
