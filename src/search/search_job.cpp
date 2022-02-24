@@ -37,7 +37,7 @@ class SearchJob {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
                     lineage->shrink_to_fit();
-                    _increment_visits(lineage.get());
+                    _virtual_loss(lineage.get());
                     backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
                     backprop_variable->notify_one();
                     return;
@@ -46,7 +46,7 @@ class SearchJob {
                     if (active_nodes->count(best_leaf) == 0) { //only evaluate if we're not currently evaluating
                         lineage->shrink_to_fit();
                         active_nodes->insert(best_leaf);
-                        _increment_visits(lineage.get());
+                        _virtual_loss(lineage.get());
                         evaluate_queue->enqueue(std::unique_ptr<EvaluateJob>(new EvaluateJob(temp_board, best_child->_ply, best_leaf, node, std::move(lineage))));
                     }
                     return;
@@ -62,10 +62,10 @@ class SearchJob {
         RootNode* _root;
 
         // aka "virtual loss"
-        // TODO: this is more of a "virtual draw" - will that be a problem?
-        void _increment_visits(std::vector<ExpandedNode*> *lineage) {
+        void _virtual_loss(std::vector<ExpandedNode*> *lineage) {
             for (ExpandedNode* n : *lineage) {
                 n->_visits += 1;
+                n->_score -= 1;
             }
         }
 };

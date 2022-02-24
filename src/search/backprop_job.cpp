@@ -17,6 +17,7 @@ class BackpropJob {
                 } else {
                     (*node)->_score += _score;
                 }
+                (*node)->_score += 1; // undoes virtual loss
                 white_to_play = !white_to_play;
             }
         }
