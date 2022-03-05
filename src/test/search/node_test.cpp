@@ -1,5 +1,5 @@
-#include "../../search_v2/root_node.cpp"
-#include "../../search_v2/expander.cpp"
+#include "../../search/root_node.cpp"
+#include "../../search/expander.cpp"
 
 #include <gtest/gtest.h>
 

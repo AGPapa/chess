@@ -1,7 +1,7 @@
-#include "../../search_v2/root_node.cpp"
-#include "../../search_v2/backprop_job.cpp"
-#include "../../search_v2/edge.cpp"
-#include "../../search_v2/expander.cpp"
+#include "../../search/root_node.cpp"
+#include "../../search/backprop_job.cpp"
+#include "../../search/edge.cpp"
+#include "../../search/expander.cpp"
 
 #include <gtest/gtest.h>
 

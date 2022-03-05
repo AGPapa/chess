@@ -1,6 +1,6 @@
-#include "../../search_v2/root_node.cpp"
-#include "../../search_v2/expand_job.cpp"
-#include "../../search_v2/edge.cpp"
+#include "../../search/root_node.cpp"
+#include "../../search/expand_job.cpp"
+#include "../../search/edge.cpp"
 #include "../../evaluation/evaluator.cpp"
 
 #include <gtest/gtest.h>
