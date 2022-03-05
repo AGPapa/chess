@@ -26,6 +26,7 @@ TEST(NodeTest, convert_node_constructor) {
     ASSERT_EQ(child->is_leaf(), false);
     ASSERT_EQ(child->_node->_visits, 1);
     ASSERT_EQ(child->_prior, leaf_prior);
+    ASSERT_EQ(child->search_score(root->_visits), child->_node->search_score(root->_visits, child->_prior));
 
     Edge* grandchild = &child->_node->_children[0];
 
