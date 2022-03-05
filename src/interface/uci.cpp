@@ -1,6 +1,6 @@
 #include <string>
 
-#include "../search/searcher.cpp"
+#include "../search_v2/searcher.cpp"
 
 class UCI {
 
