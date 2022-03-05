@@ -15,7 +15,6 @@ TEST(ExpandJobTest, run) {
     lineage->push_back(root.get());
 
     ExpandJob j = ExpandJob(b.is_white_turn(), std::move(p), leaf, std::move(lineage));
-    // void run(std::set<Edge*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue) {
     std::set<Edge*> active_nodes = std::set<Edge*>();
     active_nodes.insert(leaf);
     std::unique_ptr<MPSCQueue<BackpropJob>> backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());

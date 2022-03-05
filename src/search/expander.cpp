@@ -30,7 +30,7 @@ class Expander {
     private:
         static float _expand(bool is_white_turn, Policy* policy, ExpandedNode *node) {
             std::unique_ptr<Node> previous_leaf = nullptr;
-            for (Action a : policy->actions()) {
+            for (Action a : *(policy->actions())) {
                 std::unique_ptr<Node> new_node = std::unique_ptr<Node>(new LeafNode(std::move(previous_leaf), a.ply(), a.probability()));
                 previous_leaf = std::move(new_node);
             }

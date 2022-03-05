@@ -26,8 +26,8 @@ class Policy {
             return _value;
         }
 
-        std::vector<Action> actions() {
-            return _action_list;
+        std::vector<Action>* actions() {
+            return &_action_list;
         }
 
     private:

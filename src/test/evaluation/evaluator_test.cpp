@@ -8,25 +8,25 @@ TEST(EvaluatorTest, evaluate_threefold_repetition) {
     b.apply_ply(Ply("h1a8"));
     std::unique_ptr<Policy> p = std::move(Evaluator::evaluate(b));
     ASSERT_NE(0, p->value());
-    ASSERT_NE(0, p->actions().size());
+    ASSERT_NE(0, p->actions()->size());
 
     b.apply_ply(Ply("g8h7"));
     b.apply_ply(Ply("a8h1"));
     p = std::move(Evaluator::evaluate(b));
     ASSERT_NE(0, p->value());
-    ASSERT_NE(0, p->actions().size());
+    ASSERT_NE(0, p->actions()->size());
 
     b.apply_ply(Ply("h7g8"));
     b.apply_ply(Ply("h1a8"));
     p = std::move(Evaluator::evaluate(b));
     ASSERT_NE(0, p->value());
-    ASSERT_NE(0, p->actions().size());
+    ASSERT_NE(0, p->actions()->size());
 
     b.apply_ply(Ply("g8h7"));
     b.apply_ply(Ply("a8h1"));
     p = std::move(Evaluator::evaluate(b));
     ASSERT_EQ(0, p->value());
-    ASSERT_EQ(0, p->actions().size());
+    ASSERT_EQ(0, p->actions()->size());
 }
 
 TEST(EvaluatorTest, evaluate_checkmate) {
@@ -34,14 +34,14 @@ TEST(EvaluatorTest, evaluate_checkmate) {
     std::unique_ptr<Policy> p = std::move(Evaluator::evaluate(b));
 
     ASSERT_EQ(1, p->value());
-    ASSERT_EQ(0, p->actions().size());
+    ASSERT_EQ(0, p->actions()->size());
 
 
     b = Board("7k/8/8/8/8/8/6PP/r6K w - - 0 100");
     p = std::move(Evaluator::evaluate(b));
 
     ASSERT_EQ(-1, p->value());
-    ASSERT_EQ(0, p->actions().size());
+    ASSERT_EQ(0, p->actions()->size());
 }
 
 TEST(EvaluatorTest, evaluate_stalemate) {
@@ -49,14 +49,14 @@ TEST(EvaluatorTest, evaluate_stalemate) {
     std::unique_ptr<Policy> p = std::move(Evaluator::evaluate(b));
 
     ASSERT_EQ(0, p->value());
-    ASSERT_EQ(0, p->actions().size());
+    ASSERT_EQ(0, p->actions()->size());
 
 
     b = Board("7k/8/8/8/8/6q1/8/7K w - - 0 100");
     p = std::move(Evaluator::evaluate(b));
 
     ASSERT_EQ(0, p->value());
-    ASSERT_EQ(0, p->actions().size());
+    ASSERT_EQ(0, p->actions()->size());
 }
 
 TEST(EvaluatorTest, evaluate_fifty_move_draw) {
@@ -64,13 +64,13 @@ TEST(EvaluatorTest, evaluate_fifty_move_draw) {
   std::unique_ptr<Policy> p = std::move(Evaluator::evaluate(b));
 
   ASSERT_NE(0, p->value());
-  ASSERT_NE(0, p->actions().size());
+  ASSERT_NE(0, p->actions()->size());
 
   b.apply_ply(Ply("h1h2"));
     p = std::move(Evaluator::evaluate(b));
 
   ASSERT_EQ(0, p->value());
-  ASSERT_EQ(0, p->actions().size());
+  ASSERT_EQ(0, p->actions()->size());
 }
 
 TEST(EvaluatorTest, is_insufficient_mating_material) {
@@ -78,14 +78,14 @@ TEST(EvaluatorTest, is_insufficient_mating_material) {
   std::unique_ptr<Policy> p = std::move(Evaluator::evaluate(b));
 
   ASSERT_NE(0, p->value());
-  ASSERT_NE(0, p->actions().size());
+  ASSERT_NE(0, p->actions()->size());
 
   b.apply_ply(Ply("g1g8"));
   b.apply_ply(Ply("h8g8"));
   p = std::move(Evaluator::evaluate(b));
 
   ASSERT_EQ(0, p->value());
-  ASSERT_EQ(0, p->actions().size());
+  ASSERT_EQ(0, p->actions()->size());
 }
 
 int main(int argc, char** argv) {

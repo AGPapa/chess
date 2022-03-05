@@ -10,8 +10,8 @@ TEST(PolicyTest, add_action) {
     Ply ply = Ply("e2e4");
     float prob = 0.94;
     policy.add_action(ply, prob);
-    ASSERT_EQ(policy.actions().front().ply().to_string(), ply.to_string());
-    ASSERT_EQ(policy.actions().front().probability(), prob);
+    ASSERT_EQ(policy.actions()->front().ply().to_string(), ply.to_string());
+    ASSERT_EQ(policy.actions()->front().probability(), prob);
 }
 
 TEST(PolicyTest, set_value) {

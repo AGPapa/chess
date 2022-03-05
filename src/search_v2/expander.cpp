@@ -7,10 +7,10 @@ class Expander {
     public:
         static float evaluate_and_expand(Board b, Node *node) {
             std::unique_ptr<Policy> policy = Evaluator::evaluate(b);
-            int size = policy->actions().size();
+            int size = policy->actions()->size();
             std::unique_ptr<Edge[]> edges = std::unique_ptr<Edge[]>(new Edge[size]);
             int i = 0;
-            for (Action a : policy->actions()) {
+            for (Action a : *(policy->actions())) {
                 edges[i] = Edge(a.ply(), a.probability());
                 i++;
             }
@@ -27,10 +27,10 @@ class Expander {
         }
 
         static float expand(bool is_white_turn, Policy* policy, Edge *edge) {
-            int size = policy->actions().size();
+            int size = policy->actions()->size();
             std::unique_ptr<Edge[]> edges = std::unique_ptr<Edge[]>(new Edge[size]);
             int i = 0;
-            for (Action a : policy->actions()) {
+            for (Action a : *(policy->actions())) {
                 edges[i] = Edge(a.ply(), a.probability());
                 i++;
             }
