@@ -1,3 +1,5 @@
+#pragma once
+
 #include "smart_evaluator.cpp"
 #include "../chess/board.cpp"
 

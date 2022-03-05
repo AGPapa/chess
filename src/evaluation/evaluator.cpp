@@ -1,3 +1,5 @@
+#pragma once
+
 #include "evaluator.hpp"
 #include "neural_net.cpp"
 #include "mock_neural_net.cpp"
