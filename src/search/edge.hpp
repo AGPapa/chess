@@ -17,7 +17,7 @@ class Edge {
 
         bool is_leaf();
 
-        float search_score(int parent_visits);
+        float search_score(const float sqrt_parent_visits);
 
         float visits();
 

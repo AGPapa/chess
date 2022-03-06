@@ -16,11 +16,11 @@ Edge::Edge(const Ply ply, float prior) {
 
 bool Edge::is_leaf() { return _node == nullptr; };
 
-float Edge::search_score(int parent_visits) { 
+float Edge::search_score(const float sqrt_parent_visits) {
     if (_node == nullptr) {
-        return EXPLORATION_FACTOR * _prior * sqrt(parent_visits);
+        return EXPLORATION_FACTOR * _prior * sqrt_parent_visits;
     } else {
-        return _node->search_score(parent_visits, _prior);
+        return _node->search_score(sqrt_parent_visits, _prior);
     }
 };
 

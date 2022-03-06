@@ -22,8 +22,9 @@ class SearchJob {
                 std::unique_ptr<Node>* best_child_owner = nullptr;
                 Edge* best_child = nullptr;
                 float best_score = -100.0; //max negative float
+                float sqrt_vists = sqrt(node->_visits);
                 for (int i = 0; i < node->_num_children; i++) {
-                    float score = node->_children[i].search_score(node->_visits);
+                    float score = node->_children[i].search_score(sqrt_vists);
                     if (score > best_score) {
                         best_score = score;
                         best_child = &node->_children[i];
