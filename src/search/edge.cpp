@@ -4,6 +4,7 @@
 #include "search_constants.hpp"
 
 Edge::Edge() {
+    _ply = Ply();
     _prior = 0;
     _node = nullptr;
 };

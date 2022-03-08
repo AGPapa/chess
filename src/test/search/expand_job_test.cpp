@@ -28,6 +28,13 @@ TEST(ExpandJobTest, run) {
     ASSERT_NE(leaf->_node, nullptr);
     ASSERT_EQ(active_nodes.count(leaf), 0);
     ASSERT_EQ(backprop_queue->size(), 1);
+    int i = 0;
+    for (int i = 0; i < leaf->_node->_num_children; i++) {
+      ASSERT_EQ(leaf->_node->_children[i]._node, nullptr);
+      ASSERT_NE(leaf->_node->_children[i]._ply, Ply());
+      ASSERT_NE(leaf->_node->_children[i]._prior, 0);
+    }
+
 
 }
 

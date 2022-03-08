@@ -11,7 +11,8 @@ class Expander {
             std::unique_ptr<Edge[]> edges = std::unique_ptr<Edge[]>(new Edge[size]);
             int i = 0;
             for (Action a : *(policy->actions())) {
-                edges[i] = Edge(a.ply(), a.probability());
+                edges[i]._ply = a.ply();
+                edges[i]._prior = a.probability();
                 i++;
             }
             node->_num_children = size;
@@ -31,7 +32,8 @@ class Expander {
             std::unique_ptr<Edge[]> edges = std::unique_ptr<Edge[]>(new Edge[size]);
             int i = 0;
             for (Action a : *(policy->actions())) {
-                edges[i] = Edge(a.ply(), a.probability());
+                edges[i]._ply = a.ply();
+                edges[i]._prior = a.probability();
                 i++;
             }
             if (is_white_turn) {
