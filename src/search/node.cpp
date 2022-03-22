@@ -8,7 +8,7 @@
 
 Node::Node() { _visits = 0; _score = 0; _children = nullptr; _num_children = 0; };
 
-Node::Node(float score, std::unique_ptr<Edge[]> children, int num_children) {
+Node::Node(float score, std::unique_ptr<Edge[]> children, short num_children) {
     _visits = 1;
     _score = score;
     _children = std::move(children);

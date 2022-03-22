@@ -10,12 +10,12 @@ class Node {
     public:
         int _visits;
         float _score;
-        int _num_children;
+        short _num_children;
         std::unique_ptr<Edge[]> _children;
 
         Node();
 
-        Node(float score, std::unique_ptr<Edge[]> children, int num_children);
+        Node(float score, std::unique_ptr<Edge[]> children, short num_children);
 
         float search_score(const float sqrt_parent_visits, const float prior);
 
