@@ -10,27 +10,19 @@ class Policy {
 
         Policy(float value) {
             _value = value;
-            _action_list = std::vector<Action>();
-            _action_list.reserve(30);
+            _num_actions = 0;
         }
 
         void add_action(Ply p, float probability) {
-            _action_list.push_back(Action(p, probability));
+            _actions[_num_actions] = Action(p, probability);
+            _num_actions++;
         }
 
         void set_value(float value) {
             _value = value;
         }
 
-        const float value() {
-            return _value;
-        }
-
-        std::vector<Action>* actions() {
-            return &_action_list;
-        }
-
-    private:
         float _value;
-        std::vector<Action> _action_list;
+        short _num_actions;
+        Action _actions[218]; // 218 is the most number of chess moves from one position
 };

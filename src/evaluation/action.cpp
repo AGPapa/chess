@@ -3,6 +3,11 @@
 class Action {
     public:
 
+        Action() {
+            _ply = Ply();
+            _probability = 0;
+        }
+
         Action(Ply ply, float probability) {
             _ply = ply;
             _probability = probability;
