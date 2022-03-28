@@ -8,42 +8,44 @@ class BoardSignature {
 
     public:
 
+        BoardSignature() {};
+
         BoardSignature(Bitboard w_p, Bitboard b_p, Bitboard b, Bitboard r, Bitboard n,
             Square w_k, Square b_k, Castling c) {
-            w_pieces = w_p;
-            b_pieces = b_p;
-            bishops = b;
-            rooks = r;
-            knights = n;
+            _w_pieces = w_p;
+            _b_pieces = b_p;
+            _bishops = b;
+            _rooks = r;
+            _knights = n;
 
-            w_king = w_k;
-            b_king = b_k;
+            _w_king = w_k;
+            _b_king = b_k;
 
-            castling = c;
+            _castling = c;
         };
 
         bool is_repetition(const BoardSignature b) const {
-            return b.w_pieces == w_pieces
-                && b.b_pieces == b_pieces
-                && b.rooks == rooks
-                && b.knights == knights
-                && b.bishops == bishops
-                && b.w_king == w_king
-                && b.b_king == b_king
-                && b.castling == castling;
+            return b._w_pieces == _w_pieces
+                && b._b_pieces == _b_pieces
+                && b._rooks == _rooks
+                && b._knights == _knights
+                && b._bishops == _bishops
+                && b._w_king == _w_king
+                && b._b_king == _b_king
+                && b._castling == _castling;
         }
 
     private:
         // TODO: Replace this with a hash
 
-        Bitboard w_pieces;
-        Bitboard b_pieces;
+        Bitboard _w_pieces;
+        Bitboard _b_pieces;
 
-        Bitboard rooks;
-        Bitboard knights;
-        Bitboard bishops;
-        Square w_king;
-        Square b_king;
+        Bitboard _rooks;
+        Bitboard _knights;
+        Bitboard _bishops;
+        Square _w_king;
+        Square _b_king;
 
-        Castling castling;
+        Castling _castling;
 };
