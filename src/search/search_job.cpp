@@ -39,7 +39,7 @@ class SearchJob {
                     }
                     lineage->shrink_to_fit();
                     _virtual_loss(lineage.get());
-                    backprop_queue->enqueue(std::unique_ptr<BackpropJob>(new BackpropJob(result, std::move(lineage), temp_board.is_white_turn())));
+                    backprop_queue->enqueue(BackpropJob(result, std::move(lineage), temp_board.is_white_turn()));
                     backprop_variable->notify_one();
                     return;
                 } else if (best_child->is_leaf()) {
@@ -47,7 +47,7 @@ class SearchJob {
                         lineage->shrink_to_fit();
                         active_nodes->insert(best_child);
                         _virtual_loss(lineage.get());
-                        evaluate_queue->enqueue(std::unique_ptr<EvaluateJob>(new EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage))));
+                        evaluate_queue->enqueue(EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage)));
                     }
                     return;
                 } else {

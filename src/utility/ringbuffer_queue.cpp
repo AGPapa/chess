@@ -14,23 +14,23 @@ class RingbufferQueue {
             _write_index = 0;
         }
 
-        std::unique_ptr<Item> enqueue(std::unique_ptr<Item> i) {
+        bool enqueue(Item i) {
             while (full()) {
-               return std::move(i);
+               return false;
             }
-            _ringbuffer[_write_index] = std::move(i);
+            _ringbuffer[_write_index] = i;
             atomic_signal_fence(std::memory_order_acq_rel); //without this the multithreading sometimes messes up
             _write_index = _next(_write_index);
-            return nullptr;
+            return true;
         }
 
-        std::unique_ptr<Item> dequeue() {
+        bool dequeue(Item* i) {
             if (empty()) {
-                return nullptr;
+                return false;
             }
-            std::unique_ptr<Item> i = std::move(_ringbuffer[_read_index]);
+            *i = _ringbuffer[_read_index];
             _read_index = _next(_read_index);
-            return i;
+            return true;
         }
 
         bool empty() const {
@@ -50,7 +50,7 @@ class RingbufferQueue {
         }
 
      private:
-        std::unique_ptr<Item> _ringbuffer[MaxSize];
+        Item _ringbuffer[MaxSize];
         volatile int _read_index;
         volatile int _write_index;
 

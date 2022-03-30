@@ -11,22 +11,22 @@ class MPSCQueue {
             queue = RingbufferQueue<Item, 1024>();
         }
 
-        void enqueue(std::unique_ptr<Item> i) {
+        void enqueue(Item i) {
             _mutex.lock();
-            i = queue.enqueue(std::move(i));
-            while (i != nullptr) {
+            bool success = queue.enqueue(i);
+            while (success == false) {
                 std::mutex mutex;
                 std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(mutex);
                 _full_variable.wait(lock);
-                i = queue.enqueue(std::move(i));
+                success = queue.enqueue(i);
             }
             _mutex.unlock();
         }
 
-        std::unique_ptr<Item> dequeue() {
-            std::unique_ptr<Item> i = std::move(queue.dequeue());
+        bool dequeue(Item* i) {
+            bool success = queue.dequeue(i);
             _full_variable.notify_one();
-            return i;
+            return success;
         }
 
         bool empty() {

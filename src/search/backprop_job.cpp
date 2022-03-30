@@ -3,9 +3,11 @@
 class BackpropJob {
 
     public:
-        BackpropJob(float s, std::unique_ptr<std::vector<Node*>> l, bool w_turn) {
+        BackpropJob() {}
+
+        BackpropJob(float s, std::shared_ptr<std::vector<Node*>> l, bool w_turn) {
             _score = s;
-            _lineage = std::move(l);
+            _lineage = l;
             _is_white_turn = w_turn;
         }
 
@@ -24,7 +26,7 @@ class BackpropJob {
 
     private:
         float _score;
-        std::unique_ptr<std::vector<Node*>> _lineage;
+        std::shared_ptr<std::vector<Node*>> _lineage;
         bool _is_white_turn;
 
 };

@@ -11,22 +11,22 @@ class SPMCQueue {
             queue = RingbufferQueue<Item, 1024>();
         }
 
-        void enqueue(std::unique_ptr<Item> i) {
-            i = queue.enqueue(std::move(i));
-            while (i != nullptr) {
+        void enqueue(Item i) {
+            bool success = queue.enqueue(i);
+            while (success == false) {
                 std::mutex mutex;
                 std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(mutex);
                 _full_variable.wait_for(lock, std::chrono::milliseconds(5));
-                i = queue.enqueue(std::move(i));
+                success = queue.enqueue(i);
             }
         }
 
-        std::unique_ptr<Item> dequeue() {
+        bool dequeue(Item* i) {
             _mutex.lock();
-            std::unique_ptr<Item> i = std::move(queue.dequeue());
+            bool success = queue.dequeue(i);
             _full_variable.notify_one();
             _mutex.unlock();
-            return i;
+            return success;
         }
 
         bool empty() {
