@@ -37,14 +37,12 @@ class SearchJob {
                     } else {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
-                    lineage->shrink_to_fit();
                     _virtual_loss(lineage.get());
                     backprop_queue->enqueue(BackpropJob(result, std::move(lineage), temp_board.is_white_turn()));
                     backprop_variable->notify_one();
                     return;
                 } else if (best_child->is_leaf()) {
                     if (active_nodes->count(best_child) == 0) { //only evaluate if we're not currently evaluating
-                        lineage->shrink_to_fit();
                         active_nodes->insert(best_child);
                         _virtual_loss(lineage.get());
                         evaluate_queue->enqueue(EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage)));
