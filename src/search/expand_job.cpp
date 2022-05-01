@@ -19,10 +19,10 @@ class ExpandJob {
             _lineage = lineage;
         }
 
-        void run(std::set<Edge*> *active_nodes, MPSCQueue<BackpropJob>* backprop_queue) {
+        void run(std::set<Edge*> *active_nodes) {
             float value = Expander::expand(_is_white_turn, _policy.get(), _leaf);
             active_nodes->erase(_leaf);
-            backprop_queue->enqueue(BackpropJob(value, _lineage, _is_white_turn));
+            Expander::backprop(_is_white_turn, _lineage.get(), value);
         }
 
     private:

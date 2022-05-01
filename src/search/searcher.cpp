@@ -11,7 +11,6 @@ class Searcher {
             _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
             _state = SearcherState::Stopped;
             _output = output;
-            _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
             _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
         }
@@ -20,7 +19,6 @@ class Searcher {
             _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
             _state = SearcherState::Stopped;
             _output = output;
-            _backprop_queue = std::unique_ptr<MPSCQueue<BackpropJob>>(new MPSCQueue<BackpropJob>());
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
             _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
         }
@@ -82,7 +80,6 @@ class Searcher {
             for (int i = 0; i < NUM_EVALUATION_THREADS; i++) {
                 _evaluating_threads[i] = std::unique_ptr<std::thread>(new std::thread(&Searcher::_evaluate, this));
             }
-            _backpropagating_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_backpropagate, this));
             _time_managing_thread = std::unique_ptr<std::thread>(new std::thread(&Searcher::_manage_time, this));
             _state_mutex.unlock();
         }
@@ -99,20 +96,17 @@ class Searcher {
         }
 
     private:
-        enum class SearcherState : std::uint8_t { Stopped, StoppingSearch, StoppingEvaluation, StoppingBackprop, Searching };
+        enum class SearcherState : std::uint8_t { Stopped, StoppingSearch, StoppingEvaluation, Searching };
 
         std::unique_ptr<RootNode> _root;
         SearcherState _state;
         std::mutex _state_mutex;
         std::unique_ptr<std::thread> _searching_thread;
-        std::unique_ptr<std::thread> _backpropagating_thread;
         std::unique_ptr<std::thread> _time_managing_thread;
         std::unique_ptr<std::thread> _evaluating_threads[NUM_EVALUATION_THREADS];
         std::condition_variable _time_managing_variable;
         std::condition_variable _search_variable;
-        std::condition_variable _backprop_variable;
         std::ostream *_output;
-        std::unique_ptr<MPSCQueue<BackpropJob>> _backprop_queue;
         std::unique_ptr<MPSCQueue<ExpandJob>> _expand_queue;
         std::unique_ptr<SPMCQueue<EvaluateJob>> _evaluate_queue;
         std::set<Edge*> _active_nodes;
@@ -145,14 +139,8 @@ class Searcher {
                     }
                 }
                 _expand();
-                _state = SearcherState::StoppingBackprop;
-                _backprop_variable.notify_one();
-                if (_backpropagating_thread != nullptr && _backpropagating_thread->joinable()) {
-                   _backpropagating_thread->join();
-                }
                 if (!_evaluate_queue->empty()) { throw std::runtime_error("Evaluate queue is not empty"); }
                 if (!_expand_queue->empty()) { throw std::runtime_error("Expand queue is not empty"); }
-                if (!_backprop_queue->empty()) { throw std::runtime_error("Backprop queue is not empty"); }
                 if (!_active_nodes.empty()) { throw std::runtime_error("Active nodes set is not empty"); }
                 _state = SearcherState::Stopped;
                 _output_info();
@@ -188,7 +176,7 @@ class Searcher {
             std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(search_mutex);
             while (_state == SearcherState::Searching || !_expand_queue->empty()) {
                 if (_state == SearcherState::Searching) {
-                    SearchJob(_root.get()).run(&_active_nodes, _evaluate_queue.get(), _backprop_queue.get(), &_backprop_variable);
+                    SearchJob(_root.get()).run(&_active_nodes, _evaluate_queue.get());
                 }
                 _expand();
                 if (_evaluate_queue->size() > (10 * NUM_EVALUATION_THREADS)) {
@@ -215,27 +203,9 @@ class Searcher {
             while (!_expand_queue->empty()) {
                 bool success = _expand_queue->dequeue(&job);
                 if (success) {
-                    job.run(&_active_nodes, _backprop_queue.get());
+                    job.run(&_active_nodes);
                 } else {
                     throw std::runtime_error("Dequeued nullptr expand job");
-                }
-            }
-            _backprop_variable.notify_one();
-        }
-
-        void _backpropagate() {
-            BackpropJob job;
-            std::mutex backprop_mutex;
-            std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(backprop_mutex);
-            while (_state == SearcherState::Searching || _state == SearcherState::StoppingSearch || _state == SearcherState::StoppingEvaluation || !_backprop_queue->empty()) {
-                _backprop_variable.wait_for(lock, std::chrono::milliseconds(50));  //timeout here in case we miss the closing backprop_variable.notify() in _stop_searching
-                while (!_backprop_queue->empty()) {
-                    bool success = _backprop_queue->dequeue(&job);
-                    if (success) {
-                        job.run();
-                    } else {
-                        throw std::runtime_error("Dequeued nullptr backrpop job");
-                    }
                 }
             }
         }

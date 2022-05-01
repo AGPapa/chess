@@ -12,7 +12,7 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue, MPSCQueue<BackpropJob>* backprop_queue, std::condition_variable* backprop_variable) {
+        void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue) {
             std::unique_ptr<std::vector<Node*>> lineage = std::unique_ptr<std::vector<Node*>>(new std::vector<Node*>());
             Node* node = _root;
             lineage->push_back(node);
@@ -38,8 +38,7 @@ class SearchJob {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
                     _virtual_loss(lineage.get());
-                    backprop_queue->enqueue(BackpropJob(result, std::move(lineage), temp_board.is_white_turn()));
-                    backprop_variable->notify_one();
+                    Expander::backprop(temp_board.is_white_turn(), lineage.get(), result);
                     return;
                 } else if (best_child->is_leaf()) {
                     if (active_nodes->count(best_child) == 0) { //only evaluate if we're not currently evaluating
@@ -47,6 +46,7 @@ class SearchJob {
                         _virtual_loss(lineage.get());
                         evaluate_queue->enqueue(EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage)));
                     }
+
                     return;
                 } else {
                     temp_board.apply_ply(best_child->_ply);
