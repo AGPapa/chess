@@ -12,31 +12,31 @@ class Ply {
         Ply() {};
 
         Ply(const Square from, const Square to) {
-            ply = (to.get_int_value() + (from.get_int_value() << 6));
+            _ply = (to.get_int_value() + (from.get_int_value() << 6));
         }
 
         Ply(const Square from, const Square to, const Promotion promotion) {
-            ply = (to.get_int_value() + (from.get_int_value() << 6) + (static_cast<uint8_t>(promotion) << 12));
+            _ply = (to.get_int_value() + (from.get_int_value() << 6) + (static_cast<uint8_t>(promotion) << 12));
         }
 
         Ply(const std::string& str) {
             Square from = str.substr(0, 2);
             Square to = str.substr(2, 2);
-            ply = (to.get_int_value() + (from.get_int_value() << 6));
+            _ply = (to.get_int_value() + (from.get_int_value() << 6));
             if (str.size() != 4) {
                 if (str.size() != 5) throw std::runtime_error("Invalid ply - invalid length: " + str);
                 switch (str[4]) {
                     case 'q':
-                        ply += (static_cast<uint8_t>(Promotion::Queen) << 12);
+                        _ply += (static_cast<uint8_t>(Promotion::Queen) << 12);
                         break;
                     case 'n':
-                        ply += (static_cast<uint8_t>(Promotion::Knight) << 12);
+                        _ply += (static_cast<uint8_t>(Promotion::Knight) << 12);
                         break;
                     case 'b':
-                        ply += (static_cast<uint8_t>(Promotion::Bishop) << 12);
+                        _ply += (static_cast<uint8_t>(Promotion::Bishop) << 12);
                         break;
                     case 'r':
-                        ply += (static_cast<uint8_t>(Promotion::Rook) << 12);
+                        _ply += (static_cast<uint8_t>(Promotion::Rook) << 12);
                         break;
                     default:
                         throw std::runtime_error("Invalid ply - invalid promotion: " + str);
@@ -45,15 +45,15 @@ class Ply {
         }
 
         Square from_square() const {
-            return Square((ply & from_mask) >> 6);
+            return Square((_ply & FROM_MASK) >> 6);
         }
 
         Square to_square() const {
-            return Square(ply & to_mask);
+            return Square(_ply & TO_MASK);
         }
 
         Promotion promotion() const {
-            return Promotion((ply & promotion_mask) >> 12);
+            return Promotion((_ply & PROMOTION_MASK) >> 12);
         }
 
         Ply mirror() const {
@@ -61,15 +61,15 @@ class Ply {
         }
 
         bool operator==(const Ply& other) const {
-            return ply == other.ply;
+            return _ply == other._ply;
         }
 
         bool operator!=(const Ply& other) const {
-            return ply != other.ply;
+            return _ply != other._ply;
         }
 
         bool operator<(const Ply& other) const {
-            return ply < other.ply;
+            return _ply < other._ply;
         }
 
         std::string to_string() const {
@@ -94,9 +94,9 @@ class Ply {
         // Bits 0 to 5 -- to
         // Bits 6 to 11 -- from
         // Bits 12 to 14 -- promotion
-        std::uint16_t ply = 0;
+        std::uint16_t _ply = 0;
 
-        static const std::uint16_t to_mask = 0b0000000000111111;
-        static const std::uint16_t from_mask = 0b0000111111000000;
-        static const std::uint16_t promotion_mask = 0b0111000000000000;
+        static const std::uint16_t TO_MASK = 0b0000000000111111;
+        static const std::uint16_t FROM_MASK = 0b0000111111000000;
+        static const std::uint16_t PROMOTION_MASK = 0b0111000000000000;
 };
