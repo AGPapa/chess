@@ -11,26 +11,26 @@
 #include "ply.cpp"
 
 // ranks 1 and 8 on pawns track en-passant
-static const Bitboard pawn_mask = Bitboard(0x00FFFFFFFFFFFF00);
-static const Bitboard en_passant_mask = Bitboard(0xFF000000000000FF);
-static const Bitboard light_squares_mask(0x55AA55AA55AA55AA);
-static const Bitboard dark_squares_mask(0xAA55AA55AA55AA55);
+static const Bitboard PAWN_MASK = Bitboard(0x00FFFFFFFFFFFF00);
+static const Bitboard EN_PASSANT_MASK = Bitboard(0xFF000000000000FF);
+static const Bitboard LIGHT_SQUARES_MASK(0x55AA55AA55AA55AA);
+static const Bitboard DARK_SQUARES_MASK(0xAA55AA55AA55AA55);
 
-static const Square a1 = Square("a1");
-static const Square c1 = Square("c1");
-static const Square d1 = Square("d1");
-static const Square e1 = Square("e1");
-static const Square f1 = Square("f1");
-static const Square g1 = Square("g1");
-static const Square h1 = Square("h1");
+static const Square A1 = Square("a1");
+static const Square C1 = Square("c1");
+static const Square D1 = Square("d1");
+static const Square E1 = Square("e1");
+static const Square F1 = Square("f1");
+static const Square G1 = Square("g1");
+static const Square H1 = Square("h1");
 
-static const Square a8 = Square("a8");
-static const Square c8 = Square("c8");
-static const Square d8 = Square("d8");
-static const Square e8 = Square("e8");
-static const Square f8 = Square("f8");
-static const Square g8 = Square("g8");
-static const Square h8 = Square("h8");
+static const Square A8 = Square("a8");
+static const Square C8 = Square("c8");
+static const Square D8 = Square("d8");
+static const Square E8 = Square("e8");
+static const Square F8 = Square("f8");
+static const Square G8 = Square("g8");
+static const Square H8 = Square("h8");
 
 class Board {
 
@@ -39,46 +39,46 @@ class Board {
 
         Board(Bitboard w_p, Bitboard b_p, Bitboard p, Bitboard b, Bitboard r, Bitboard n,
               Square w_k, Square b_k, bool w_t, Castling c, int r50_ply, int m_c) {
-            w_pieces = w_p;
-            b_pieces = b_p;
-            pawns = p;
-            bishops = b;
-            rooks = r;
-            knights = n;
+            _w_pieces = w_p;
+            _b_pieces = b_p;
+            _pawns = p;
+            _bishops = b;
+            _rooks = r;
+            _knights = n;
 
-            w_king = w_k;
-            b_king = b_k;
+            _w_king = w_k;
+            _b_king = b_k;
 
-            w_turn = w_t;
-            castling = c;
+            _w_turn = w_t;
+            _castling = c;
 
-            rule_fifty_ply_clock = r50_ply;
-            move_count = m_c;
+            _rule_fifty_ply_clock = r50_ply;
+            _move_count = m_c;
         };
         
         Board(Bitboard w_p, Bitboard w_r, Bitboard w_n, Bitboard w_b, Square w_k,
               Bitboard b_p, Bitboard b_r, Bitboard b_n, Bitboard b_b, Square b_k,
               bool w_t, Castling c, int r50_ply, int m_c) {
 
-            w_pieces = squarewise_or(squarewise_or(squarewise_and(w_p, pawn_mask), w_r), squarewise_or(w_n, w_b));
-            w_pieces.set_square(w_k);
+            _w_pieces = squarewise_or(squarewise_or(squarewise_and(w_p, PAWN_MASK), w_r), squarewise_or(w_n, w_b));
+            _w_pieces.set_square(w_k);
 
-            b_pieces = squarewise_or(squarewise_or(squarewise_and(b_p, pawn_mask), b_r), squarewise_or(b_n, b_b));
-            b_pieces.set_square(b_k);
+            _b_pieces = squarewise_or(squarewise_or(squarewise_and(b_p, PAWN_MASK), b_r), squarewise_or(b_n, b_b));
+            _b_pieces.set_square(b_k);
 
-            pawns = squarewise_or(w_p, b_p);
-            bishops = squarewise_or(w_b, b_b);
-            rooks = squarewise_or(w_r, b_r);
-            knights = squarewise_or(w_n, b_n);
+            _pawns = squarewise_or(w_p, b_p);
+            _bishops = squarewise_or(w_b, b_b);
+            _rooks = squarewise_or(w_r, b_r);
+            _knights = squarewise_or(w_n, b_n);
 
-            w_king = w_k;
-            b_king = b_k;
+            _w_king = w_k;
+            _b_king = b_k;
 
-            w_turn = w_t;
-            castling = c;
+            _w_turn = w_t;
+            _castling = c;
 
-            rule_fifty_ply_clock = r50_ply;
-            move_count = m_c;
+            _rule_fifty_ply_clock = r50_ply;
+            _move_count = m_c;
         };
 
         Board(std::string fen) {
@@ -106,43 +106,43 @@ class Board {
                 if (col >= 8) throw std::runtime_error("Bad fen string - too many columns: " + fen);
             
                 if (c == 'K') {
-                    w_king = Square(row, col);
-                    w_pieces.set_square(row, col);
+                    _w_king = Square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'Q') {
-                    bishops.set_square(row, col);
-                    rooks.set_square(row, col);
-                    w_pieces.set_square(row, col);
+                    _bishops.set_square(row, col);
+                    _rooks.set_square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'P') {
-                    pawns.set_square(row, col);
-                    w_pieces.set_square(row, col);
+                    _pawns.set_square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'R') {
-                    rooks.set_square(row, col);
-                    w_pieces.set_square(row, col);
+                    _rooks.set_square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'N') {
-                    knights.set_square(row, col);
-                    w_pieces.set_square(row, col);
+                    _knights.set_square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'B') {
-                    bishops.set_square(row, col);
-                    w_pieces.set_square(row, col);
+                    _bishops.set_square(row, col);
+                    _w_pieces.set_square(row, col);
                 } else if (c == 'k') {
-                    b_king = Square(row, col);
-                    b_pieces.set_square(row, col);
+                    _b_king = Square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else if (c == 'q') {
-                    bishops.set_square(row, col);
-                    rooks.set_square(row, col);
-                    b_pieces.set_square(row, col);
+                    _bishops.set_square(row, col);
+                    _rooks.set_square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else if (c == 'p') {
-                    pawns.set_square(row, col);
-                    b_pieces.set_square(row, col);
+                    _pawns.set_square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else if (c == 'r') {
-                    rooks.set_square(row, col);
-                    b_pieces.set_square(row, col);
+                    _rooks.set_square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else if (c == 'n') {
-                    knights.set_square(row, col);
-                    b_pieces.set_square(row, col);
+                    _knights.set_square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else if (c == 'b') {
-                    bishops.set_square(row, col);
-                    b_pieces.set_square(row, col);
+                    _bishops.set_square(row, col);
+                    _b_pieces.set_square(row, col);
                 } else {
                     throw std::runtime_error("Bad fen string - invalid piece char: " + fen);
                 }
@@ -151,89 +151,89 @@ class Board {
 
             fen_stream >> turn;
             if (turn == "w") { 
-                w_turn = true;
+                _w_turn = true;
             } else if (turn == "b") {
-                w_turn = false;
+                _w_turn = false;
             } else {
                 throw std::runtime_error("Bad fen string - invalid turn: " + fen);
             }
 
             fen_stream >> castlings;
             if (castlings == "-") {
-                castling = Castling(false, false, false, false);
+                _castling = Castling(false, false, false, false);
             } else if (castlings == "K") {
-                castling = Castling(true, false, false, false);
+                _castling = Castling(true, false, false, false);
             } else if (castlings == "Q") {
-                castling = Castling(false, true, false, false);
+                _castling = Castling(false, true, false, false);
             } else if (castlings == "KQ") {
-                castling = Castling(true, true, false, false);
+                _castling = Castling(true, true, false, false);
             } else if (castlings == "k") {
-                castling = Castling(false, false, true, false);
+                _castling = Castling(false, false, true, false);
             } else if (castlings == "Kk") {
-                castling = Castling(true, false, true, false);
+                _castling = Castling(true, false, true, false);
             } else if (castlings == "Qk") {
-                castling = Castling(false, true, true, false);
+                _castling = Castling(false, true, true, false);
             } else if (castlings == "KQk") {
-                castling = Castling(true, true, true, false);
+                _castling = Castling(true, true, true, false);
             } else if (castlings == "q") {
-                castling = Castling(false, false, false, true);
+                _castling = Castling(false, false, false, true);
             } else if (castlings == "Kq") {
-                castling = Castling(true, false, false, true);
+                _castling = Castling(true, false, false, true);
             } else if (castlings == "Qq") {
-                castling = Castling(false, true, false, true);
+                _castling = Castling(false, true, false, true);
             } else if (castlings == "KQq") {
-                castling = Castling(true, true, false, true);
+                _castling = Castling(true, true, false, true);
             } else if (castlings == "kq") {
-                castling = Castling(false, false, true, true);
+                _castling = Castling(false, false, true, true);
             } else if (castlings == "Kkq") {
-                castling = Castling(true, false, true, true);
+                _castling = Castling(true, false, true, true);
             } else if (castlings == "Qkq") {
-                castling = Castling(false, true, true, true);
+                _castling = Castling(false, true, true, true);
             } else if (castlings == "KQkq") {
-                castling = Castling(true, true, true, true);
+                _castling = Castling(true, true, true, true);
             } else {
-                throw std::runtime_error("Bad fen string - invalid castling: " + fen);
+                throw std::runtime_error("Bad fen string - invalid _castling: " + fen);
             }
            
             fen_stream >> en_passant;
             if (en_passant == "a3") {
-                pawns.set_square(0, 0);
+                _pawns.set_square(0, 0);
             } else if (en_passant == "b3") {
-                pawns.set_square(0, 1);
+                _pawns.set_square(0, 1);
             } else if (en_passant == "c3") {
-                pawns.set_square(0, 2);
+                _pawns.set_square(0, 2);
             } else if (en_passant == "d3") {
-                pawns.set_square(0, 3);
+                _pawns.set_square(0, 3);
             } else if (en_passant == "e3") {
-                pawns.set_square(0, 4);
+                _pawns.set_square(0, 4);
             } else if (en_passant == "f3") {
-                pawns.set_square(0, 5);
+                _pawns.set_square(0, 5);
             } else if (en_passant == "g3") {
-                pawns.set_square(0, 6);
+                _pawns.set_square(0, 6);
             } else if (en_passant == "h3") {
-                pawns.set_square(0, 7);
+                _pawns.set_square(0, 7);
             } else if (en_passant == "a6") {
-                pawns.set_square(7, 0);
+                _pawns.set_square(7, 0);
             } else if (en_passant == "b6") {
-                pawns.set_square(7, 1);
+                _pawns.set_square(7, 1);
             } else if (en_passant == "c6") {
-                pawns.set_square(7, 2);
+                _pawns.set_square(7, 2);
             } else if (en_passant == "d6") {
-                pawns.set_square(7, 3);
+                _pawns.set_square(7, 3);
             } else if (en_passant == "e6") {
-                pawns.set_square(7, 4);
+                _pawns.set_square(7, 4);
             } else if (en_passant == "f6") {
-                pawns.set_square(7, 5);
+                _pawns.set_square(7, 5);
             } else if (en_passant == "g6") {
-                pawns.set_square(7, 6);
+                _pawns.set_square(7, 6);
             } else if (en_passant == "h6") {
-                pawns.set_square(7, 7);
+                _pawns.set_square(7, 7);
             } else if (en_passant != "-") {
                 throw std::runtime_error("Bad fen string - invalid en_passant: " + fen);
             }
 
-            fen_stream >> rule_fifty_ply_clock;
-            fen_stream >> move_count;
+            fen_stream >> _rule_fifty_ply_clock;
+            fen_stream >> _move_count;
         }
 
         static Board default_board() {
@@ -257,114 +257,114 @@ class Board {
         }
 
         Board copy_without_history() const {
-            return Board(w_pieces, b_pieces, pawns, bishops, rooks, knights,
-                w_king, b_king, w_turn, castling, rule_fifty_ply_clock, move_count);
+            return Board(_w_pieces, _b_pieces, _pawns, _bishops, _rooks, _knights,
+                _w_king, _b_king, _w_turn, _castling, _rule_fifty_ply_clock, _move_count);
         }
 
         BoardSignature signature() const {
-            return BoardSignature(w_pieces, b_pieces, bishops, rooks, knights, w_king, b_king, castling);
+            return BoardSignature(_w_pieces, _b_pieces, _bishops, _rooks, _knights, _w_king, _b_king, _castling);
         }
 
         Square white_king() const {
-            return w_king;
+            return _w_king;
         }
 
         Square black_king() const {
-            return b_king;
+            return _b_king;
         }
 
         Bitboard white_pawns() const {
-            return squarewise_and(w_pieces, squarewise_and(pawns, pawn_mask));
+            return squarewise_and(_w_pieces, squarewise_and(_pawns, PAWN_MASK));
         }
 
         Bitboard black_pawns() const {
-            return squarewise_and(b_pieces, squarewise_and(pawns, pawn_mask));
+            return squarewise_and(_b_pieces, squarewise_and(_pawns, PAWN_MASK));
         }
 
         Bitboard all_pawns() const {
-            return squarewise_and(pawns, pawn_mask);
+            return squarewise_and(_pawns, PAWN_MASK);
         }
 
         Bitboard white_knights() const {
-            return squarewise_and(w_pieces, knights);
+            return squarewise_and(_w_pieces, _knights);
         }
 
         Bitboard black_knights() const {
-            return squarewise_and(b_pieces, knights);
+            return squarewise_and(_b_pieces, _knights);
         }
 
         Bitboard white_bishops() const {
-            return squarewise_and(rooks.squarewise_not(), squarewise_and(w_pieces, bishops));
+            return squarewise_and(_rooks.squarewise_not(), squarewise_and(_w_pieces, _bishops));
         }
 
         Bitboard black_bishops() const {
-            return squarewise_and(rooks.squarewise_not(), squarewise_and(b_pieces, bishops));
+            return squarewise_and(_rooks.squarewise_not(), squarewise_and(_b_pieces, _bishops));
         }
 
         Bitboard white_rooks() const {
-            return squarewise_and(bishops.squarewise_not(), squarewise_and(w_pieces, rooks));
+            return squarewise_and(_bishops.squarewise_not(), squarewise_and(_w_pieces, _rooks));
         }
 
         Bitboard black_rooks() const {
-            return  squarewise_and(bishops.squarewise_not(), squarewise_and(b_pieces, rooks));
+            return  squarewise_and(_bishops.squarewise_not(), squarewise_and(_b_pieces, _rooks));
         }
 
         Bitboard white_queens() const {
-            return squarewise_and(w_pieces, squarewise_and(bishops, rooks));
+            return squarewise_and(_w_pieces, squarewise_and(_bishops, _rooks));
         }
 
         Bitboard black_queens() const {
-            return squarewise_and(b_pieces, squarewise_and(bishops, rooks));
+            return squarewise_and(_b_pieces, squarewise_and(_bishops, _rooks));
         }
 
         Bitboard white_en_passant() const {
-            return squarewise_and(w_pieces, squarewise_and(pawns, en_passant_mask));
+            return squarewise_and(_w_pieces, squarewise_and(_pawns, EN_PASSANT_MASK));
         }
 
         Bitboard black_en_passant() const {
-            return squarewise_and(b_pieces, squarewise_and(pawns, en_passant_mask));
+            return squarewise_and(_b_pieces, squarewise_and(_pawns, EN_PASSANT_MASK));
         }
 
         Bitboard all_en_passant() const {
-            return squarewise_and(pawns, en_passant_mask);
+            return squarewise_and(_pawns, EN_PASSANT_MASK);
         }
 
         Bitboard all_pieces() const {
-            Bitboard b = squarewise_or(w_pieces, b_pieces);
+            Bitboard b = squarewise_or(_w_pieces, _b_pieces);
             return b;
         }
 
         Bitboard white_pieces() const {
-            return w_pieces;
+            return _w_pieces;
         }
 
         Bitboard black_pieces() const {
-            return b_pieces;
+            return _b_pieces;
         }
 
         bool can_white_castle_kingside() const {
-            return castling.get_white_kingside();
+            return _castling.get_white_kingside();
         }
 
         bool can_white_castle_queenside() const {
-            return castling.get_white_queenside();
+            return _castling.get_white_queenside();
         }
 
         bool can_black_castle_kingside() const {
-            return castling.get_black_kingside();
+            return _castling.get_black_kingside();
         }
 
         bool can_black_castle_queenside() const {
-            return castling.get_black_queenside();
+            return _castling.get_black_queenside();
         }
 
         bool is_white_turn() const {
-            return w_turn;
+            return _w_turn;
         }
 
         Board mirror() const {
-            return Board(b_pieces.mirror(), w_pieces.mirror(), pawns.mirror(), bishops.mirror(), rooks.mirror(), knights.mirror(),
-                            b_king.mirror(), w_king.mirror(), !w_turn, castling.mirror(), rule_fifty_ply_clock, move_count);
+            return Board(_b_pieces.mirror(), _w_pieces.mirror(), _pawns.mirror(), _bishops.mirror(), _rooks.mirror(), _knights.mirror(),
+                            _b_king.mirror(), _w_king.mirror(), !_w_turn, _castling.mirror(), _rule_fifty_ply_clock, _move_count);
         }
 
         void apply_ply(Ply ply) {
@@ -381,156 +381,156 @@ class Board {
             // clear capture
             if (all_pieces().get_square(to)) {
                 reset_50 = true;
-                pawns.unset_square(to);
-                rooks.unset_square(to);
-                knights.unset_square(to);
-                bishops.unset_square(to);
-                b_pieces.unset_square(to);
-                w_pieces.unset_square(to);
+                _pawns.unset_square(to);
+                _rooks.unset_square(to);
+                _knights.unset_square(to);
+                _bishops.unset_square(to);
+                _b_pieces.unset_square(to);
+                _w_pieces.unset_square(to);
             }
 
             // king move
-            if (from == w_king) {
-                w_pieces.unset_square(from);
-                w_pieces.set_square(to);
-                w_king = to;
-                castling.unset_white();
-                if (to == g1 && from == e1) {
-                    rooks.unset_square(h1);
-                    w_pieces.unset_square(h1);
-                    rooks.set_square(f1);
-                    w_pieces.set_square(f1);
-                } else if (to == c1 && from == e1) {
-                    rooks.unset_square(a1);
-                    w_pieces.unset_square(a1);
-                    rooks.set_square(d1);
-                    w_pieces.set_square(d1);
+            if (from == _w_king) {
+                _w_pieces.unset_square(from);
+                _w_pieces.set_square(to);
+                _w_king = to;
+                _castling.unset_white();
+                if (to == G1 && from == E1) {
+                    _rooks.unset_square(H1);
+                    _w_pieces.unset_square(H1);
+                    _rooks.set_square(F1);
+                    _w_pieces.set_square(F1);
+                } else if (to == C1 && from == E1) {
+                    _rooks.unset_square(A1);
+                    _w_pieces.unset_square(A1);
+                    _rooks.set_square(D1);
+                    _w_pieces.set_square(D1);
                 }
-            } else if (from == b_king) {
-                b_pieces.unset_square(from);
-                b_pieces.set_square(to);
-                b_king = to;
-                castling.unset_black();
-                if (to == g8 && from == e8) {
-                    rooks.unset_square(h8);
-                    b_pieces.unset_square(h8);
-                    rooks.set_square(f8);
-                    b_pieces.set_square(f8);
-                } else if (to == c8 && from == e8) {
-                    rooks.unset_square(a8);
-                    b_pieces.unset_square(a8);
-                    rooks.set_square(d8);
-                    b_pieces.set_square(d8);
+            } else if (from == _b_king) {
+                _b_pieces.unset_square(from);
+                _b_pieces.set_square(to);
+                _b_king = to;
+                _castling.unset_black();
+                if (to == G8 && from == E8) {
+                    _rooks.unset_square(H8);
+                    _b_pieces.unset_square(H8);
+                    _rooks.set_square(F8);
+                    _b_pieces.set_square(F8);
+                } else if (to == C8 && from == E8) {
+                    _rooks.unset_square(A8);
+                    _b_pieces.unset_square(A8);
+                    _rooks.set_square(D8);
+                    _b_pieces.set_square(D8);
                 }
 
                 //clears en-passant flags
-                pawns = squarewise_and(pawns, pawn_mask);
+                _pawns = squarewise_and(_pawns, PAWN_MASK);
             // pawn move
-            } else if (pawns.get_square(from)) {
+            } else if (_pawns.get_square(from)) {
                 // resets 50 move counter
                 reset_50 = true;
 
                 // clear en-passant captures
-                if (w_turn && (to.get_col() != from.get_col()) && pawns.get_square(7, to.get_col())) {
-                    pawns.unset_square(Square(4, to.get_col()));
-                    b_pieces.unset_square(Square(4, to.get_col()));
-                } else if (!w_turn && (to.get_col() != from.get_col()) && pawns.get_square(0, to.get_col())) {
-                    pawns.unset_square(Square(3, to.get_col()));
-                    w_pieces.unset_square(Square(3, to.get_col()));
+                if (_w_turn && (to.get_col() != from.get_col()) && _pawns.get_square(7, to.get_col())) {
+                    _pawns.unset_square(Square(4, to.get_col()));
+                    _b_pieces.unset_square(Square(4, to.get_col()));
+                } else if (!_w_turn && (to.get_col() != from.get_col()) && _pawns.get_square(0, to.get_col())) {
+                    _pawns.unset_square(Square(3, to.get_col()));
+                    _w_pieces.unset_square(Square(3, to.get_col()));
                 }
 
                 //clears en-passant flags
-                pawns = squarewise_and(pawns, pawn_mask);
+                _pawns = squarewise_and(_pawns, PAWN_MASK);
 
                 // set en-passant flags
-                if (w_turn) {
-                    pawns.set_square_if(Square(0, to.get_col()), (to.get_row() - from.get_row()) == 2);
+                if (_w_turn) {
+                    _pawns.set_square_if(Square(0, to.get_col()), (to.get_row() - from.get_row()) == 2);
                 } else {
-                    pawns.set_square_if(Square(7, to.get_col()), (from.get_row() - to.get_row()) == 2);
+                    _pawns.set_square_if(Square(7, to.get_col()), (from.get_row() - to.get_row()) == 2);
                 }
 
                 // add to square
-                pawns.set_square(to);
-                w_pieces.set_square_if(to, w_turn);
-                b_pieces.set_square_if(to, !w_turn);
+                _pawns.set_square(to);
+                _w_pieces.set_square_if(to, _w_turn);
+                _b_pieces.set_square_if(to, !_w_turn);
 
-                // promote pawns
+                // promote _pawns
                 Ply::Promotion promotion = ply.promotion();
                 if (promotion != Ply::Promotion::None) {
-                    pawns.unset_square(to);
+                    _pawns.unset_square(to);
                     if (promotion == Ply::Promotion::Queen) {
-                        bishops.set_square(to);
-                        rooks.set_square(to);
+                        _bishops.set_square(to);
+                        _rooks.set_square(to);
                     } else if (promotion == Ply::Promotion::Knight) {
-                        knights.set_square(to);
+                        _knights.set_square(to);
                     } else if (promotion == Ply::Promotion::Rook) {
-                        rooks.set_square(to);
+                        _rooks.set_square(to);
                     } else if (promotion == Ply::Promotion::Bishop) {
-                        bishops.set_square(to);
+                        _bishops.set_square(to);
                     }
                 }
 
                 // clear from square
-                pawns.unset_square(from);
-                w_pieces.unset_square(from);
-                b_pieces.unset_square(from);
+                _pawns.unset_square(from);
+                _w_pieces.unset_square(from);
+                _b_pieces.unset_square(from);
             } else {
-                // clear castling rights
-                if (from == a1) {
-                    castling.unset_white_queenside();
-                } else if (from == h1) {
-                    castling.unset_white_kingside();
-                } else if (from == a8) {
-                    castling.unset_black_queenside();
-                } else if (from == h8) {
-                    castling.unset_black_kingside();
+                // clear _castling rights
+                if (from == A1) {
+                    _castling.unset_white_queenside();
+                } else if (from == H1) {
+                    _castling.unset_white_kingside();
+                } else if (from == A8) {
+                    _castling.unset_black_queenside();
+                } else if (from == H8) {
+                    _castling.unset_black_kingside();
                 }
-                if (to == a1) {
-                    castling.unset_white_queenside();
-                } else if (to == h1) {
-                    castling.unset_white_kingside();
-                } else if (to == a8) {
-                    castling.unset_black_queenside();
-                } else if (to == h8) {
-                    castling.unset_black_kingside();
+                if (to == A1) {
+                    _castling.unset_white_queenside();
+                } else if (to == H1) {
+                    _castling.unset_white_kingside();
+                } else if (to == A8) {
+                    _castling.unset_black_queenside();
+                } else if (to == H8) {
+                    _castling.unset_black_kingside();
                 }
 
                 //clears en-passant flags
-                pawns = squarewise_and(pawns, pawn_mask);
+                _pawns = squarewise_and(_pawns, PAWN_MASK);
 
                 // add to square
-                rooks.set_square_if(to, rooks.get_square(from));
-                knights.set_square_if(to, knights.get_square(from));
-                bishops.set_square_if(to, bishops.get_square(from));
-                w_pieces.set_square_if(to, w_turn);
-                b_pieces.set_square_if(to, !w_turn);
+                _rooks.set_square_if(to, _rooks.get_square(from));
+                _knights.set_square_if(to, _knights.get_square(from));
+                _bishops.set_square_if(to, _bishops.get_square(from));
+                _w_pieces.set_square_if(to, _w_turn);
+                _b_pieces.set_square_if(to, !_w_turn);
 
                 // clear from square
-                rooks.unset_square(from);
-                knights.unset_square(from);
-                bishops.unset_square(from);
-                w_pieces.unset_square(from);
-                b_pieces.unset_square(from);
+                _rooks.unset_square(from);
+                _knights.unset_square(from);
+                _bishops.unset_square(from);
+                _w_pieces.unset_square(from);
+                _b_pieces.unset_square(from);
             }
 
             // reset rule 50
-            if (reset_50) { rule_fifty_ply_clock = 0; board_history.clear(); } else { rule_fifty_ply_clock++; }
+            if (reset_50) { _rule_fifty_ply_clock = 0; board_history.clear(); } else { _rule_fifty_ply_clock++; }
             // increment move count
-            if (!w_turn) { move_count++; }
+            if (!_w_turn) { _move_count++; }
             // change turn
-            w_turn = !w_turn;
+            _w_turn = !_w_turn;
         }
 
         bool is_white_king_in_check() const {
-            return square_under_attack(w_king, !w_turn);
+            return square_under_attack(_w_king, !_w_turn);
         }
 
         bool is_black_king_in_check() const {
-            return square_under_attack(b_king, !w_turn);
+            return square_under_attack(_b_king, !_w_turn);
         }
 
         bool square_under_attack(Square s) const {
-            return square_under_attack(s, w_turn);
+            return square_under_attack(s, _w_turn);
         }
 
         bool square_under_attack(Square s, bool white_turn) const {
@@ -543,21 +543,21 @@ class Board {
             Bitboard our_pawns;
             Square our_king;
             int our_forward;
-            Bitboard all = squarewise_or(w_pieces, b_pieces);
+            Bitboard all = squarewise_or(_w_pieces, _b_pieces);
             if (white_turn) {
                 our_forward = 1;
-                our_knights = squarewise_and(w_pieces, knights);
-                our_rooks = squarewise_and(w_pieces, rooks);
-                our_bishops = squarewise_and(w_pieces, bishops);
-                our_pawns = squarewise_and(w_pieces, pawns);
-                our_king = w_king;
+                our_knights = squarewise_and(_w_pieces, _knights);
+                our_rooks = squarewise_and(_w_pieces, _rooks);
+                our_bishops = squarewise_and(_w_pieces, _bishops);
+                our_pawns = squarewise_and(_w_pieces, _pawns);
+                our_king = _w_king;
             } else {
                 our_forward = -1;
-                our_knights = squarewise_and(b_pieces, knights);
-                our_rooks = squarewise_and(b_pieces, rooks);
-                our_bishops = squarewise_and(b_pieces, bishops);
-                our_pawns = squarewise_and(b_pieces, pawns);
-                our_king = b_king;
+                our_knights = squarewise_and(_b_pieces, _knights);
+                our_rooks = squarewise_and(_b_pieces, _rooks);
+                our_bishops = squarewise_and(_b_pieces, _bishops);
+                our_pawns = squarewise_and(_b_pieces, _pawns);
+                our_king = _b_king;
             }
 
             // Knights
@@ -681,29 +681,29 @@ class Board {
             bool can_castle_kingside;
             bool can_castle_queenside;
             int home_row;
-            if (w_turn) {
-                king = w_king;
+            if (_w_turn) {
+                king = _w_king;
                 our_pawns = white_pawns();
-                our_knights = squarewise_and(w_pieces, knights);
-                our_rooks = squarewise_and(w_pieces, rooks);
-                our_bishops = squarewise_and(w_pieces, bishops);
+                our_knights = squarewise_and(_w_pieces, _knights);
+                our_rooks = squarewise_and(_w_pieces, _rooks);
+                our_bishops = squarewise_and(_w_pieces, _bishops);
                 our_pieces = white_pieces();
                 opponent_pieces = black_pieces();
                 forward = 1;
-                can_castle_kingside = castling.get_white_kingside();
-                can_castle_queenside = castling.get_white_queenside();
+                can_castle_kingside = _castling.get_white_kingside();
+                can_castle_queenside = _castling.get_white_queenside();
                 home_row = 0;
             } else {
-                king = b_king;
+                king = _b_king;
                 our_pawns = black_pawns();
-                our_knights = squarewise_and(b_pieces, knights);
-                our_rooks = squarewise_and(b_pieces, rooks);
-                our_bishops = squarewise_and(b_pieces, bishops);
+                our_knights = squarewise_and(_b_pieces, _knights);
+                our_rooks = squarewise_and(_b_pieces, _rooks);
+                our_bishops = squarewise_and(_b_pieces, _bishops);
                 our_pieces = black_pieces();
                 opponent_pieces = white_pieces();
                 forward = -1;
-                can_castle_kingside = castling.get_black_kingside();
-                can_castle_queenside = castling.get_black_queenside();
+                can_castle_kingside = _castling.get_black_kingside();
+                can_castle_queenside = _castling.get_black_queenside();
                 home_row = 7;
             }
 
@@ -721,18 +721,18 @@ class Board {
             // Castling
             if (can_castle_kingside) {
                 if (!all.get_square(home_row, 5) && !all.get_square(home_row, 6)
-                    && !square_under_attack(king, !w_turn)
-                    && !square_under_attack(Square(home_row, 5), !w_turn)
-                    && !square_under_attack(Square(home_row, 6), !w_turn)
+                    && !square_under_attack(king, !_w_turn)
+                    && !square_under_attack(Square(home_row, 5), !_w_turn)
+                    && !square_under_attack(Square(home_row, 6), !_w_turn)
                 ) {
                     ply_list.push_back(Ply(king, Square(home_row, 6)));
                 }
             }
             if (can_castle_queenside) {
                 if (!all.get_square(home_row, 1) && !all.get_square(home_row, 2) && !all.get_square(home_row, 3)
-                    && !square_under_attack(king, !w_turn)
-                    && !square_under_attack(Square(home_row, 2), !w_turn)
-                    && !square_under_attack(Square(home_row, 3), !w_turn)
+                    && !square_under_attack(king, !_w_turn)
+                    && !square_under_attack(Square(home_row, 2), !_w_turn)
+                    && !square_under_attack(Square(home_row, 3), !_w_turn)
                 ) {
                     ply_list.push_back(Ply(king, Square(home_row, 2)));
                 }
@@ -786,7 +786,7 @@ class Board {
                         Square to = Square(r + forward, c);
                         if (!all.get_square(to)) {
                             add_pawn_plies(&ply_list, from, to);
-                            if ((w_turn && r == 1) || (!w_turn && r == 6)) {
+                            if ((_w_turn && r == 1) || (!_w_turn && r == 6)) {
                                 to = Square(r + forward * 2, c);
                                 if (!all.get_square(to)) {
                                     add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
@@ -799,7 +799,7 @@ class Board {
                             if (opponent_pieces.get_square(to)) {
                                add_pawn_plies(&ply_list, from, to);
                             }
-                            if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c + 1)) {
+                            if (r == (_w_turn ? 4 : 3) && all_en_passant().get_square(_w_turn ? 7 : 0, c + 1)) {
                                 add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                         }
@@ -808,7 +808,7 @@ class Board {
                             if (opponent_pieces.get_square(to)) {
                                 add_pawn_plies(&ply_list, from, to);
                             }
-                            if (r == (w_turn ? 4 : 3) && all_en_passant().get_square(w_turn ? 7 : 0, c - 1)) {
+                            if (r == (_w_turn ? 4 : 3) && all_en_passant().get_square(_w_turn ? 7 : 0, c - 1)) {
                                 add_ply_if_king_not_in_check(&ply_list, Ply(from, to));
                             }
                         }
@@ -891,15 +891,15 @@ class Board {
                 }
             }
 
-            result += w_turn ? " w " : " b ";
+            result += _w_turn ? " w " : " b ";
 
-            if (castling.no_castle_legal()) {
+            if (_castling.no_castle_legal()) {
                 result += '-';
             } else {
-                if (castling.get_white_kingside()) { result += "K"; };
-                if (castling.get_white_queenside()) { result += "Q"; };
-                if (castling.get_black_kingside()) { result += "k"; };
-                if (castling.get_black_queenside()) { result += "q"; };
+                if (_castling.get_white_kingside()) { result += "K"; };
+                if (_castling.get_white_queenside()) { result += "Q"; };
+                if (_castling.get_black_kingside()) { result += "k"; };
+                if (_castling.get_black_queenside()) { result += "q"; };
             }
             result += ' ';
 
@@ -907,7 +907,7 @@ class Board {
                 result += "- ";
             } else if (!white_en_passant().empty()) {
                 for (int col = 0; col < 8; col++) {
-                    if (pawns.get_square(0, col)) {
+                    if (_pawns.get_square(0, col)) {
                         result += (col + 'a');
                         result += "3 ";
                         break;
@@ -915,16 +915,16 @@ class Board {
                 }
             } else if (!black_en_passant().empty()) {
                 for (int col = 0; col < 8; col++) {
-                    if (pawns.get_square(7, col)) {
+                    if (_pawns.get_square(7, col)) {
                         result += (col + 'a');
                         result += "6 ";
                         break;
                     }
                 }
             }
-            result += std::to_string(rule_fifty_ply_clock);
+            result += std::to_string(_rule_fifty_ply_clock);
             result += ' ';
-            result += std::to_string(move_count);
+            result += std::to_string(_move_count);
             return result;
         }
 
@@ -955,74 +955,74 @@ class Board {
         }
 
         bool is_fifty_move_draw() const {
-            return rule_fifty_ply_clock >= 100;
+            return _rule_fifty_ply_clock >= 100;
         }
 
         bool is_insufficient_mating_material() const {
-            if (!rooks.empty() || !pawns.empty()) {
+            if (!_rooks.empty() || !_pawns.empty()) {
                 return false;
             }
 
             // three pieces or less, no queens/rooks/pawns
-            if ((squarewise_or(w_pieces, b_pieces)).count() < 3) {
+            if ((squarewise_or(_w_pieces, _b_pieces)).count() < 3) {
                 return true;
             }
 
             // multiple knights
-            if (!(knights.empty())) {
+            if (!(_knights.empty())) {
                 return false;
             }
 
             // both a light and dark square bishop
-            const bool light_bishop = !squarewise_and(bishops, light_squares_mask).empty();
-            const bool dark_bishop = !squarewise_and(bishops, dark_squares_mask).empty();
+            const bool light_bishop = !squarewise_and(_bishops, LIGHT_SQUARES_MASK).empty();
+            const bool dark_bishop = !squarewise_and(_bishops, DARK_SQUARES_MASK).empty();
             return !(light_bishop && dark_bishop);
         }
     
     private:
-        Bitboard w_pieces;
-        Bitboard b_pieces;
+        Bitboard _w_pieces;
+        Bitboard _b_pieces;
 
-        Bitboard pawns;
-        Bitboard rooks; // includes Queens
-        Bitboard knights;
-        Bitboard bishops; // includes Queens
-        Square w_king;
-        Square b_king;
+        Bitboard _pawns;
+        Bitboard _rooks; // includes Queens
+        Bitboard _knights;
+        Bitboard _bishops; // includes Queens
+        Square _w_king;
+        Square _b_king;
 
-        bool w_turn;
+        bool _w_turn;
 
-        Castling castling;
+        Castling _castling;
 
-        int rule_fifty_ply_clock = 0;
-        int move_count = 1;
+        int _rule_fifty_ply_clock = 0;
+        int _move_count = 1;
 
         std::list<BoardSignature> board_history;
 
         char square_to_char(int row, int col) const {
-            if (row == w_king.get_row() && col == w_king.get_col()) {
+            if (row == _w_king.get_row() && col == _w_king.get_col()) {
                 return 'K';
             } else if (white_queens().get_square(row, col)) {
                 return 'Q';
             } else if (white_pawns().get_square(row, col)) {
                 return 'P';
-            } else if (squarewise_and(w_pieces, rooks).get_square(row, col)) {
+            } else if (squarewise_and(_w_pieces, _rooks).get_square(row, col)) {
                 return 'R';
-            } else if (squarewise_and(w_pieces, knights).get_square(row, col)) {
+            } else if (squarewise_and(_w_pieces, _knights).get_square(row, col)) {
                 return 'N';
-            } else if (squarewise_and(w_pieces, bishops).get_square(row, col)) {
+            } else if (squarewise_and(_w_pieces, _bishops).get_square(row, col)) {
                 return 'B';
-            } else if (row == b_king.get_row() && col == b_king.get_col()) {
+            } else if (row == _b_king.get_row() && col == _b_king.get_col()) {
                 return 'k';
             } else if (black_queens().get_square(row, col)) {
                 return 'q';
             } else if (black_pawns().get_square(row, col)) {
                 return 'p';
-            } else if (squarewise_and(b_pieces, rooks).get_square(row, col)) {
+            } else if (squarewise_and(_b_pieces, _rooks).get_square(row, col)) {
                 return 'r';
-            } else if (squarewise_and(b_pieces, knights).get_square(row, col)) {
+            } else if (squarewise_and(_b_pieces, _knights).get_square(row, col)) {
                 return 'n';
-            } else if (squarewise_and(b_pieces, bishops).get_square(row, col)) {
+            } else if (squarewise_and(_b_pieces, _bishops).get_square(row, col)) {
                 return 'b';
             } else {
                 return '.';
@@ -1032,7 +1032,7 @@ class Board {
         void add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) const {
             Board b = copy_without_history();
             b.apply_ply_without_history(ply);
-            Square king = w_turn ? b.w_king : b.b_king;
+            Square king = _w_turn ? b._w_king : b._b_king;
             if (!b.square_under_attack(king)) {
                 ply_list->push_back(ply);
             }
