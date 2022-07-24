@@ -529,6 +529,15 @@ TEST(BoardTest, generate_potential_plies) {
     actual = n.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
+
+    // Pinned pawn can't move
+    Board o = Board("5b2/K3P2r/8/8/8/8/8/k7 w - - 0 100");
+    expected = { Ply("a7a8"), Ply("a7b8"), Ply("a7b7"), Ply("a7b6"), Ply("a7a6") };
+    std::sort(expected.begin(), expected.end());
+    actual = o.generate_potential_plies();
+    std::sort(actual.begin(), actual.end());
+    ASSERT_EQ(expected, actual);
+
 }
 
 TEST(BoardTest, is_threefold_repetition) {

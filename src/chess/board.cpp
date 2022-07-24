@@ -1038,13 +1038,18 @@ class Board {
             }
         }
 
-        // TODO: potential speed improvement since we don't need add_ply_if_king_not_in_check for every one
         void add_pawn_plies(std::vector<Ply>* ply_list, Square from, Square to) const {
             if (to.get_row() == 7 || to.get_row() == 0) {
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Queen));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Knight));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Rook));
-                add_ply_if_king_not_in_check(ply_list, Ply(from, to, Ply::Promotion::Bishop));
+                // We don't need to check if the pawn is pinned for each possible promotion
+                Board b = copy_without_history();
+                b.apply_ply_without_history(Ply(from, to, Ply::Promotion::Queen));
+                Square king = _w_turn ? b._w_king : b._b_king;
+                if (!b.square_under_attack(king)) {
+                    ply_list->push_back(Ply(from, to, Ply::Promotion::Queen));
+                    ply_list->push_back(Ply(from, to, Ply::Promotion::Knight));
+                    ply_list->push_back(Ply(from, to, Ply::Promotion::Rook));
+                    ply_list->push_back(Ply(from, to, Ply::Promotion::Bishop));
+                }
             } else {
                 add_ply_if_king_not_in_check(ply_list, Ply(from, to));
             }
