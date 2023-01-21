@@ -15,7 +15,7 @@ class RingbufferQueue {
         }
 
         bool enqueue(Item i) {
-            while (full()) {
+            if (full()) {
                return false;
             }
             _ringbuffer[_write_index] = i;
