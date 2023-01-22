@@ -15,8 +15,8 @@ class SearchJob {
         void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue) {
             std::unique_ptr<std::vector<Node*>> lineage = std::unique_ptr<std::vector<Node*>>(new std::vector<Node*>());
             Node* node = _root;
-            lineage->push_back(node);
             lineage->reserve(50);
+            lineage->push_back(node);
             Board temp_board = Board(_root->_board);
             while(true) {
                 std::unique_ptr<Node>* best_child_owner = nullptr;
