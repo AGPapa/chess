@@ -368,6 +368,7 @@ class Board {
         }
 
         void apply_ply(Ply ply) {
+            // TODO: create signature here - but only add to list if we don't reset_50
             board_history.push_front(signature());
             apply_ply_without_history(ply);
         }

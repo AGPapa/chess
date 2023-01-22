@@ -12,40 +12,19 @@ class BoardSignature {
 
         BoardSignature(Bitboard w_p, Bitboard b_p, Bitboard b, Bitboard r, Bitboard n,
             Square w_k, Square b_k, Castling c) {
-            _w_pieces = w_p;
-            _b_pieces = b_p;
-            _bishops = b;
-            _rooks = r;
-            _knights = n;
-
-            _w_king = w_k;
-            _b_king = b_k;
-
-            _castling = c;
+            std::hash<uint64_t> hasher;
+            _seed = hasher(w_p.get_int());
+            _seed ^= hasher(b_p.get_int()) + 0x9e3779b9 + (_seed<<6) + (_seed>>2);
+            _seed ^= hasher(b.get_int()) + 0x9e3779b9 + (_seed<<6) + (_seed>>2);
+            _seed ^= hasher(r.get_int()) + 0x9e3779b9 + (_seed<<6) + (_seed>>2);
+            _seed ^= hasher(n.get_int()) + 0x9e3779b9 + (_seed<<6) + (_seed>>2);
+            _seed ^= hasher(c.get_int() + (w_k.get_int()<<8) + (b_k.get_int()<<16)) + 0x9e3779b9 + (_seed<<6) + (_seed>>2);
         };
 
         bool is_repetition(const BoardSignature b) const {
-            return b._w_pieces == _w_pieces
-                && b._b_pieces == _b_pieces
-                && b._rooks == _rooks
-                && b._knights == _knights
-                && b._bishops == _bishops
-                && b._w_king == _w_king
-                && b._b_king == _b_king
-                && b._castling == _castling;
+            return b._seed == _seed;
         }
 
     private:
-        // TODO: Replace this with a hash
-
-        Bitboard _w_pieces;
-        Bitboard _b_pieces;
-
-        Bitboard _rooks;
-        Bitboard _knights;
-        Bitboard _bishops;
-        Square _w_king;
-        Square _b_king;
-
-        Castling _castling;
+        std::size_t _seed;
 };

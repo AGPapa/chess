@@ -42,6 +42,7 @@ class SearchJob {
                     return;
                 } else if (best_child->is_leaf()) {
                     if (active_nodes->count(best_child) == 0) { //only evaluate if we're not currently evaluating
+                        // TODO: Test running checkmate checks here instead of in evaluator
                         active_nodes->insert(best_child);
                         _virtual_loss(lineage.get());
                         evaluate_queue->enqueue(EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage)));

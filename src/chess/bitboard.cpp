@@ -99,6 +99,10 @@ class Bitboard {
             return result;
         };
 
+        std::uint64_t get_int() {
+            return _board;
+        }
+
     private:
         std::uint64_t _board;
 };
