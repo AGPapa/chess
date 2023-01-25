@@ -38,7 +38,7 @@ class Castling {
         bool operator==(const Castling& other) const { return _castling == other._castling; }
         bool operator!=(const Castling& other) const { return _castling != other._castling; }
 
-        std::uint8_t get_int() { return _castling; }
+        std::uint8_t get_int() const { return _castling; }
 
     private:
         // - Bit 0 -- white kingside castle.

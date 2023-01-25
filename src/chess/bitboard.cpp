@@ -88,7 +88,7 @@ class Bitboard {
             return _board != other._board;
         }
 
-        std::string to_string() {
+        std::string to_string() const {
             std::string result;
             for (int row = 7; row >= 0; row--) {
                 for (int col = 0; col < 8; col++) {
@@ -99,7 +99,7 @@ class Bitboard {
             return result;
         };
 
-        std::uint64_t get_int() {
+        std::uint64_t get_int() const {
             return _board;
         }
 

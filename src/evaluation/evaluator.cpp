@@ -6,7 +6,7 @@
 
 std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p) {
     Board b = prev_board;
-    b.apply_ply(p);
+    b.apply_ply_without_history(p);
     
     std::unique_ptr<Policy> policy = _draw(b);
     if (policy != nullptr) return policy;
@@ -35,7 +35,8 @@ std::unique_ptr<Policy> Evaluator::_draw(const Board b) {
     std::unique_ptr<Policy> draw_policy = std::unique_ptr<Policy>(new Policy(0));
     if (b.is_fifty_move_draw()) { return draw_policy; }
     if (b.is_insufficient_mating_material()) { return draw_policy; }
-    if (b.is_threefold_repetition()) { return draw_policy; }
+    // TODO - Refactor this so the draw checks all happen in search_job
+    // if (b.is_threefold_repetition()) { return draw_policy; }
     return nullptr;
 }
 

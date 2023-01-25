@@ -8,7 +8,7 @@ class Searcher {
     public:
 
         Searcher(std::ostream *output) {
-            _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board()));
+            _root = std::unique_ptr<RootNode>(new RootNode(Board::default_board(), BoardHistory()));
             _state = SearcherState::Stopped;
             _output = output;
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
@@ -16,7 +16,7 @@ class Searcher {
         }
 
         Searcher(Board starting_board, std::ostream *output) {
-            _root = std::unique_ptr<RootNode>(new RootNode(starting_board));
+            _root = std::unique_ptr<RootNode>(new RootNode(starting_board, BoardHistory()));
             _state = SearcherState::Stopped;
             _output = output;
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
@@ -55,11 +55,12 @@ class Searcher {
                 if (child->_ply == p) {
                     if (child->is_leaf()) {
                         Board new_board = Board(_root->_board);
-                        new_board.apply_ply(p);
-                        _root = std::unique_ptr<RootNode>(new RootNode(new_board));
+                        BoardHistory new_history = BoardHistory(_root->_history);
+                        new_board.apply_ply(p, &new_history);
+                        _root = std::unique_ptr<RootNode>(new RootNode(new_board, new_history));
                         return;
                     } else {
-                        _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, child->_ply, child->_node.get()));
+                        _root = std::unique_ptr<RootNode>(new RootNode(_root->_board, _root->_history, child->_ply, child->_node.get()));
                         return;
                     }
                 }

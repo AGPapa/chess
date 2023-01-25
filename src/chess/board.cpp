@@ -7,7 +7,7 @@
 #include <vector>
 #include <list>
 #include "piece_attacks.hpp"
-#include "board_signature.cpp"
+#include "board_history.cpp"
 #include "ply.cpp"
 
 // ranks 1 and 8 on pawns track en-passant
@@ -367,13 +367,13 @@ class Board {
                             _b_king.mirror(), _w_king.mirror(), !_w_turn, _castling.mirror(), _rule_fifty_ply_clock, _move_count);
         }
 
-        void apply_ply(Ply ply) {
+        void apply_ply(Ply ply, BoardHistory *history) {
             BoardSignature previous_board = signature();
             apply_ply_without_history(ply);
             if (_rule_fifty_ply_clock == 0) {
-                board_history.clear();
+                history->clear();
             } else {
-                board_history.push_front(previous_board);
+                history->add(previous_board);
             }
         }
 
@@ -944,19 +944,8 @@ class Board {
             return result;
         }
 
-        bool is_threefold_repetition() const {
-            if (board_history.size() < 8) return false;
-            BoardSignature current_board = signature();
-            int repetition_count = 1;
-            // jumps two board signatures at a time to skip white and black turns
-            for (std::list<BoardSignature>::const_iterator b = ++board_history.begin(); b != board_history.end(); ++b, ++b) {
-                if (current_board.is_repetition(*b)) {
-                    if (repetition_count == 2) return true;
-                    ++b; ++b; // skips two board signatures after we find a repetition
-                    repetition_count++;
-                }
-            }
-            return false;
+        bool is_threefold_repetition(BoardHistory *history) const {
+            return history->is_threefold_repetition(signature());
         }
 
         bool is_fifty_move_draw() const {
@@ -1001,8 +990,6 @@ class Board {
 
         int _rule_fifty_ply_clock = 0;
         int _move_count = 1;
-
-        std::list<BoardSignature> board_history;
 
         char square_to_char(int row, int col) const {
             if (row == _w_king.get_row() && col == _w_king.get_col()) {

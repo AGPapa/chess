@@ -47,7 +47,7 @@ class Square {
             return result;
         }
 
-        std::uint8_t get_int() { return _square; }
+        std::uint8_t get_int() const { return _square; }
 
     private:
         std::uint8_t _square = 0;

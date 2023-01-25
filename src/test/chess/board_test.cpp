@@ -59,7 +59,7 @@ TEST(BoardTest, is_white_turn) {
     Board a = Board::default_board();
     ASSERT_EQ(true, a.is_white_turn());
 
-    a.apply_ply(Ply("e2e4"));
+    a.apply_ply_without_history(Ply("e2e4"));
     ASSERT_EQ(false, a.is_white_turn());
 }
 
@@ -67,7 +67,7 @@ TEST(BoardTest, white_pieces) {
     Board a = Board::default_board();
     ASSERT_EQ(Bitboard(0x000000000000FFFF), a.white_pieces());
 
-    a.apply_ply(Ply("a2a3"));
+    a.apply_ply_without_history(Ply("a2a3"));
     ASSERT_EQ(Bitboard(0x000000000001FEFF), a.white_pieces());
 
     Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
@@ -81,7 +81,7 @@ TEST(BoardTest, black_pieces) {
     Board a = Board::default_board();
     ASSERT_EQ(Bitboard(0xFFFF000000000000), a.black_pieces());
 
-    a.apply_ply(Ply("a2a3"));
+    a.apply_ply_without_history(Ply("a2a3"));
     ASSERT_EQ(Bitboard(0xFFFF000000000000), a.black_pieces());
 
     Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
@@ -95,7 +95,7 @@ TEST(BoardTest, all_pieces) {
     Board a = Board::default_board();
     ASSERT_EQ(Bitboard(0xFFFF00000000FFFF), a.all_pieces());
 
-    a.apply_ply(Ply("a2a3"));
+    a.apply_ply_without_history(Ply("a2a3"));
     ASSERT_EQ(Bitboard(0xFFFF00000001FEFF), a.all_pieces());
 
     Board b = Board("k7/8/8/8/7P/8/8/K7 w - h3 0 100");
@@ -135,86 +135,86 @@ TEST(BoardTest, black_rooks) {
 
 TEST(BoardTest, apply_ply) {
     Board a = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    a.apply_ply(Ply("e2e4"));
+    a.apply_ply_without_history(Ply("e2e4"));
     ASSERT_EQ("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", a.to_fen());
-    a.apply_ply(Ply("d7d5"));
+    a.apply_ply_without_history(Ply("d7d5"));
     ASSERT_EQ("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2", a.to_fen());
-    a.apply_ply(Ply("e4d5"));
+    a.apply_ply_without_history(Ply("e4d5"));
     ASSERT_EQ("rnbqkbnr/ppp1pppp/8/3P4/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 2", a.to_fen());
-    a.apply_ply(Ply("d8d5"));
+    a.apply_ply_without_history(Ply("d8d5"));
     ASSERT_EQ("rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3", a.to_fen());
-    a.apply_ply(Ply("e1e2"));
+    a.apply_ply_without_history(Ply("e1e2"));
     ASSERT_EQ("rnb1kbnr/ppp1pppp/8/3q4/8/8/PPPPKPPP/RNBQ1BNR b kq - 1 3", a.to_fen());
-    a.apply_ply(Ply("e8d8"));
+    a.apply_ply_without_history(Ply("e8d8"));
     ASSERT_EQ("rnbk1bnr/ppp1pppp/8/3q4/8/8/PPPPKPPP/RNBQ1BNR w - - 2 4", a.to_fen());
-    a.apply_ply(Ply("a2a4"));
+    a.apply_ply_without_history(Ply("a2a4"));
     ASSERT_EQ("rnbk1bnr/ppp1pppp/8/3q4/P7/8/1PPPKPPP/RNBQ1BNR b - a3 0 4", a.to_fen());
-    a.apply_ply(Ply("d8e8"));
+    a.apply_ply_without_history(Ply("d8e8"));
     ASSERT_EQ("rnb1kbnr/ppp1pppp/8/3q4/P7/8/1PPPKPPP/RNBQ1BNR w - - 1 5", a.to_fen());
 
 
     Board b = Board("8/k3PPPP/8/8/8/8/K3pppp/8 w - - 0 100");
-    b.apply_ply(Ply("h7h8q"));
+    b.apply_ply_without_history(Ply("h7h8q"));
     ASSERT_EQ("7Q/k3PPP1/8/8/8/8/K3pppp/8 b - - 0 100", b.to_fen());
-    b.apply_ply(Ply("h2h1q"));
+    b.apply_ply_without_history(Ply("h2h1q"));
     ASSERT_EQ("7Q/k3PPP1/8/8/8/8/K3ppp1/7q w - - 0 101", b.to_fen());
-    b.apply_ply(Ply("g7g8n"));
+    b.apply_ply_without_history(Ply("g7g8n"));
     ASSERT_EQ("6NQ/k3PP2/8/8/8/8/K3ppp1/7q b - - 0 101", b.to_fen());
-    b.apply_ply(Ply("g2g1n"));
+    b.apply_ply_without_history(Ply("g2g1n"));
     ASSERT_EQ("6NQ/k3PP2/8/8/8/8/K3pp2/6nq w - - 0 102", b.to_fen());
-    b.apply_ply(Ply("f7f8b"));
+    b.apply_ply_without_history(Ply("f7f8b"));
     ASSERT_EQ("5BNQ/k3P3/8/8/8/8/K3pp2/6nq b - - 0 102", b.to_fen());
-    b.apply_ply(Ply("f2f1b"));
+    b.apply_ply_without_history(Ply("f2f1b"));
     ASSERT_EQ("5BNQ/k3P3/8/8/8/8/K3p3/5bnq w - - 0 103", b.to_fen());
-    b.apply_ply(Ply("e7e8r"));
+    b.apply_ply_without_history(Ply("e7e8r"));
     ASSERT_EQ("4RBNQ/k7/8/8/8/8/K3p3/5bnq b - - 0 103", b.to_fen());
-    b.apply_ply(Ply("e2e1r"));
+    b.apply_ply_without_history(Ply("e2e1r"));
     ASSERT_EQ("4RBNQ/k7/8/8/8/8/K7/4rbnq w - - 0 104", b.to_fen());
 
     Board c = Board("rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
-    c.apply_ply(Ply("e1g1"));
+    c.apply_ply_without_history(Ply("e1g1"));
     ASSERT_EQ("rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4", c.to_fen());
-    c.apply_ply(Ply("e8g8"));
+    c.apply_ply_without_history(Ply("e8g8"));
     ASSERT_EQ("rnbq1rk1/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 w - - 6 5", c.to_fen());
 
     Board d = Board("r3kbnr/pppqpppp/2n5/3p1b2/3P1B2/2N5/PPPQPPPP/R3KBNR w KQkq - 6 5");
-    d.apply_ply(Ply("e1c1"));
+    d.apply_ply_without_history(Ply("e1c1"));
     ASSERT_EQ("r3kbnr/pppqpppp/2n5/3p1b2/3P1B2/2N5/PPPQPPPP/2KR1BNR b kq - 7 5", d.to_fen());
-    d.apply_ply(Ply("e8c8"));
+    d.apply_ply_without_history(Ply("e8c8"));
     ASSERT_EQ("2kr1bnr/pppqpppp/2n5/3p1b2/3P1B2/2N5/PPPQPPPP/2KR1BNR w - - 8 6", d.to_fen());
 
     Board e = Board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 100");
-    e.apply_ply(Ply("a1a2"));
+    e.apply_ply_without_history(Ply("a1a2"));
     ASSERT_EQ("r3k2r/8/8/8/8/8/R7/4K2R b Kkq - 1 100", e.to_fen());
-    e.apply_ply(Ply("a8a7"));
+    e.apply_ply_without_history(Ply("a8a7"));
     ASSERT_EQ("4k2r/r7/8/8/8/8/R7/4K2R w Kk - 2 101", e.to_fen());
-    e.apply_ply(Ply("h1h2"));
+    e.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ("4k2r/r7/8/8/8/8/R6R/4K3 b k - 3 101", e.to_fen());
-    e.apply_ply(Ply("h8h7"));
+    e.apply_ply_without_history(Ply("h8h7"));
     ASSERT_EQ("4k3/r6r/8/8/8/8/R6R/4K3 w - - 4 102", e.to_fen());
 
     Board f = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    f.apply_ply(Ply("a2a4"));
+    f.apply_ply_without_history(Ply("a2a4"));
     ASSERT_EQ("rnbqkbnr/pppppppp/8/8/P7/8/1PPPPPPP/RNBQKBNR b KQkq a3 0 1", f.to_fen());
-    f.apply_ply(Ply("h7h5"));
+    f.apply_ply_without_history(Ply("h7h5"));
     ASSERT_EQ("rnbqkbnr/ppppppp1/8/7p/P7/8/1PPPPPPP/RNBQKBNR w KQkq h6 0 2", f.to_fen());
-    f.apply_ply(Ply("a4a5"));
+    f.apply_ply_without_history(Ply("a4a5"));
     ASSERT_EQ("rnbqkbnr/ppppppp1/8/P6p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 2", f.to_fen());
-    f.apply_ply(Ply("b7b5"));
+    f.apply_ply_without_history(Ply("b7b5"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/8/Pp5p/8/8/1PPPPPPP/RNBQKBNR w KQkq b6 0 3", f.to_fen());
-    f.apply_ply(Ply("a5b6"));
+    f.apply_ply_without_history(Ply("a5b6"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/7p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 3", f.to_fen());
-    f.apply_ply(Ply("h5h4"));
+    f.apply_ply_without_history(Ply("h5h4"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/7p/8/1PPPPPPP/RNBQKBNR w KQkq - 0 4", f.to_fen());
-    f.apply_ply(Ply("g2g4"));
+    f.apply_ply_without_history(Ply("g2g4"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/6Pp/8/1PPPPP1P/RNBQKBNR b KQkq g3 0 4", f.to_fen());
-    f.apply_ply(Ply("h4g3"));
+    f.apply_ply_without_history(Ply("h4g3"));
     ASSERT_EQ("rnbqkbnr/p1ppppp1/1P6/8/8/6p1/1PPPPP1P/RNBQKBNR w KQkq - 0 5", f.to_fen());
 
     Board g = Board("rnbqk2r/8/8/8/8/8/1B7/RN1QK2R w KQkq - 0 20");
-    g.apply_ply(Ply("b2h8"));
+    g.apply_ply_without_history(Ply("b2h8"));
     ASSERT_EQ("rnbqk2B/8/8/8/8/8/8/RN1QK2R b KQq - 0 20", g.to_fen());
-    g.apply_ply(Ply("a8a1"));
+    g.apply_ply_without_history(Ply("a8a1"));
     ASSERT_EQ("1nbqk2B/8/8/8/8/8/8/rN1QK2R w K - 0 21", g.to_fen());
 }
 
@@ -228,7 +228,7 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, a.square_under_attack(Square("f2")));
     ASSERT_EQ(true, a.square_under_attack(Square("d2")));
     ASSERT_EQ(false, a.square_under_attack(Square("c2")));
-    a.apply_ply(Ply("h1h2"));
+    a.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, a.square_under_attack(Square("b5")));
     ASSERT_EQ(true, a.square_under_attack(Square("c6")));
     ASSERT_EQ(true, a.square_under_attack(Square("e6")));
@@ -251,7 +251,7 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, b.square_under_attack(Square("g4")));
     ASSERT_EQ(false, b.square_under_attack(Square("h4")));
     ASSERT_EQ(false, b.square_under_attack(Square("c4")));
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.square_under_attack(Square("d3")));
     ASSERT_EQ(true, b.square_under_attack(Square("d2")));
     ASSERT_EQ(true, b.square_under_attack(Square("d1")));
@@ -276,7 +276,7 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, c.square_under_attack(Square("c7")));
     ASSERT_EQ(false, c.square_under_attack(Square("b8")));
     ASSERT_EQ(false, c.square_under_attack(Square("f3")));
-    c.apply_ply(Ply("h1h2"));
+    c.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, c.square_under_attack(Square("a7")));
     ASSERT_EQ(true, c.square_under_attack(Square("a5")));
     ASSERT_EQ(true, c.square_under_attack(Square("c7")));
@@ -292,7 +292,7 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, d.square_under_attack(Square("d5")));
     ASSERT_EQ(true, d.square_under_attack(Square("f5")));
     ASSERT_EQ(false, d.square_under_attack(Square("e5")));
-    d.apply_ply(Ply("h1h2"));
+    d.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, d.square_under_attack(Square("d4")));
     ASSERT_EQ(true, d.square_under_attack(Square("f4")));
     ASSERT_EQ(false, d.square_under_attack(Square("e4")));
@@ -307,7 +307,7 @@ TEST(BoardTest, square_under_attack) {
     ASSERT_EQ(true, e.square_under_attack(Square("c3")));
     ASSERT_EQ(true, e.square_under_attack(Square("c2")));
     ASSERT_EQ(false, e.square_under_attack(Square("d4")));
-    e.apply_ply(Ply("e2d2"));
+    e.apply_ply_without_history(Ply("e2d2"));
     ASSERT_EQ(true, e.square_under_attack(Square("c8")));
     ASSERT_EQ(true, e.square_under_attack(Square("d8")));
     ASSERT_EQ(true, e.square_under_attack(Square("e8")));
@@ -342,7 +342,7 @@ TEST(BoardTest, generate_potential_plies) {
     std::vector<Ply> actual = a.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    a.apply_ply(Ply("b3b2"));
+    a.apply_ply_without_history(Ply("b3b2"));
     expected = { Ply("b5b6"), Ply("b5c6"), Ply("b5c5"), Ply("b5c4"), Ply("b5b4"), Ply("b5a4"), Ply("b5a5"), Ply("b5a6") };
     std::sort(expected.begin(), expected.end());
     actual = a.generate_potential_plies();
@@ -355,7 +355,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = b.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    b.apply_ply(Ply("h1g1"));
+    b.apply_ply_without_history(Ply("h1g1"));
     expected = { Ply("h8g8"), Ply("h8g7"), Ply("h7h6"), Ply("h7h5") };
     std::sort(expected.begin(), expected.end());
     actual = b.generate_potential_plies();
@@ -368,7 +368,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = c.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    c.apply_ply(Ply("h1g1"));
+    c.apply_ply_without_history(Ply("h1g1"));
     expected = { Ply("h8g8"), Ply("h8g7"), Ply("h7h6"), Ply("h4h3"), Ply("d2d1q"), Ply("d2d1n"), Ply("d2d1r"), Ply("d2d1b") };
     std::sort(expected.begin(), expected.end());
     actual = c.generate_potential_plies();
@@ -388,13 +388,13 @@ TEST(BoardTest, generate_potential_plies) {
     actual = e.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    e.apply_ply(Ply("a2a4"));
+    e.apply_ply_without_history(Ply("a2a4"));
     expected = { Ply("h8h7"), Ply("h8g7"), Ply("h8g8"), Ply("g5g4"), Ply("b4b3"), Ply("b4a3") };
     std::sort(expected.begin(), expected.end());
     actual = e.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    e.apply_ply(Ply("h8h7"));
+    e.apply_ply_without_history(Ply("h8h7"));
     expected = { Ply("h1h2"), Ply("h1g2"), Ply("h1g1"), Ply("a4a5") };
     std::sort(expected.begin(), expected.end());
     actual = e.generate_potential_plies();
@@ -416,7 +416,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = g.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    g.apply_ply(Ply("b1f1"));
+    g.apply_ply_without_history(Ply("b1f1"));
     expected = { Ply("b8a8"), Ply("b8a7"), Ply("b8b7"), Ply("b8c7"), Ply("b8c8"),
                  Ply("b3b2"), Ply("b3b1"), Ply("b3b4"), Ply("b3b5"), Ply("b3b6"), Ply("b3b7"),
                  Ply("b3a3"), Ply("b3c3"), Ply("b3d3"), Ply("b3e3"), Ply("b3f3"), Ply("b3g3"), Ply("b3h3")};
@@ -433,7 +433,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = h.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    h.apply_ply(Ply("h1g1"));
+    h.apply_ply_without_history(Ply("h1g1"));
 
     expected = { Ply("h8g8"), Ply("h8g7"), Ply("h8h7"),
                  Ply("c6d5"), Ply("c6e4"), Ply("c6f3"),
@@ -467,7 +467,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = k.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    k.apply_ply(Ply("a2a3"));
+    k.apply_ply_without_history(Ply("a2a3"));
     expected = { Ply("a8b8"), Ply("a8c8"), Ply("a8d8"), Ply("h8g8"), Ply("h8f8"),
                  Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
                  Ply("e8d8"), Ply("e8d7"), Ply("e8e7"), Ply("e8f7"), Ply("e8f8"),
@@ -498,7 +498,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = m.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    m.apply_ply(Ply("a2a3"));
+    m.apply_ply_without_history(Ply("a2a3"));
     expected = { Ply("a8b8"), Ply("a8c8"), Ply("a8d8"), Ply("h8g8"), Ply("h8f8"),
                  Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
                  Ply("e8d8"), Ply("e8d7"), Ply("e8e7"), Ply("e8f7"), Ply("e8f8"),
@@ -519,7 +519,7 @@ TEST(BoardTest, generate_potential_plies) {
     actual = n.generate_potential_plies();
     std::sort(actual.begin(), actual.end());
     ASSERT_EQ(expected, actual);
-    n.apply_ply(Ply("a2a3"));
+    n.apply_ply_without_history(Ply("a2a3"));
     expected = { Ply("h8g8"), Ply("h8f8"),
                  Ply("a7a6"), Ply("a7a5"), Ply("h7h6"), Ply("h7h5"),
                  Ply("b8a6"), Ply("b8c6"), Ply("b8d7"),
@@ -542,115 +542,118 @@ TEST(BoardTest, generate_potential_plies) {
 
 TEST(BoardTest, is_threefold_repetition) {
     Board a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h8"));
-    a.apply_ply(Ply("f1h1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h8"));
-    a.apply_ply(Ply("f1h1"));
-    ASSERT_EQ(true, a.is_threefold_repetition());
+    BoardHistory history = BoardHistory();
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h8"), &history);
+    a.apply_ply(Ply("f1h1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h8"), &history);
+    a.apply_ply(Ply("f1h1"), &history);
+    ASSERT_EQ(true, a.is_threefold_repetition(&history));
 
     // Tests with pawn push
     a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h8"));
-    a.apply_ply(Ply("f1h1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f7f5"));
-    a.apply_ply(Ply("f1h2"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h8"));
-    a.apply_ply(Ply("h2h1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
+    history = BoardHistory();
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h8"), &history);
+    a.apply_ply(Ply("f1h1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f7f5"), &history);
+    a.apply_ply(Ply("f1h2"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h8"), &history);
+    a.apply_ply(Ply("h2h1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
 
     // Tests turns
     a = Board("7k/6p1/8/8/8/8/8/7K b - - 0 100");
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h8"));
-    a.apply_ply(Ply("f1h1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h8f8"));
-    a.apply_ply(Ply("h1f1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("f8h7"));
-    a.apply_ply(Ply("f1h1"));
-    ASSERT_EQ(false, a.is_threefold_repetition());
-    a.apply_ply(Ply("h7h8"));
+    history = BoardHistory();
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h8"), &history);
+    a.apply_ply(Ply("f1h1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h8f8"), &history);
+    a.apply_ply(Ply("h1f1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("f8h7"), &history);
+    a.apply_ply(Ply("f1h1"), &history);
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
+    a.apply_ply(Ply("h7h8"), &history);
     ASSERT_EQ("7k/6p1/8/8/8/8/8/7K w - - 9 105", a.to_fen());
-    ASSERT_EQ(false, a.is_threefold_repetition());
+    ASSERT_EQ(false, a.is_threefold_repetition(&history));
 }
 
 TEST(BoardTest, is_fifty_move_draw) {
     Board b = Board("7k/7r/8/8/8/8/7R/7K w - - 99 105");
     ASSERT_EQ(false, b.is_fifty_move_draw());
-    b.apply_ply(Ply("h1f1"));
+    b.apply_ply_without_history(Ply("h1f1"));
     ASSERT_EQ(true, b.is_fifty_move_draw());
 
     b = Board("7k/7r/8/8/8/8/7R/7K b - - 99 105");
     ASSERT_EQ(false, b.is_fifty_move_draw());
-    b.apply_ply(Ply("h8f8"));
+    b.apply_ply_without_history(Ply("h8f8"));
     ASSERT_EQ(true, b.is_fifty_move_draw());
 }
 
 TEST(BoardTest, is_insufficient_mating_material) {
     Board b = Board("7k/8/8/8/8/8/7r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/7R/8/8/8/8/8/7K b - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h8h7"));
+    b.apply_ply_without_history(Ply("h8h7"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/7p/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/b6r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/1b5r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/b1b4r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/1b1b3r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/1b1B3r/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 
     b = Board("7k/8/8/8/8/8/1b1B3p/7K w - - - 100");
     ASSERT_EQ(false, b.is_insufficient_mating_material());
-    b.apply_ply(Ply("h1h2"));
+    b.apply_ply_without_history(Ply("h1h2"));
     ASSERT_EQ(true, b.is_insufficient_mating_material());
 }
 
@@ -659,12 +662,13 @@ TEST(BoardTest, legal_plies_integration) {
         std::ifstream game (p.path());
 
         Board b = Board::default_board();
+        BoardHistory history = BoardHistory();
 
         for (std::string line; std::getline(game, line); ) {
             std::vector<Ply> plies = b.generate_potential_plies();
             Ply new_ply = Ply(line);
             ASSERT_EQ(1, std::count(plies.begin(), plies.end(), new_ply));
-            b.apply_ply(new_ply);
+            b.apply_ply(new_ply, &history);
         }
     }
 }

@@ -8,7 +8,7 @@
 //TODO: Add backprop tests into this file
 TEST(ExpandJobTest, run) {
     Board b = Board::default_board();
-    std::unique_ptr<RootNode> root = std::unique_ptr<RootNode>(new RootNode(b));
+    std::unique_ptr<RootNode> root = std::unique_ptr<RootNode>(new RootNode(b, BoardHistory()));
     Edge* leaf = &(root->_children[0]);
     std::unique_ptr<Policy> p = Evaluator::evaluate(b, leaf->_ply);
 

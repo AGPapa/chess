@@ -14,10 +14,11 @@ class SearchJob {
 
         void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue) {
             std::unique_ptr<std::vector<Node*>> lineage = std::unique_ptr<std::vector<Node*>>(new std::vector<Node*>());
-            Node* node = _root;
             lineage->reserve(50);
+            Node* node = _root;
             lineage->push_back(node);
             Board temp_board = Board(_root->_board);
+            BoardHistory temp_history = BoardHistory(_root->_history);
             while(true) {
                 std::unique_ptr<Node>* best_child_owner = nullptr;
                 Edge* best_child = nullptr;
@@ -42,15 +43,23 @@ class SearchJob {
                     return;
                 } else if (best_child->is_leaf()) {
                     if (active_nodes->count(best_child) == 0) { //only evaluate if we're not currently evaluating
-                        // TODO: Test running checkmate checks here instead of in evaluator
-                        active_nodes->insert(best_child);
+                        // TODO: Clean this up and run checkmate checks here instead of in evaluator
+                        Board prev_board = Board(temp_board);
+                        temp_board.apply_ply(best_child->_ply, &temp_history);
                         _virtual_loss(lineage.get());
-                        evaluate_queue->enqueue(EvaluateJob(temp_board, best_child->_ply, best_child, std::move(lineage)));
+                        if (temp_board.is_threefold_repetition(&temp_history)) {
+                            Policy draw = Policy(0);
+                            Expander::expand(temp_board.is_white_turn(), &draw, best_child);
+                            Expander::backprop(temp_board.is_white_turn(), lineage.get(), 0);
+                        } else {
+                            active_nodes->insert(best_child);
+                            evaluate_queue->enqueue(EvaluateJob(prev_board, best_child->_ply, best_child, std::move(lineage)));
+                        }
                     }
 
                     return;
                 } else {
-                    temp_board.apply_ply(best_child->_ply);
+                    temp_board.apply_ply(best_child->_ply, &temp_history);
                     node = best_child->_node.get();
                     lineage->push_back(node);
                 }

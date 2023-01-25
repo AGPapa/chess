@@ -21,6 +21,7 @@ bool is_bestmove_valid(Board b, std::string output) {
 
 TEST(UCITest, integration) {
     Board b = Board::default_board();
+    BoardHistory history = BoardHistory();
     std::ostringstream out = std::ostringstream();
     UCI engine = UCI(out);
 
@@ -37,8 +38,8 @@ TEST(UCITest, integration) {
     ASSERT_EQ(true, is_bestmove_valid(b, out.str()));
 
     out = std::ostringstream();
-    b.apply_ply(Ply("h2h4"));
-    b.apply_ply(Ply("d7d5"));
+    b.apply_ply(Ply("h2h4"), &history);
+    b.apply_ply(Ply("d7d5"), &history);
     engine.parse_line("position startpos moves h2h4 d7d5");
     engine.parse_line("isready");
     out.str("");
@@ -47,8 +48,8 @@ TEST(UCITest, integration) {
     engine.parse_line("stop");
     ASSERT_EQ(true, is_bestmove_valid(b, out.str()));
 
-    b.apply_ply(Ply("h4h5"));
-    b.apply_ply(Ply("e7e5"));
+    b.apply_ply(Ply("h4h5"), &history);
+    b.apply_ply(Ply("e7e5"), &history);
     engine.parse_line("position startpos moves h2h4 d7d5 h4h5 e7e5");
     engine.parse_line("isready");
     out.str("");
