@@ -42,7 +42,8 @@ class SearchJob {
                     Expander::backprop(temp_board.is_white_turn(), lineage.get(), result);
                     return;
                 } else if (best_child->is_leaf()) {
-                    if (active_nodes->count(best_child) == 0) { //only evaluate if we're not currently evaluating
+                    std::pair<std::set<Edge*>::iterator, bool> pair = active_nodes->insert(best_child);
+                    if (pair.second) { //only evaluate if we're not currently evaluating
                         // TODO: Clean this up and run checkmate checks here instead of in evaluator
                         Board prev_board = Board(temp_board);
                         temp_board.apply_ply(best_child->_ply, &temp_history);
@@ -51,8 +52,8 @@ class SearchJob {
                             Policy draw = Policy(0);
                             Expander::expand(temp_board.is_white_turn(), &draw, best_child);
                             Expander::backprop(temp_board.is_white_turn(), lineage.get(), 0);
+                            active_nodes->erase(pair.first);
                         } else {
-                            active_nodes->insert(best_child);
                             evaluate_queue->enqueue(EvaluateJob(prev_board, best_child->_ply, best_child, std::move(lineage)));
                         }
                     }
