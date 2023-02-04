@@ -3,8 +3,6 @@
 
 #include "../utility/spmc_queue.cpp"
 
-#include <set>
-
 class SearchJob {
 
     public:
@@ -12,7 +10,7 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue, Bank<std::vector<Node*>>* lineage_bank) {
+        void run(std::unordered_set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue, Bank<std::vector<Node*>>* lineage_bank) {
             std::pair<std::vector<Node*>*, int> lineage_bank_pair = lineage_bank->acquire();
             std::vector<Node*>* lineage = lineage_bank_pair.first;
             int lineage_bank_index = lineage_bank_pair.second;
@@ -44,7 +42,7 @@ class SearchJob {
                     Expander::backprop(temp_board.is_white_turn(), lineage, result);
                     return;
                 } else if (best_child->is_leaf()) {
-                    std::pair<std::set<Edge*>::iterator, bool> pair = active_nodes->insert(best_child);
+                    std::pair<std::unordered_set<Edge*>::iterator, bool> pair = active_nodes->insert(best_child);
                     if (pair.second) { //only evaluate if we're not currently evaluating
                         // TODO: Clean this up and run checkmate checks here instead of in evaluator
                         Board prev_board = Board(temp_board);

@@ -22,7 +22,7 @@ TEST(ExpandJobTest, run) {
     lineage->push_back(root.get());
 
     ExpandJob j = ExpandJob(b.is_white_turn(), std::move(p), leaf, lineage_bank_pair.second);
-    std::set<Edge*> active_nodes = std::set<Edge*>();
+    std::unordered_set<Edge*> active_nodes = std::unordered_set<Edge*>();
     active_nodes.insert(leaf);
 
     ASSERT_EQ(leaf->_node, nullptr);

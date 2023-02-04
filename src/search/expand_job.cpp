@@ -6,7 +6,7 @@
 #include "../utility/mpsc_queue.cpp"
 #include "../utility/bank.cpp"
 
-#include <set>
+#include <unordered_set>
 
 class ExpandJob {
 
@@ -20,7 +20,7 @@ class ExpandJob {
             _lineage_bank_index = lineage_bank_index;
         }
 
-        void run(std::set<Edge*> *active_nodes, Bank<std::vector<Node*>>* lineage_bank) {
+        void run(std::unordered_set<Edge*> *active_nodes, Bank<std::vector<Node*>>* lineage_bank) {
             float value = Expander::expand(_is_white_turn, _policy.get(), _leaf);
             active_nodes->erase(_leaf);
             Expander::backprop(_is_white_turn, lineage_bank->access(_lineage_bank_index), value);

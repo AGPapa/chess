@@ -112,7 +112,7 @@ class Searcher {
         std::ostream *_output;
         std::unique_ptr<MPSCQueue<ExpandJob>> _expand_queue;
         std::unique_ptr<SPMCQueue<EvaluateJob>> _evaluate_queue;
-        std::set<Edge*> _active_nodes;
+        std::unordered_set<Edge*> _active_nodes;
         std::unique_ptr<Bank<std::vector<Node*>>> _lineage_bank;
         int _w_time;
         int _b_time;
