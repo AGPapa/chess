@@ -13,6 +13,7 @@ class Searcher {
             _output = output;
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
             _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
+            _lineage_bank = std::unique_ptr<Bank<std::vector<Node*>>>(new Bank<std::vector<Node*>>());
         }
 
         Searcher(Board starting_board, std::ostream *output) {
@@ -21,6 +22,7 @@ class Searcher {
             _output = output;
             _expand_queue = std::unique_ptr<MPSCQueue<ExpandJob>>(new MPSCQueue<ExpandJob>());
             _evaluate_queue = std::unique_ptr<SPMCQueue<EvaluateJob>>(new SPMCQueue<EvaluateJob>());
+            _lineage_bank = std::unique_ptr<Bank<std::vector<Node*>>>(new Bank<std::vector<Node*>>());
         }
 
         Ply find_best_ply() {
@@ -111,6 +113,7 @@ class Searcher {
         std::unique_ptr<MPSCQueue<ExpandJob>> _expand_queue;
         std::unique_ptr<SPMCQueue<EvaluateJob>> _evaluate_queue;
         std::set<Edge*> _active_nodes;
+        std::unique_ptr<Bank<std::vector<Node*>>> _lineage_bank;
         int _w_time;
         int _b_time;
         int _moves_to_next_time_control;
@@ -177,7 +180,7 @@ class Searcher {
             std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(search_mutex);
             while (_state == SearcherState::Searching || !_expand_queue->empty()) {
                 if (_state == SearcherState::Searching) {
-                    SearchJob(_root.get()).run(&_active_nodes, _evaluate_queue.get());
+                    SearchJob(_root.get()).run(&_active_nodes, _evaluate_queue.get(), _lineage_bank.get());
                 }
                 _expand();
                 if (_evaluate_queue->size() > (10 * NUM_EVALUATION_THREADS)) {
@@ -204,7 +207,7 @@ class Searcher {
             while (!_expand_queue->empty()) {
                 bool success = _expand_queue->dequeue(&job);
                 if (success) {
-                    job.run(&_active_nodes);
+                    job.run(&_active_nodes, _lineage_bank.get());
                 } else {
                     throw std::runtime_error("Dequeued nullptr expand job");
                 }

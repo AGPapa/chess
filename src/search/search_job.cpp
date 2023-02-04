@@ -12,8 +12,10 @@ class SearchJob {
             _root = root;
         }
 
-        void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue) {
-            std::unique_ptr<std::vector<Node*>> lineage = std::unique_ptr<std::vector<Node*>>(new std::vector<Node*>());
+        void run(std::set<Edge*> *active_nodes, SPMCQueue<EvaluateJob>* evaluate_queue, Bank<std::vector<Node*>>* lineage_bank) {
+            std::pair<std::vector<Node*>*, int> lineage_bank_pair = lineage_bank->acquire();
+            std::vector<Node*>* lineage = lineage_bank_pair.first;
+            int lineage_bank_index = lineage_bank_pair.second;
             lineage->reserve(50);
             Node* node = _root;
             lineage->push_back(node);
@@ -38,8 +40,8 @@ class SearchJob {
                     } else {
                         result = (node->_score > 0) - (node->_score < 0);
                     }
-                    _virtual_loss(lineage.get());
-                    Expander::backprop(temp_board.is_white_turn(), lineage.get(), result);
+                    _virtual_loss(lineage);
+                    Expander::backprop(temp_board.is_white_turn(), lineage, result);
                     return;
                 } else if (best_child->is_leaf()) {
                     std::pair<std::set<Edge*>::iterator, bool> pair = active_nodes->insert(best_child);
@@ -47,14 +49,16 @@ class SearchJob {
                         // TODO: Clean this up and run checkmate checks here instead of in evaluator
                         Board prev_board = Board(temp_board);
                         temp_board.apply_ply(best_child->_ply, &temp_history);
-                        _virtual_loss(lineage.get());
+                        _virtual_loss(lineage);
                         if (temp_board.is_threefold_repetition(&temp_history)) {
                             Policy draw = Policy(0);
                             Expander::expand(temp_board.is_white_turn(), &draw, best_child);
-                            Expander::backprop(temp_board.is_white_turn(), lineage.get(), 0);
+                            Expander::backprop(temp_board.is_white_turn(), lineage, 0);
                             active_nodes->erase(pair.first);
+                            lineage->clear();
+                            lineage_bank->release(lineage_bank_index);
                         } else {
-                            evaluate_queue->enqueue(EvaluateJob(temp_board, prev_board, best_child->_ply, best_child, std::move(lineage)));
+                            evaluate_queue->enqueue(EvaluateJob(temp_board, prev_board, best_child->_ply, best_child, lineage_bank_index));
                         }
                     }
 

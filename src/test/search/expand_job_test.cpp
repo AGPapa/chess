@@ -16,17 +16,19 @@ TEST(ExpandJobTest, run) {
     float score_increment = 0.2;
     p->set_value(score_increment);
 
-    std::unique_ptr<std::vector<Node*>> lineage = std::unique_ptr<std::vector<Node*>>(new std::vector<Node*>());
+    Bank<std::vector<Node*>> lineage_bank = Bank<std::vector<Node*>>();
+    std::pair<std::vector<Node*>*, int> lineage_bank_pair = lineage_bank.acquire();
+    std::vector<Node*>* lineage = lineage_bank_pair.first;
     lineage->push_back(root.get());
 
-    ExpandJob j = ExpandJob(b.is_white_turn(), std::move(p), leaf, std::move(lineage));
+    ExpandJob j = ExpandJob(b.is_white_turn(), std::move(p), leaf, lineage_bank_pair.second);
     std::set<Edge*> active_nodes = std::set<Edge*>();
     active_nodes.insert(leaf);
 
     ASSERT_EQ(leaf->_node, nullptr);
     ASSERT_EQ(active_nodes.count(leaf), 1);
 
-    j.run(&active_nodes);
+    j.run(&active_nodes, &lineage_bank);
 
     ASSERT_NE(leaf->_node, nullptr);
     ASSERT_EQ(active_nodes.count(leaf), 0);
