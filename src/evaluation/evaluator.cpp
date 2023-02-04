@@ -4,31 +4,28 @@
 #include "neural_net.cpp"
 #include "mock_neural_net.cpp"
 
-std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p) {
-    Board b = prev_board;
-    b.apply_ply_without_history(p);
-    
-    std::unique_ptr<Policy> policy = _draw(b);
+std::unique_ptr<Policy> Evaluator::evaluate(const Board curr_board, const Board prev_board, const Ply p) {
+    std::unique_ptr<Policy> policy = _draw(curr_board);
     if (policy != nullptr) return policy;
 
-    std::vector<Ply> ply_list = b.generate_potential_plies();
+    std::vector<Ply> ply_list = curr_board.generate_potential_plies();
 
-    policy = _checkmate_or_stalemate(b, ply_list);
+    policy = _checkmate_or_stalemate(curr_board, ply_list);
     if (policy != nullptr) return policy;
 
-    return net->evaluate(b, prev_board, p, ply_list);
+    return net->evaluate(curr_board, prev_board, p, ply_list);
 }
 
-std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
-    std::unique_ptr<Policy> policy = _draw(b);
+std::unique_ptr<Policy> Evaluator::evaluate(const Board curr_board) {
+    std::unique_ptr<Policy> policy = _draw(curr_board);
     if (policy != nullptr) return policy;
 
-    std::vector<Ply> ply_list = b.generate_potential_plies();
+    std::vector<Ply> ply_list = curr_board.generate_potential_plies();
 
-    policy = _checkmate_or_stalemate(b, ply_list);
+    policy = _checkmate_or_stalemate(curr_board, ply_list);
     if (policy != nullptr) return policy;
 
-    return net->evaluate(b, ply_list);
+    return net->evaluate(curr_board, ply_list);
 }
 
 std::unique_ptr<Policy> Evaluator::_draw(const Board b) {

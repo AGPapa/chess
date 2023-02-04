@@ -54,7 +54,7 @@ class SearchJob {
                             Expander::backprop(temp_board.is_white_turn(), lineage.get(), 0);
                             active_nodes->erase(pair.first);
                         } else {
-                            evaluate_queue->enqueue(EvaluateJob(prev_board, best_child->_ply, best_child, std::move(lineage)));
+                            evaluate_queue->enqueue(EvaluateJob(temp_board, prev_board, best_child->_ply, best_child, std::move(lineage)));
                         }
                     }
 

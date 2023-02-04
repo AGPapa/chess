@@ -6,7 +6,7 @@
 class Evaluator {
 
     public:
-        static std::unique_ptr<Policy> evaluate(Board prev_board, Ply p);
+        static std::unique_ptr<Policy> evaluate(Board curr_board, Board prev_board, Ply p);
 
         static std::unique_ptr<Policy> evaluate(Board b);
 
