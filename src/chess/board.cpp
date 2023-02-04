@@ -256,11 +256,6 @@ class Board {
                          true, c, 0, 1);
         }
 
-        Board copy_without_history() const {
-            return Board(_w_pieces, _b_pieces, _pawns, _bishops, _rooks, _knights,
-                _w_king, _b_king, _w_turn, _castling, _rule_fifty_ply_clock, _move_count);
-        }
-
         BoardSignature signature() const {
             return BoardSignature(_w_pieces, _b_pieces, _bishops, _rooks, _knights, _w_king, _b_king, _castling);
         }
@@ -1022,7 +1017,7 @@ class Board {
         }
 
         bool add_ply_if_king_not_in_check(std::vector<Ply>* ply_list, const Ply ply) const {
-            Board b = copy_without_history();
+            Board b = Board(*this);
             b.apply_ply_without_history(ply);
             Square king = _w_turn ? b._w_king : b._b_king;
             if (!b.square_under_attack(king)) {

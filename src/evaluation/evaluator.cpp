@@ -16,7 +16,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board prev_board, const Ply p)
     policy = _checkmate_or_stalemate(b, ply_list);
     if (policy != nullptr) return policy;
 
-    return net->evaluate(b.copy_without_history(), prev_board.copy_without_history(), p, ply_list);
+    return net->evaluate(b, prev_board, p, ply_list);
 }
 
 std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
@@ -28,7 +28,7 @@ std::unique_ptr<Policy> Evaluator::evaluate(const Board b) {
     policy = _checkmate_or_stalemate(b, ply_list);
     if (policy != nullptr) return policy;
 
-    return net->evaluate(b.copy_without_history(), ply_list);
+    return net->evaluate(b, ply_list);
 }
 
 std::unique_ptr<Policy> Evaluator::_draw(const Board b) {
